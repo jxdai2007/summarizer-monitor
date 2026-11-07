@@ -141,7 +141,9 @@ Wording limits for the raw lane:
 > summarizers from 11 vendors)"}} it flagged all nine lossy ones and cleared three, {{source: same file:T3 table, 9
 > FAIL/FAIL and 3 PASS/PASS rows}} two clearly, one narrowly. {{source:
 > summarizer-monitor/experiments/E2d-canary-pass-side-3/analysis.md:"Kimi PASS in 80%" of log-bootstrap replicates;
-> findings.md Result 4d safe line}}
+> findings.md Result 4d safe line}} In a second environment it was right on five of six; the miss was that narrow
+> one. {{source: summarizer-monitor/experiments/E7-canary-new-environment/results/analysis.txt:"labels matched 5/6";
+> Kimi +8.2 -> +18.1}}
 
 E2-E2d are final and reviewed. The narration uses the Result 4d safe line from `findings.md` (shortened).
 - E2 (FAIL side): Q1 PASS 4/4 (weak test, n = 4, p = 0.0625 against coin-flip labels); Q2 PASS (Spearman 0.983 over
@@ -182,9 +184,8 @@ lane 49, luna summaries 46, all of 66 and none significantly different), then a 
 > Scope: on agent-written deals, at matched false alarms, the gap is six points, not significant {{source:
 > loop8/l8_results.txt:"Sonnet matched-FA FULL vs LUNA ... diff +6 pts [CI -3, +15]"}}; 73 to 56 percent only at a
 > fixed threshold {{source: review2/l2_13_stress_results.txt:"claude-sonnet-5.5 FULL: T-COORD 48/66 ... LUNA: T-COORD
-> 37/66", exact McNemar two-sided p=0.00098}}. The big drops are on planted deals: six templates per corpus {{source:
-> review2/l2_13.md:§2.3 "only 6 deal templates"}}, though all 17 untied deals lose {{source: review2/l2_13.md:§2.5 "17
-> of 17 untied deals lose detection"}}.
+> 37/66", exact McNemar two-sided p=0.00098}}. The big drops are on planted deals {{source:
+> review2/l2_13.md:§2.3 "only 6 deal templates"}}.
 
 On screen: a small realism panel with bars at a fixed threshold and at matched false alarms.
 
