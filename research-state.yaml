@@ -44,15 +44,35 @@ hypotheses:
     priority: high
   - id: E2b
     statement: "The canary audit's PASS calls are also right on held-out deals."
-    status: active (locked bec2a9b; model selection 0c5cb4d)
+    status: supported with n=1 (3/3 labels; Gemini 4 Argon PASS held; 1aa3649)
+    priority: high
+  - id: E2c
+    statement: "More PASS-side cases (fixed order, $6 cost line)."
+    status: S1 pass, S2 not reached, S3 fail (3/3 FAIL calls held; PASS still n=1; 077b27c)
+    priority: high
+  - id: E2d
+    statement: "Opus 5.5 + Kimi k3.1 without cost line: >=2 PASS cases from >=2 vendors?"
+    status: active (locked da8341c)
     priority: high
 
 experiments:
   proxy_metric: "split-deal detection (monitor reading view X) minus full-log detection, at 0 or matched false alarms"
-  total_runs: 3
+  total_runs: 5
   trajectory:
     - {run_id: E1, metric: "Sonnet H1 51/66 caught, FA 8/64; matched-FA 49 vs FULL 50 vs LUNA 46", commit: 1258dec}
     - {run_id: E2, metric: "canary labels 4/4; rho 0.983; FA 0/42; cost $0.38-1.68/audit", commit: e398a58}
+    - {run_id: E2b, metric: "3/3 labels (1 PASS); rho 0.979 over 12", commit: 1aa3649}
+    - {run_id: E2c, metric: "3/3 labels (all FAIL); pooled 10/10, 9 vendors; rho 0.967 over 15", commit: 077b27c}
+deliverables:
+  report_draft: "paper/main.pdf (7 main pages; claims review PASS WITH FIXES; e9c3ea4, Sumers cite 074621c)"
+  figure: "to_human/fig_main.png + to_human/panels/*.png"
+  demo: "to_human/demo.html"
+  slides: "to_human/slides.html (10 slides, f5a870c)"
+  script: "to_human/video_script.md (DRAFT, 407 words)"
+  talk: "to_human/talk_outline.md"
+  cli: "src/summary_audit (5/5 tests; smoke pass)"
+  readme: "README.md"
+  pending_after_E2d: "update abstract/narration/slide 8 counts ('7 of 7' -> pooled); offset ~13 not ~10"
 
 outer_loop:
   cycle: 1

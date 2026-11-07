@@ -42,7 +42,7 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
 - Setup: 4 new summarizer families (GPT-5.6-terra, Cohere Command A+, MiniMax M3.1 Flash, Amazon Nova Pro). Their
   canary drop on set A was committed as a PASS/FAIL prediction before set B ran.
 - Labels matched 4/4. Spearman 0.983 over 9 summarizers (deal-clustered CI 0.82-1.00).
-- False alarms were 0/42 in every cell. The canary overstates held-out loss by about 10 points.
+- False alarms were 0/42 in every cell. The canary overstates held-out loss by about 10-13 points (13 with E2c).
 - Cost: $0.38-1.68 and 2-4 minutes per audit.
 - Caveat: all 4 were canary-FAIL, so only the warning side was tested. E2b (locked bec2a9b) tests the PASS side.
 - Ceiling exception (prospective Q4): monitors on Nova summaries beat Nova's own full-log catch by 9 points on set A
