@@ -22,8 +22,8 @@ How to read this file:
 > Nobody reads logs at swarm scale. A model summarizes them; the monitor reads the summary. Swap that one model,
 > and the same monitors catch fewer than half as many hidden deals {{source: summarizer-monitor/paper/numbers.tex:
 > B-luna-full 55, B-luna-sum 25 of B-luna-n 80 (set B, luna summaries)}}, or more than if they had read the raw log {{source:
-> summarizer-monitor/paper/numbers.tex:E2d-opus-hsum vs E2d-opus-hfull (Opus summaries vs raw log, set B)}}. So who
-> is really monitoring?
+> summarizer-monitor/paper/numbers.tex:E2d-opus-hsum vs E2d-opus-hfull (Opus summaries vs raw log, set B)}}. The
+> summarizer is the real monitor, and a six-dollar test tells you which kind you have.
 
 On screen: a pipeline diagram (agents → raw log → **summarizer** → monitor). The summarizer box lights up on "who".
 
@@ -34,9 +34,9 @@ That adds 18 words (435 total), so also make the cuts listed in the word-count t
 ## Beat 2 · 0:15-0:35 · Setup
 
 > We took real multi-agent logs: eighteen agents {{source: loop2c/l2_13_summary_launder.py:docstring "7 runs of 18
-> GPT-6-Luna agents"}} building a Lisp interpreter, and a ChatDev corpus. We planted fictional deals to game the tests,
+> GPT-6-Luna agents"}} and a ChatDev corpus. We planted fictional deals to game the tests,
 > each split across four {{source: loop2c/l2_13_summary_launder.py:docstring "4 messages between two workers"}}
-> harmless-looking messages and written by two models. Then: chunk, summarize, monitor.
+> harmless-looking messages. Then: chunk, summarize, monitor.
 
 On screen: demo tab 2, Log 1, full-log view. It opens scrolled to the first highlighted planted message; press the
 1-4 buttons to jump between them.

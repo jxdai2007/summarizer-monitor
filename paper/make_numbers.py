@@ -777,6 +777,7 @@ if (_E / "E8-unselected-vendors/results/analysis.txt").exists():
                        _d, re.M)
     _norm = lambda s: s.split("/")[-1].lower().replace(" (low effort)", "").replace(" ", "-").replace("-pro", "")
     put("all-match", f"{sum(r[5] == 'ok' for r in _rows)}/{len(_rows)}")
+    put("all-alwaysfail", f"{sum(r[4] == 'FAIL' for r in _rows)}/{len(_rows)}")
     _far = [r for r in _rows if float(r[6]) > 10]
     _near = [r for r in _rows if float(r[6]) <= 10]
     _fs = {_norm(r[0]) for r in _far}
