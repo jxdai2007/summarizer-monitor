@@ -1,0 +1,65 @@
+# Research State: "The Summarizer Is the Monitor" (package F)
+# Hackathon: Apart x AI Alignment Foundation Swarm Alignment, Nov 6-8 2026 (Jollen, solo, LA hub)
+# Deadlines: 3-min video Sun Nov 8 10:00 PT; 8-page report Sun 23:59 AoE.
+
+project:
+  title: "The Summarizer Is the Monitor: swarm oversight is capped by whoever writes the record it reads"
+  question: >
+    When swarm monitors read LLM-written summaries instead of raw logs, how much of what they can catch is
+    decided by the summarizer, does agent-authored testimony (corrections, blame notes) get laundered into the
+    record as fact, and can a cheap audit predict a summarizer's pass-through before deployment?
+  status: active
+  started: "2026-11-06"
+  domain: "multi-agent oversight / AI control (Track 4, cross-listed T3)"
+  approved_by_jollen: "2026-11-06 22:20 PT ('go' after package F recommendation)"
+
+literature:
+  key_papers:
+    - {id: "2607.11751", relevance: "observability boundary: local views miss compositional harm (closest general point)"}
+    - {id: "2605.31593", relevance: "distributed / decomposition attacks on monitors"}
+    - {id: "2506.10949", relevance: "sequential monitors for split attacks"}
+    - {id: "2606.22528", relevance: "compaction"}
+    - {id: "2608.29028", relevance: "handoff summaries drop boundary metadata (summary collapse)"}
+    - {id: "2506.15740", relevance: "SHADE-Arena monitor red-teaming"}
+    - {id: "2603.04582", relevance: "self-attribution bias in monitors"}
+  note: "Every citation must be verified against its abstract before submission (strategy.md risk list)."
+
+evidence_so_far:   # all pre-workspace results live in ~/research-taste/swarm-alignment/pilots/2026-11-06/
+  - "Planted split deals: GPT-5.6 summaries (luna cheap, sol flagship) cut detection 24-40 pts at 0 false alarms; Claude/Gemini summaries 0-10 (review2/l2_13.md)."
+  - "Monitor never beats its summarizer: 6/6 families, rho 0.99 (loop2d)."
+  - "Second corpus ChatDev/MAST: 41/69 -> 21/69 (loop9)."
+  - "Agent-written deals (loop8): Sonnet 48/66 -> 37/66 fixed threshold (two-sided p=0.001); matched-FA loss +6 (CI -3..15) n.s."
+  - "Corrections: luna clears 10/24 rule breaks after a one-line correction on realistic logs (0/24 without) (review2/agent_records.md)."
+  - "Blame chain: Sonnet suspends only the innocent 16/28 via summaries vs 0/28 raw; summarizer line -> 0/28 (loop1c L1c-20/20b)."
+  - "Editable summaries: deleting 1-2 summary sentences hides 14/15 caught deals; deleting any raw message 0/60 (loop2d L2d-15)."
+
+hypotheses:
+  - id: E1
+    statement: "A raw cross-agent message lane (H1) recovers full-log detection on AGENT-WRITTEN deals (loop8) at <=10% false alarms."
+    status: pending
+    priority: high
+  - id: E2
+    statement: "A canary audit on planted set A predicts whether a NEW summarizer loses >15 pts on held-out set B."
+    status: pending
+    priority: high
+
+experiments:
+  proxy_metric: "split-deal detection (monitor reading view X) minus full-log detection, at 0 or matched false alarms"
+  total_runs: 0
+  trajectory: []
+
+outer_loop:
+  cycle: 0
+  last_direction: null
+  last_reflection: "Bootstrapped from overnight loops + review2. Direction: package F; video first, then tool, then report."
+
+workspace:
+  findings: "findings.md"
+  log: "research-log.md"
+  literature_dir: "literature/"
+  experiments_dir: "experiments/"
+  data_dir: "data/"
+  src_dir: "src/"
+  to_human_dir: "to_human/"
+  paper_dir: "paper/"
+  pilot_records: "~/research-taste/swarm-alignment/pilots/2026-11-06/ (loop2c, loop2d, loop8, loop9, loop1c, review2)"
