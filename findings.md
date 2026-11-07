@@ -50,6 +50,16 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
 - Deviation: Kimi k3.1-pro was swapped out for cost and leaked reasoning text before its scores were read. Its partial,
   exploratory drops were +12.5 and +10, so it was the only family heading for PASS (see the E2 analysis).
 
+**Result 5: a raw worker-to-worker lane on agent-written deals (E1, CONFIRMATORY; reviewed, pass with fixes).**
+- The lane covers 53.6% of full-log characters.
+- At the fixed threshold, Sonnet catches 51/66 on the lane, against 37/66 on luna summaries (McNemar p=0.0013;
+  P2 PASS).
+- Threshold-free, it matches the full log: AUC 0.944 vs 0.924 (P3 PASS).
+- It needs its own threshold: 8/64 false alarms against the ≤6 bar, so P1 FAILS on false alarms only.
+- At matched false alarms (controls ≤10%), Sonnet FULL 50, LUNA 46, H1 49. All differences are n.s.
+- Wording: "a raw worker-to-worker lane matches full-log detection at about half the tokens, once calibrated". Do not
+  call it "a fix that beats summaries at matched false alarms".
+
 **Fixes so far.**
 - A raw cross-agent message lane (H1) closes the gap on planted deals at 0.3-0.4x full-log tokens, but by
   construction: planted deals are all cross-agent.
@@ -67,5 +77,5 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
 - H1 "closes the gap" only by construction on planted deals; E1 tests it on agent-written deals.
 
 ## Open Questions
-- E1: does the raw lane work on agent-written deals?
+- E1: answered. On agent-written deals the lane matches the full log (AUC), but needs its own threshold.
 - E2: answered for the warning side (4/4, rho 0.983). E2b: is the PASS side right too?
