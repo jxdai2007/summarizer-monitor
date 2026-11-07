@@ -1,0 +1,171 @@
+{
+ "protocol": "summarizer-monitor/experiments/E2c-canary-pass-side-2/protocol.md (locked 3a5f181)",
+ "decided": "2026-11-06 ~23:33 PT, before any E2c monitor call (probes 23:28:40-23:31:31 PT, summaries only)",
+ "rule": "first 3 available on OpenRouter, in the fixed order, whose 2-log probe projects <= $6 for the full E2c design; Kimi only if its probe chunks show no deliberation text; every probed model's summaries checked for leaked reasoning before any monitor call",
+ "projection_rule_fixed_before_probing": "per-chunk summary cost from the 2-log probe x 444 chunks (set A 124 SPLIT + 79 control chunks; set B 162 SPLIT + 79 fresh control chunks = the design E2b actually ran, fresh set-B controls included) + a $0.01/log allowance for the two monitors x 116 logs. Written into code/e2c_run.py before the first probe call, to avoid E2b's after-the-fact projection switch (E2b deviation 5). The E2-required-design figure (365 chunks, 95 logs) is shown for reference only and was not used.",
+ "fixed_order_resolved_to_ids": {
+  "1 Claude Opus latest": "anthropic/claude-opus-5.5",
+  "2 Mistral Medium latest": "mistralai/mistral-medium-3-5",
+  "3 Phi latest": "microsoft/phi-4",
+  "4 Kimi k3.1 low effort": "moonshotai/kimi-k3.1-pro",
+  "5 Qwen largest latest unused": "qwen/qwen3.8-2.4t-a95b",
+  "6 Llama largest latest unused": "meta-llama/llama-4-maverick"
+ },
+ "id_resolution_notes": {
+  "anthropic/claude-opus-5.5": "newest Claude Opus on OpenRouter (created after claude-opus-5)",
+  "mistralai/mistral-medium-3-5": "newest Mistral Medium (3.5; newer than 3.1 and 3)",
+  "microsoft/phi-4": "the only Microsoft Phi on OpenRouter",
+  "moonshotai/kimi-k3.1-pro": "Kimi k3.1, request reasoning.effort = low",
+  "qwen/qwen3.8-2.4t-a95b": "judgment call: largest stated parameter count (2.4T) in the newest Qwen generation (3.8); qwen3.8-flash already used as a summarizer; qwen3.8-max-prime (size not stated) was the alternative reading",
+  "meta-llama/llama-4-maverick": "largest Llama 4 model; llama-4-scout already used as a summarizer"
+ },
+ "selected": [
+  "mistralai/mistral-medium-3-5",
+  "microsoft/phi-4",
+  "meta-llama/llama-4-maverick"
+ ],
+ "skipped": {
+  "anthropic/claude-opus-5.5": "cost: projected $12.57 > $6 (also > $6 under the smaller E2-required design)",
+  "moonshotai/kimi-k3.1-pro": "cost: projected $6.1 > $6 under the pre-fixed projection, a narrow miss. Under the smaller E2-required design (no fresh set-B controls) it would be $5.01; we did not switch projections after seeing the number. Its probe summaries were clean (no deliberation text at low effort).",
+  "qwen/qwen3.8-2.4t-a95b": "cost: projected $10.31 > $6"
+ },
+ "request_settings": "OpenRouter defaults (no reasoning override) for the three selected, exactly as E2/E2b's summarizers; max_tokens 4000 per chunk",
+ "set_B_controls_plan": "fresh set-B summaries of the 21 control logs are run for every selected summarizer after its set-B SPLIT run, as in E2b (they are inside the projection)",
+ "budget_note": "the 3 selected project to about $6.6 together; probes so far cost about $0.52 (E2c total cap $15)",
+ "probes": {
+  "anthropic/claude-opus-5.5": {
+   "served_model": "anthropic/claude-opus-5.5",
+   "request_extra": {},
+   "probe_logs": [
+    "practice_02|1|SPLIT",
+    "practice_02|0|SPLIT"
+   ],
+   "probe_chunks": 8,
+   "probe_usd_summaries": 0.2056,
+   "usd_per_chunk": 0.0257,
+   "projected_full_E2c_usd": 12.57,
+   "fits_6usd": false,
+   "projected_E2_required_design_usd_for_reference_only": 10.33,
+   "chunk_errors": 0,
+   "chunk_words_min_max_mean": [
+    155,
+    189,
+    172
+   ],
+   "leaked_reasoning_flags": 0
+  },
+  "mistralai/mistral-medium-3-5": {
+   "served_model": "mistralai/mistral-medium-3-5",
+   "request_extra": {},
+   "probe_logs": [
+    "practice_02|1|SPLIT",
+    "practice_02|0|SPLIT"
+   ],
+   "probe_chunks": 8,
+   "probe_usd_summaries": 0.0478,
+   "usd_per_chunk": 0.00597,
+   "projected_full_E2c_usd": 3.81,
+   "fits_6usd": true,
+   "projected_E2_required_design_usd_for_reference_only": 3.13,
+   "chunk_errors": 0,
+   "chunk_words_min_max_mean": [
+    118,
+    144,
+    126
+   ],
+   "leaked_reasoning_flags": 0,
+   "leak_check": "heuristic (starts with / first 200 chars contain deliberation phrases) + manual read of the opening and close of all 8 chunks: clean summaries, no deliberation text"
+  },
+  "microsoft/phi-4": {
+   "served_model": "microsoft/phi-4",
+   "request_extra": {},
+   "probe_logs": [
+    "practice_02|1|SPLIT",
+    "practice_02|0|SPLIT"
+   ],
+   "probe_chunks": 8,
+   "probe_usd_summaries": 0.0015,
+   "usd_per_chunk": 0.00018,
+   "projected_full_E2c_usd": 1.24,
+   "fits_6usd": true,
+   "projected_E2_required_design_usd_for_reference_only": 1.02,
+   "chunk_errors": 0,
+   "chunk_words_min_max_mean": [
+    160,
+    294,
+    231
+   ],
+   "leaked_reasoning_flags": 0,
+   "leak_check": "heuristic (starts with / first 200 chars contain deliberation phrases) + manual read of the opening and close of all 8 chunks: clean summaries, no deliberation text"
+  },
+  "moonshotai/kimi-k3.1-pro": {
+   "served_model": "moonshotai/kimi-k3.1-pro",
+   "request_extra": {
+    "reasoning": {
+     "effort": "low"
+    }
+   },
+   "probe_logs": [
+    "practice_02|1|SPLIT",
+    "practice_02|0|SPLIT"
+   ],
+   "probe_chunks": 8,
+   "probe_usd_summaries": 0.089,
+   "usd_per_chunk": 0.01113,
+   "projected_full_E2c_usd": 6.1,
+   "fits_6usd": false,
+   "projected_E2_required_design_usd_for_reference_only": 5.01,
+   "chunk_errors": 0,
+   "chunk_words_min_max_mean": [
+    117,
+    138,
+    127
+   ],
+   "leaked_reasoning_flags": 0,
+   "leak_check": "heuristic (starts with / first 200 chars contain deliberation phrases) + manual read of the opening and close of all 8 chunks: clean summaries, no deliberation text"
+  },
+  "qwen/qwen3.8-2.4t-a95b": {
+   "served_model": "qwen/qwen3.8-2.4t-a95b",
+   "request_extra": {},
+   "probe_logs": [
+    "practice_02|1|SPLIT",
+    "practice_02|0|SPLIT"
+   ],
+   "probe_chunks": 8,
+   "probe_usd_summaries": 0.1649,
+   "usd_per_chunk": 0.02061,
+   "projected_full_E2c_usd": 10.31,
+   "fits_6usd": false,
+   "projected_E2_required_design_usd_for_reference_only": 8.47,
+   "chunk_errors": 0,
+   "chunk_words_min_max_mean": [
+    74,
+    123,
+    105
+   ],
+   "leaked_reasoning_flags": 0
+  },
+  "meta-llama/llama-4-maverick": {
+   "served_model": "meta-llama/llama-4-maverick",
+   "request_extra": {},
+   "probe_logs": [
+    "practice_02|1|SPLIT",
+    "practice_02|0|SPLIT"
+   ],
+   "probe_chunks": 8,
+   "probe_usd_summaries": 0.0062,
+   "usd_per_chunk": 0.00078,
+   "projected_full_E2c_usd": 1.5,
+   "fits_6usd": true,
+   "projected_E2_required_design_usd_for_reference_only": 1.23,
+   "chunk_errors": 0,
+   "chunk_words_min_max_mean": [
+    134,
+    152,
+    143
+   ],
+   "leaked_reasoning_flags": 0,
+   "leak_check": "heuristic (starts with / first 200 chars contain deliberation phrases) + manual read of the opening and close of all 8 chunks: clean summaries, no deliberation text (Llama prefixes each chunk with 'Here is a summary of the segment in 150 words...', a preamble, not deliberation)"
+  }
+ }
+}
