@@ -159,3 +159,14 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
     PASS can be trusted.
   - The fix made MiniMax fail on 19.5% of chunk summaries.
 - **E8, outcome-blind vendor selection: running.** Tencent hy3, GLM-5.3-prime, Seed-2.0-lite, with held-out sets B and C.
+- **E3b, second monitor (CONFIRMATORY, 237ecb0): PASS.** Re-scoring E3's summaries with Grok 4.20 met both bars: ρ +0.94
+  and a FAIL−PASS gap of +17.7 [+9.1, +40.4]. With Haiku (E3) only the ranking bar was met. Grok over-flags controls at
+  the default threshold.
+- **E8, outcome-blind vendors (CONFIRMATORY, two-stage lock): KILL.** The locked rule picked Tencent hy3, GLM-5.3-prime
+  and Seed-2.0-lite. All three canary drops sat within 9 points of the threshold (+12.3 to +23.8). Labels matched 3/6:
+  new deals 2/3, ChatDev 1/3.
+- **Post-hoc distance analysis (24 prospective calls).**
+  - Calls 21.7 or more points from the threshold were confirmed 14/14; calls within 9 points 6/10.
+  - **The audit separates clearly lossy from clearly faithful summarizers; near the threshold its label is unreliable.**
+  - The deployer checklist now says to treat drops within about 10 points as undecided.
+  - The earlier clean 12/12 owed much to selection that produced mostly far-from-threshold summarizers.

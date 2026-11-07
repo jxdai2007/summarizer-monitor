@@ -125,4 +125,10 @@ block_2026-11-07:
       status: "E4-E7 reviewed (PASS WITH FIXES x4, fixes applied 9d2e28d) and added to paper 6cae910"
     - id: E8
       what: "Canary on 3 vendors chosen without regard to outcome (hy3, glm-5.3-prime, seed-2.0-lite); held-out sets B and C"
-      status: "stage 1 running (locked 8d3c001, selection b41c02e)"
+      status: "done KILL (f2c4acd): all 3 near threshold; labels 3/6. Post hoc: far calls 14/14, within 9 pts 6/10"
+    - id: E3b
+      what: "E3 re-scored with Grok 4.20 as second monitor"
+      status: "done PASS (d3e0403): rho +0.94, gap +17.7 [+9.1,+40.4]"
+    - id: PAPER-2
+      what: "E3b + E8 + distance limit in paper (854ac07); claims review running"
+      status: running
