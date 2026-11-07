@@ -64,6 +64,17 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
   ($4.14) after seeing the cost projection and before any monitor score existed; the controls were then run anyway.
   This is disclosed in the E2b analysis.
 
+**Result 4c: more PASS-side attempts (E2c, CONFIRMATORY; reviewed, PASS).**
+- Mistral Medium 3.5, Phi-4 and Llama 4 Maverick were all canary-FAIL and all FAIL held-out. Phi-4 and Maverick caught
+  0/64 canary pairs.
+- S2 was not reached and S3 FAILED: pooled over E2-E2c, labels match 10/10 across 9 vendors, but there is still only
+  1 PASS case.
+- Spearman 0.967 over 15 summarizers.
+- The $6 cost line priced out the likely-PASS candidates (Opus $12.57, Kimi $6.10). E2d (locked da8341c) runs those
+  two without the line.
+- Safe wording now: "the audit flagged every lossy summarizer we tested in advance (9/9, 9 vendors, all confirmed on
+  unseen deals); its one PASS call held; the PASS side is preliminary".
+
 **Result 5: a raw worker-to-worker lane on agent-written deals (E1, CONFIRMATORY; reviewed, pass with fixes).**
 - The lane covers 53.6% of full-log characters.
 - At the fixed threshold, Sonnet catches 51/66 on the lane, against 37/66 on luna summaries (McNemar p=0.0013;
@@ -92,4 +103,4 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
 
 ## Open Questions
 - E1: answered. On agent-written deals the lane matches the full log (AUC), but needs its own threshold.
-- E2/E2b: answered. 7/7 canary calls correct (6 FAIL, 1 PASS); rho 0.979 over 12 summarizers. Open: more PASS-side cases.
+- E2-E2c: 10/10 canary calls correct (9 FAIL, 1 PASS); rho 0.967 over 15 summarizers. Open: PASS side (E2d running: Opus 5.5, Kimi k3.1).
