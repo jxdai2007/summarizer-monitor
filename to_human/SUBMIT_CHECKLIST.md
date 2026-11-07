@@ -24,18 +24,17 @@ Everything below needs you. Nothing has been submitted, published or pushed.
 
 ## 3. Publish the code repo (needed for the repo link; about 30 min)
 - The tracked files have no keys or personal email (scanned 7 Nov). `.env` is gitignored.
-- Some experiment code reads records from `~/research-taste/swarm-alignment/pilots/2026-11-06/`, outside this repo. For
-  a self-contained public repo, either copy the needed records into `summarizer-monitor/data/`, or say in the README
-  that those runs are reproducible but their raw records are on request.
+- Records for today's experiments (E3-E10) are now bundled in `data/records_2026-11-07/` (13 MB, sha256 manifest).
+  Older pilot runs still read from `~/research-taste/...`; their consolidated CSVs are in `data/`.
 - The `publish-research-repo-cleanly` skill covers the scrub, verify and cold-clone steps. Ask me to run it, then you
   create the GitHub repo and push.
 
 ## 4. Record the video (about 1-2 h)
-- **Script:** `to_human/video_narration_clean.md`, 426 words, about 3:00. It's a draft; rewrite it in your own voice.
+- **Script:** `to_human/video_narration_clean.md`, about 410 words, about 3:00. It's a draft; rewrite it in your own voice.
   Sources for every number are in `to_human/video_script.md`.
 - **On-screen material:**
   - `to_human/demo.html` (offline replay; tabs 1-3)
-  - `to_human/fig_dial.png` (the dial: 26 summarizers on the same held-out deals)
+  - `to_human/fig_dial.png` (the dial, now the paper's Figure 1: 26 summarizers on the same held-out deals)
   - `to_human/slides.html` (12 slides)
 - Keep the scope line in beat 7: agent-written deals show a small effect at matched false alarms.
 
@@ -55,6 +54,7 @@ Everything below needs you. Nothing has been submitted, published or pushed.
   - 5/6 in a second environment.
   - 3/6 for vendors picked blind, all near the threshold (E8 failed).
   - Far from the threshold: 14/14 post hoc, then 8/8 in a preregistered test (all lossy side).
+  - A preregistered PASS-side test (E10) was inconclusive: only 1 of 3 new summarizers landed far.
   - Near the threshold, treat the label as undecided.
 - **Agent-written deals:** small losses. Calibration shifts a lot between summarizers (the 10%-FA threshold ranges
   23-83). The canary ranking met its bar with two monitor families.
