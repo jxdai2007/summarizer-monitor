@@ -294,7 +294,7 @@ def slides(N, B):
         <li><b>Repeatable:</b> re-running the audit gave the same label in {nt('E4-match')} reruns.</li>
         <li><b>Its limit:</b> on three vendors picked blind to outcome, all near the threshold, it matched only
           {nt('E8-matchall')}. Over all {nt('dist-ncalls')} prospective calls: far from the threshold
-          <span class="num">{nt('dist-far')}</span>, near it {nt('dist-near')} (post hoc), then <span class="num">{nt('E9-far')}</span> in a preregistered test of that rule. Act only on drops about 22+ points from 15; treat closer drops as undecided. All prospective calls: {nt('all9-match')} (always-FAIL {nt('all9-alwaysfail')}).</li>
+          <span class="num">{nt('dist-far')}</span>, near it {nt('dist-near')} (post hoc), then <span class="num">{nt('E9-far')}</span> (all lossy) in a preregistered test of that rule. Act only on drops about 22+ points from 15; treat closer drops as undecided. All prospective calls: {nt('all9-match')} (always-FAIL {nt('all9-alwaysfail')}).</li>
         <li><b>Recalibrate per summarizer:</b> one carried-over threshold cost {nt('E6-detlosslo')}&ndash;{nt('E6-detlosshi')} points of
           detection for {nt('E6-nzero')} of {nt('E6-nsum')} summarizers (not predicted).</li>
       </ul>""", eyebrow="Added 7 Nov \u00b7 preregistered follow-ups (E3b, E4, E6, E7, E8)",

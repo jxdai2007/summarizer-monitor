@@ -827,6 +827,7 @@ if (_E / "E9-far-rule-prospective/results/analysis.txt").exists():
     put("E9-far", f"{_m.group(1)}/{_m.group(2)}")
     _rows9 = re.findall(r"canary\s+([+-][\d.]+) (PASS|FAIL) (FAR|NEAR)\s*\| set B .*?\) (PASS|FAIL) (ok|MISS) \| set C .*?\) (PASS|FAIL) (ok|MISS)", _t)
     put("E9-nfar", sum(r[2] == "FAR" for r in _rows9))
+    put("E9-all", f"{sum((r[4] == 'ok') + (r[6] == 'ok') for r in _rows9)}/{2 * len(_rows9)}")
     _nr = [r for r in _rows9 if r[2] == "NEAR"]
     put("E9-near", f"{sum((r[4] == 'ok') + (r[6] == 'ok') for r in _nr)}/{2 * len(_nr)}")
     _ok9 = sum((r[4] == "ok") + (r[6] == "ok") for r in _rows9)

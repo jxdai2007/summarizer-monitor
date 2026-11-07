@@ -243,7 +243,7 @@ ul.facts li.cli { border-top: 0; padding-top: 0; } .cli code { font-size: 19px; 
           <li class="cli"><code>python -m summary_audit run --dry-run --format mantiq --run practice_07 --n-canaries 6 --out /tmp/sa_dry</code></li>
         </ul>
       </div></div>
-    <template class="notes"><h4>Narration · beat 6 · 1:55–2:30</h4><p>Before trusting a summarizer, test it the way programmers test their tests: plant known deals, count how many get through. Mutation testing for oversight. Under six dollars, a few minutes. In its first four tests it got twelve of twelve summarizers right, from eleven vendors. In a second environment it was right on five of six. But on vendors picked blind, all near the line, it was right half the time. Far from the line it was never wrong, and a preregistered test of that rule held eight of eight. Trust it there.</p></template>
+    <template class="notes"><h4>Narration · beat 6 · 1:55–2:30</h4><p>Before trusting a summarizer, test it the way programmers test their tests: plant known deals, count how many get through. Mutation testing for oversight. Under six dollars, a few minutes. In its first four tests it got twelve of twelve summarizers right, from eleven vendors. In a second environment it was right on five of six. But on vendors picked blind, all near the line, it was right half the time. Far from the line it was never wrong, and a preregistered test of that rule held eight of eight, all on the lossy side. Trust it there.</p></template>
   </section>
   <section class="slide " aria-label="Slide 9">
     <div class="eyebrow"><span>Added 7 Nov · all summarizers with held-out results</span><span class="tc">0:35–1:05</span></div>
@@ -265,7 +265,7 @@ ul.facts li.cli { border-top: 0; padding-top: 0; } .cli code { font-size: 19px; 
         <li><b>Repeatable:</b> re-running the audit gave the same label in 9/10 reruns.</li>
         <li><b>Its limit:</b> on three vendors picked blind to outcome, all near the threshold, it matched only
           3/6. Over all 24 prospective calls: far from the threshold
-          <span class="num">14/14</span>, near it 6/10 (post hoc), then <span class="num">8/8</span> in a preregistered test of that rule. Act only on drops about 22+ points from 15; treat closer drops as undecided. All prospective calls: 32/36 (always-FAIL 26/36).</li>
+          <span class="num">14/14</span>, near it 6/10 (post hoc), then <span class="num">8/8</span> (all lossy) in a preregistered test of that rule. Act only on drops about 22+ points from 15; treat closer drops as undecided. All prospective calls: 32/36 (always-FAIL 26/36).</li>
         <li><b>Recalibrate per summarizer:</b> one carried-over threshold cost 21&ndash;43 points of
           detection for 4 of 6 summarizers (not predicted).</li>
       </ul></div>
