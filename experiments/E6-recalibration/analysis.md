@@ -16,13 +16,18 @@ Haiku monitor, E3 sessions (66 coordinated, 64 controls), 200 random 32/32 contr
 ## Locked tests
 - **P1: FAIL.** Under one fixed threshold, only 1 of 6 summarizer views had a false-alarm rate outside [0, 20%]; the
   bar was ≥ 2.
-- **P2: PASS.** Recalibrating on 32 controls keeps every view within 9-11%.
+- **P2: PASS.** Mean test false alarms after recalibrating on 32 controls are 8-11% for every view. The mean over splits
+  is near 10% almost by construction, because calibration and test halves are exchangeable. Per split, test false
+  alarms exceed 20% in 5-14% of splits (5-95% range about 0-28%).
 - **P3: PASS.** Mean |FA − 10%| fell from 8.4 to 0.6 points.
 
 ## Exploratory (not predicted)
 - The fixed threshold's main harm was not false alarms but missed detections. Four summarizers dropped to 0% false
   alarms and lost detection.
-- Recalibration restores detection by +21 to +43 points:
+- Detection gains come with false alarms rising from 0% to about 10%, so they are a matched-FA comparison, not a free
+  gain. Gemini 3.8 Flash (80 → 70) and Argon (76 → 68) lose detection under recalibration, because their fixed
+  threshold was over-alarming.
+- Recalibration raises detection by +21 to +43 points:
   - luna 40 → 73
   - Kimi 50 → 71
   - gpt-oss 24 → 59
@@ -30,7 +35,8 @@ Haiku monitor, E3 sessions (66 coordinated, 64 controls), 200 random 32/32 contr
 - My P1 measured the wrong side of the error.
 
 ## Reading
-- A 32-control calibration set is enough to re-centre false alarms for every summarizer tested.
+- On average, a 32-control calibration set re-centres false alarms for every summarizer tested. A single deployer's
+  32-control recalibration can still land above 20% (up to 14% of splits).
 - Deployer guidance: recalibrate whenever the summarizer changes. A carried-over threshold can silently cost up to
   ~40 points of detection, even when false alarms look fine.
 - The detection numbers are exploratory.

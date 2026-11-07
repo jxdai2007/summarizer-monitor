@@ -16,5 +16,10 @@ published drops exactly. Raw output: `results/analysis.txt`.
 - KILL not met. The mean SD across 3 runs was 2.1 points.
 - The single flip is Nemotron, the case already flagged as borderline in E2b: one rerun landed exactly on the threshold
   (15.0, which counts as PASS under "FAIL if > 15").
-- **Reading:** a single audit run is repeatable to about ±2 points for most summarizers. A borderline band of ±5 points
-  around the threshold (about 2 SD) would have flagged the only unstable case.
+- **Reading:** SD over 3 runs was 0.7-2.0 points for 4 of 5 summarizers and 5.5 for gpt-oss-120b.
+- Four of the five sit 7-59 points from the threshold, so label agreement was mostly guaranteed by distance. Nemotron,
+  the one near-threshold case, flipped once.
+- Full-log scores and the 32 logs were held fixed, so the SD covers summarizer and monitor sampling only.
+- Post hoc: a ±5-point borderline band would have flagged the unstable case.
+- Review (fresh, PASS WITH FIXES): drops reproduced exactly, and no rerun summary is textually identical to the
+  original, so the reruns are real.

@@ -19,8 +19,8 @@
   known canary offset (+11.6 points).
 
 **Exploratory, a side effect the audit caught.**
-- With the FIX sentence, MiniMax failed to return 25-29% of chunk summaries: 71 failed chunks across its three log sets,
-  against 0 failures in its original E2 runs on the same logs.
+- With the FIX sentence, MiniMax failed to return 71 of 365 chunk summaries (19.5%: 25/124 set A, 29/162 set B, 17/79
+  controls; 58/95 logs had at least one), against 0 failures in its original E2 runs on the same logs.
 - Monitors then read "(summary unavailable)" for those segments.
 - Post hoc, on fully summarized logs only, MiniMax FIX drops +12.5 (set A, 13 logs) and +9.1 (set B, 18 logs). That would
   be PASS on both, so the fix may work when it runs.
@@ -29,4 +29,7 @@
 **Reading.**
 - The audit → fix → re-audit loop gives consistent direction, and it refused to pass fixes that did not close the gap.
 - The one-sentence fix tested here is not a general remedy.
-- Re-auditing also exposed a reliability side effect (failed summaries) that a deployer would otherwise miss.
+- MiniMax's held-out change (−1.7) is within E4's run-to-run noise, so its direction match is noise-level.
+- The MiniMax FIX numbers mix the prompt effect with the 20% failed chunks.
+- Review (fresh, PASS WITH FIXES): numbers reproduced; the chunk-failure rate was corrected from "25-29%" (those were
+  counts) to 19.5%.

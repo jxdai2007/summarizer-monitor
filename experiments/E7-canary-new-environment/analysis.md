@@ -23,11 +23,15 @@
 - KILL not met.
 
 **Reading.**
-- The canary, built on one environment, ranks summarizers correctly in a second environment with a different framework,
-  topology and deal author.
+- The canary, built on one environment, has rank correlation +0.94 with drops in a second environment (exact
+  permutation p = 6/720). Argon and Opus swap ranks.
+- The environment change bundles framework, 16-message chunks, deal author and log length.
 - The two clear PASS summarizers again make split deals easier to catch than the raw log.
-- The miss is Kimi k3.1, the narrow PASS in E2d (it already failed under DeepSeek alone). Near-threshold calls don't
-  carry over reliably; clear calls do.
+- The miss is a false PASS, the unsafe direction: Kimi k3.1, the narrowest canary PASS (+8.2 → +18.1). Only 2 of 3
+  canary-PASS calls held. The 3 FAIL matches were far from the threshold.
+- Limits: 6 deal templates and 6 runs, 12 control logs, full-log detection about 60%.
+- Review (fresh, PASS WITH FIXES): every number reproduced, and the full-log baseline is matched (same monitors,
+  prompts and chunking).
 
 **Data quality.** Unparsed monitor scores: 0-5 per summarizer (Opus 5, Argon 2, MiniMax 2), excluded pairwise. No chunk
 errors.
