@@ -26,6 +26,8 @@ How to read this file:
 > summarizer is the real monitor, and a six-dollar test tells you which kind you have.
 
 On screen: a pipeline diagram (agents → raw log → **summarizer** → monitor). The summarizer box lights up on "who".
+Then, on "fewer than half ... or more than if they had read the raw log": cut to the dial figure
+(`to_human/fig_dial.png`: 20 summarizers on the same held-out deals, from summaries that beat the raw log to a 69-point loss).
 
 Optional longer hook, only if you can source the incident figures (strategy.md asserts them; no record does): "In
 July, about twelve hundred agents exchanged over seventy thousand messages, and the swarm was found weeks later."

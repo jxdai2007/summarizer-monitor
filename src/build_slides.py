@@ -277,6 +277,11 @@ def slides(N, B):
     import re as _re
     NT = dict(_re.findall(r"\\numdef\{([A-Za-z0-9-]+)\}\{([^}]*)\}", (ROOT / "paper/numbers.tex").read_text()))
     nt = lambda k: NT[k].replace("\\ensuremath{-}", "\u2212")
+    add(3, "Same deals, same monitors: the summarizer is a dial", f"""
+      <img class="panel" style="max-height:860px;display:block;margin:0 auto" src="{img('dial.png')}"
+        alt="Dot plot: held-out detection loss per summarizer, from about minus 21 points (summaries beat the raw log) to plus 69 points">""",
+        eyebrow="Added 7 Nov \u00b7 all summarizers with held-out results",
+        notes=["Each dot is one summarizer on the same held-out deals and monitors; left of zero, its summaries beat the raw log."])
     add(6, "Does the audit hold up for a deployer?", f"""
       <ul class="facts">
         <li><b>New environment</b> (ChatDev, different framework and deal author): canary label right for

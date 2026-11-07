@@ -570,6 +570,36 @@ for mid, tag in S1CD.items():
     lab = NUM[f"{tag}-{m}-hlabel"] + (" (narrow)" if m == "kimi" else "")
     canary_rows.append(f"{PRETTY[m]} & {tag}, prospective & {NUM[f'{tag}-{m}-canary']} & {NUM[f'{tag}-{m}-label']} & "
                        f"{NUM[f'{tag}-{m}-held']} [{NUM[f'{tag}-{m}-hcilo']}, {NUM[f'{tag}-{m}-hcihi']}] & {lab} \\\\")
+_E8 = EXP / "E8-unselected-vendors"
+if (_E8 / "stage1_predictions.json").exists() and list((_E8 / "results").glob("B_split_*.jsonl")):
+    import random as _r8
+    _M8 = ["anthropic/claude-haiku-5.5", "deepseek/deepseek-v4.1-flash"]
+    _FB = {}
+    for _x in open(Path.home() / "research-taste/swarm-alignment/pilots/2026-11-06/loop2d/runs/newdeals_mon.jsonl"):
+        _q = json.loads(_x)
+        for _mm in _M8:
+            if _q["full"].get(_mm) is not None:
+                _FB[(_q["log"], _mm)] = _q["full"][_mm]
+    _pred = json.load(open(_E8 / "stage1_predictions.json"))["predictions"]
+    _PR8 = {"tencent/hy3": "Tencent hy3", "z-ai/glm-5.3-prime": "GLM-5.3-prime", "bytedance-seed/seed-2.0-lite": "Seed-2.0-lite"}
+    for _mid, _p in _pred.items():
+        _last = {}
+        for _x in open(_E8 / "results" / f"B_split_{_mid.split('/')[1]}.jsonl"):
+            _q = json.loads(_x)
+            _last[_q["log"]] = _q
+        _pr = [(f"B{_q['deal']}", _FB[(_lg, _mm)] >= 50, _q["scores"][_mm] >= 50) for _lg, _q in _last.items()
+               if _q["cond"] == "SPLIT" for _mm in _M8 if _q["scores"].get(_mm) is not None and (_lg, _mm) in _FB]
+        _d = lambda p: 100 * (sum(a for _, a, _ in p) - sum(b for *_, b in p)) / len(p)
+        _by = {}
+        for _t in _pr:
+            _by.setdefault(_t[0], []).append(_t)
+        _ks = list(_by)
+        _rg = _r8.Random(0)
+        _bs = sorted(_d([y for k in (_rg.choice(_ks) for _ in _ks) for y in _by[k]]) for _ in range(4000))
+        _hb = _d(_pr)
+        _lb = "FAIL" if _hb > 15 else "PASS"
+        canary_rows.append(f"{_PR8[_mid]} & E8, prospective & {fmt(_p['canary_drop'], 1, sign=True)} & {_p['label']} & "
+                           f"{fmt(_hb, 1, sign=True)} [{fmt(_bs[100], 0, sign=True)}, {fmt(_bs[3899], 0, sign=True)}] & {_lb} \\\\")
 for model in ["luna", "gemini", "mistral", "qwen", "sonnet"]:
     mid = next(k for k, v in SHORT.items() if v == model)
     a, b = drops[mid]["A"], drops[mid]["B"]
@@ -577,6 +607,7 @@ for model in ["luna", "gemini", "mistral", "qwen", "sonnet"]:
     canary_rows.append(f"{PRETTY[model]} & retrospective & {fmt(a[0], 1, sign=True)} & {la} & "
                        f"{fmt(b[0], 1, sign=True)} [{fmt(float(b[1]), 0, sign=True)}, {fmt(float(b[2]), 0, sign=True)}] & {lb} \\\\")
 TAB["TabCanary"] = "\n".join(canary_rows)
+put("canary-nrows", len(canary_rows))
 # realism (loop 8) + E1 lane
 rows = []
 VIEWN = {"FULL": "full log", "LUNA": "luna summaries", "GEM": "Gemini summaries", "BOTH": "both summaries", "H1": "raw worker lane (E1)"}
