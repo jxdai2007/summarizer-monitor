@@ -273,6 +273,25 @@ def slides(N, B):
         </ul>
       </div>""", note_idx=[1], eyebrow=f"Beat 6 \u00b7 {B[6]['name']} (cont.)")
 
+    # 7b: does the audit hold up? (Nov 7 preregistered tests; numbers from paper/numbers.tex, generated from the records)
+    import re as _re
+    NT = dict(_re.findall(r"\\numdef\{([A-Za-z0-9-]+)\}\{([^}]*)\}", (ROOT / "paper/numbers.tex").read_text()))
+    nt = lambda k: NT[k].replace("\\ensuremath{-}", "\u2212")
+    add(6, "Does the audit hold up for a deployer?", f"""
+      <ul class="facts">
+        <li><b>New environment</b> (ChatDev, different framework and deal author): canary label right for
+          <span class="num">{nt('E7-match')}</span> summarizers, Spearman {nt('E7-rho')}.</li>
+        <li><b>Second monitor family</b> on deals agents wrote themselves: Spearman {nt('E3b-rho')}, FAIL&minus;PASS gap
+          {nt('E3b-gap')} points (CI {nt('E3b-gaplo')} to {nt('E3b-gaphi')}).</li>
+        <li><b>Repeatable:</b> re-running the audit gave the same label in {nt('E4-match')} reruns.</li>
+        <li><b>Its limit:</b> on three vendors picked blind to outcome, all near the threshold, it matched only
+          {nt('E8-matchall')}. Over all {nt('dist-ncalls')} prospective calls: far from the threshold
+          <span class="num">{nt('dist-far')}</span>, near it {nt('dist-near')} (post hoc). Treat drops within ~10 points of 15 as undecided.</li>
+        <li><b>Recalibrate per summarizer:</b> one carried-over threshold cost {nt('E6-detlosslo')}&ndash;{nt('E6-detlosshi')} points of
+          detection for {nt('E6-nzero')} of {nt('E6-nsum')} summarizers.</li>
+      </ul>""", eyebrow="Added 7 Nov \u00b7 preregistered follow-ups (E3b, E4, E6, E7, E8)",
+        notes=["All preregistered; fresh reviewers recomputed every number. The distance split is post hoc."])
+
     # 8 scope
     fx, mc = Bn["fixed50_cmp"], Bn["matched_cmp"]
     full_fx, luna_fx = Bn["fixed50"]["full log"], Bn["fixed50"]["luna summaries"]
