@@ -695,6 +695,11 @@ if (E3D / "mon.jsonl").exists():
             put(f"E3-{_mk}-detloss-{v.lower()}", fmt(_ld[v], 0, sign=True))
         if _mk == "haiku":
             _rh, _gh, _gl = _rho, _gap, _bs[50]
+            from itertools import permutations as _perms
+            _cv = [_CAN[v] for v in _CAN]
+            _lv = [_la[v] for v in _CAN]
+            _ps = [spearman(_cv, [_lv[i] for i in p]) for p in _perms(range(len(_lv)))]
+            put("E3-haiku-rhop", f"{sum(x >= _rho - 1e-12 for x in _ps) / len(_ps):.2f}")
         else:
             _rd = _rho
     _v = "KILL" if _rh <= 0.2 else ("PASS" if (_rh >= 0.6 and _gh >= 5 and _gl > 0) else "MIXED")

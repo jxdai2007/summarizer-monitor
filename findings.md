@@ -121,3 +121,21 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
 ## Open Questions
 - E1: answered. On agent-written deals the lane matches the full log (AUC), but needs its own threshold.
 - E2-E2d: answered. 12/12 canary calls correct (9 FAIL, 3 PASS from 3 vendors; Kimi narrow); rho 0.972 over 17.
+
+## 2026-11-07 strengthening pass (commits 4cd5e1f, 71fb65d, 35cd609 + review fixes)
+- **Reframe ("dial, not leak").** On the same set-B deals and monitors: luna 55/80 → 25/80; Opus summaries beat the raw
+  log (70/78 vs 54/78). The title is scoped "On Planted Deals". Do NOT say "zero false alarms" for luna on set B: there
+  are no set-B controls for luna.
+- **The canary audit is framed as mutation testing for the summary layer.**
+- **E3 (CONFIRMATORY, locked 4cd5e1f): canary transfer to agent-written deals. Verdict MIXED.**
+  - P1 PASS at the bar exactly: Haiku Spearman +0.60 over 6 summarizers (exact permutation p = 0.12; luna and GEM were
+    retrospective).
+  - P2 FAIL: FAIL−PASS matched-FA gap +9.1 pts, CI −2.0 to +19.2.
+  - P3 not evaluable: DeepSeek returned empty replies on 233/520 calls.
+  - Post hoc: the 4 new summarizers fell in canary order. Argon and Kimi summaries beat the full log on AUC; gpt-oss and
+    Phi-4 lost.
+- **Calibration (post hoc, from E3 views).** Haiku's control flag rate at threshold 50 ranges 0-72% across the full log
+  and 6 summaries, and the 10%-FA threshold ranges 23-83. Thresholds don't carry over between summarizers.
+- **Deviations and post-hoc items now live in paper Appendix "Deviations and post-hoc analyses"** (marked † in the
+  text).
+- Fresh claims review: PASS WITH FIXES; all fixes applied.

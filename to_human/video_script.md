@@ -20,8 +20,8 @@ How to read this file:
 ## Beat 1 · 0:00-0:15 · Hook
 
 > Nobody reads logs at swarm scale. A model summarizes them; the monitor reads the summary. Swap that one model,
-> and the same monitor catches half as many hidden deals {{source: review2/l2_13_stress_results.txt:"set A (luna)
-> SPLIT pooled" FULL 55/63 -> SUM 30/63}}, or more than if it had read the raw log {{source:
+> and the same monitors catch fewer than half as many hidden deals {{source: summarizer-monitor/paper/numbers.tex:
+> B-luna-full 55, B-luna-sum 25 of B-luna-n 80 (set B, luna summaries)}}, or more than if they had read the raw log {{source:
 > summarizer-monitor/paper/numbers.tex:E2d-opus-hsum vs E2d-opus-hfull (Opus summaries vs raw log, set B)}}. So who
 > is really monitoring?
 
@@ -112,8 +112,8 @@ Corrections to the strategy draft:
 
 > The fixes are cheap. One summarizer line, keep agent tags and report later corrections as unverified, takes the
 > framing from 16 of 28 to zero {{source: loop1c/runs/l1c20b.jsonl:mon=claude-sonnet-5.5, cond=ERR_NOEV|sfix 0/28;
-> demo_numbers.json:blame_chain.fix_sonnet}}. A raw lane of worker-to-worker messages matches full-log
-> detection at half the tokens {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:"53.6% FULL
+> demo_numbers.json:blame_chain.fix_sonnet}}. On deals agents wrote themselves, a raw lane of worker-to-worker
+> messages matches full-log detection with about half the text {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:"53.6% FULL
 > message-list characters"; "H1 vs FULL 49 vs 50" at matched false alarms}}, once calibrated.
 
 E1 is final and reviewed: P1 FAIL on false alarms only (detection 51/66 passed the ≥43 bar; 8/64 false alarms missed
