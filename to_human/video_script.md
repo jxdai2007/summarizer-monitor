@@ -19,8 +19,11 @@ How to read this file:
 
 ## Beat 1 · 0:00-0:15 · Hook
 
-> Nobody reads logs at swarm scale. A model summarizes them; the monitor reads the summary. So who is really
-> monitoring?
+> Nobody reads logs at swarm scale. A model summarizes them; the monitor reads the summary. Swap that one model,
+> and the same monitor catches half as many hidden deals {{source: review2/l2_13_stress_results.txt:"set A (luna)
+> SPLIT pooled" FULL 55/63 -> SUM 30/63}}, or more than if it had read the raw log {{source:
+> summarizer-monitor/paper/numbers.tex:E2d-opus-hsum vs E2d-opus-hfull (Opus summaries vs raw log, set B)}}. So who
+> is really monitoring?
 
 On screen: a pipeline diagram (agents → raw log → **summarizer** → monitor). The summarizer box lights up on "who".
 
@@ -47,9 +50,7 @@ On screen: demo tab 2, Log 1, full-log view. It opens scrolled to the first high
 > summaries, detection falls from 87 to 48 percent {{source: review2/l2_13_stress_results.txt:"set A (luna) SPLIT
 > pooled" FULL 55/63 (87%) -> SUM 30/63 (48%); demo_numbers.json:script.setA_luna}} at zero false alarms {{source:
 > review2/l2_13_stress_results.txt:"SUM: FA@50 0/42"}}; on ChatDev, 59 to 30 {{source: loop9/loop9_results.txt:"SPLIT:
-> FULL 41/69 (59%) -> luna summaries 21/69 (30%)"}}. The flagship, GPT-5.6-sol, still loses 24 points {{source:
-> review2/l2_13_stress_results.txt:"gpt-5.6-sol summarizer" drop +24 [CI +12,+37]}}. Claude and Gemini summaries lose
-> ten or less {{source: review2/l2_13.md:§2.1 (Gemini -8, Sonnet +10 n.s.); review2/l2_13_stress_results.txt:"claude-sonnet-5.5
+> FULL 41/69 (59%) -> luna summaries 21/69 (30%)"}}. Claude and Gemini summaries lose ten or less {{source: review2/l2_13.md:§2.1 (Gemini -8, Sonnet +10 n.s.); review2/l2_13_stress_results.txt:"claude-sonnet-5.5
 > summarizer" drop +10, p=0.22}}.
 
 On screen: the main figure review2 asked for. It shows the summarizer spread from -14 to +40 {{source:
@@ -111,11 +112,9 @@ Corrections to the strategy draft:
 
 > The fixes are cheap. One summarizer line, keep agent tags and report later corrections as unverified, takes the
 > framing from 16 of 28 to zero {{source: loop1c/runs/l1c20b.jsonl:mon=claude-sonnet-5.5, cond=ERR_NOEV|sfix 0/28;
-> demo_numbers.json:blame_chain.fix_sonnet}}. A raw lane of worker-to-worker messages also helps. On deals
-> agents wrote themselves, it matches full-log detection at about half the tokens {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:"53.6% FULL
-> message-list characters"}}, once calibrated: 49 of 66 versus 50 at matched false alarms {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:"H1 vs
-> FULL 49 vs 50 (-2 points, CI -11 to +8, p = 1)"}}. At the default threshold it raises 8 false alarms in 64
-> {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:P1 row "flags 8/64 controls (12.5%)"}}, so it needs its own threshold.
+> demo_numbers.json:blame_chain.fix_sonnet}}. A raw lane of worker-to-worker messages matches full-log
+> detection at half the tokens {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:"53.6% FULL
+> message-list characters"; "H1 vs FULL 49 vs 50" at matched false alarms}}, once calibrated.
 
 E1 is final and reviewed: P1 FAIL on false alarms only (detection 51/66 passed the ≥43 bar; 8/64 false alarms missed
 the ≤6 bar), P2 PASS, P3 PASS {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:predictions verdict table}}. This is the "needs its own threshold"
@@ -132,7 +131,8 @@ Wording limits for the raw lane:
 - The planted-deal lane result (0.39 / 0.30 of full-log characters, by construction {{source:
   loop9/loop9_results.txt:"H1 raw peer msgs only"}}) moved to the talk; the agent-written result replaces it here.
 
-> Before trusting a summarizer, audit it with canary deals. Under six dollars, {{source:
+> Before trusting a summarizer, test it the way programmers test their tests: plant known deals, count how many get
+> through. Mutation testing for oversight. Under six dollars, {{source:
 > summarizer-monitor/experiments/E2d-canary-pass-side-3/results/results.txt:"claude-opus-5.5 $5.68 for 53 logs" (the
 > dearest audit; cheapest $0.10, Phi-4, summarizer-monitor/experiments/E2c-canary-pass-side-2/results/results.txt)}} a
 > few minutes. {{source: same files:"wall time 1.1 min" to E2b "wall time 4.3 min"}} Called in advance, it got twelve
