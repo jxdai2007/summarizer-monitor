@@ -132,6 +132,9 @@ def slides(N, B):
     sc = card["scores"]
     luna_a = N["ceil"][("A", "openai/gpt-5.6-luna")]
     S = []
+    import re as _re0
+    _NT0 = dict(_re0.findall(r"\\numdef\{([A-Za-z0-9-]+)\}\{([^}]*)\}", (ROOT / "paper/numbers.tex").read_text()))
+    nt = lambda k: _NT0[k].replace("\\ensuremath{-}", "\u2212")
     b3 = " ".join(B[3]["quotes"])  # beat 3 spans two slides: split the narration after "The summarizer decides."
     cut = b3.find("The summarizer decides.")
     b3a, b3b = (b3[:cut + len("The summarizer decides.")], b3[cut + len("The summarizer decides."):].strip()) if cut >= 0 else (b3, "")
@@ -263,7 +266,7 @@ def slides(N, B):
             <b>{N['cost']}, {N['minutes']} minutes</b> per audit.</li>
           <li><span class="num">{K['n_correct']} of {K['n_prospective']}</span> prospective calls correct ({rev}), {K['n_vendors']} vendors:
             called in advance, it flagged all {K['n_fail_hit']} lossy summarizers and cleared {K['n_pass_calls']}: two clearly
-            (Gemini 4 Argon, Claude Opus 5.5, whose summaries beat the raw log) and one narrowly (Kimi k3.1), in the first four tests. Over all 24 prospective calls: 20/24 right (always-FAIL scores 16/24);
+            (Gemini 4 Argon, Claude Opus 5.5, whose summaries beat the raw log) and one narrowly (Kimi k3.1), in the first four tests. Over all prospective calls (E2-E9): {nt('all9-match')} right (always-FAIL scores {nt('all9-alwaysfail')});
             vendors picked blind to outcome (E8) only 3/6, all near the threshold.</li>
           <li><b>Spearman \u03c1 = {K['rho']:.3f}</b> over {K['n_summarizers']} summarizers ({K['n_earlier']} scored before the
             prospective tests). The canary overstates the held-out loss by {-K['mean_heldout_minus_canary']:+.1f} points on average
@@ -291,7 +294,7 @@ def slides(N, B):
         <li><b>Repeatable:</b> re-running the audit gave the same label in {nt('E4-match')} reruns.</li>
         <li><b>Its limit:</b> on three vendors picked blind to outcome, all near the threshold, it matched only
           {nt('E8-matchall')}. Over all {nt('dist-ncalls')} prospective calls: far from the threshold
-          <span class="num">{nt('dist-far')}</span>, near it {nt('dist-near')} (post hoc). Act only on drops about 22+ points from 15; treat closer drops as undecided.</li>
+          <span class="num">{nt('dist-far')}</span>, near it {nt('dist-near')} (post hoc), then <span class="num">{nt('E9-far')}</span> in a preregistered test of that rule. Act only on drops about 22+ points from 15; treat closer drops as undecided. All prospective calls: {nt('all9-match')} (always-FAIL {nt('all9-alwaysfail')}).</li>
         <li><b>Recalibrate per summarizer:</b> one carried-over threshold cost {nt('E6-detlosslo')}&ndash;{nt('E6-detlosshi')} points of
           detection for {nt('E6-nzero')} of {nt('E6-nsum')} summarizers (not predicted).</li>
       </ul>""", eyebrow="Added 7 Nov \u00b7 preregistered follow-ups (E3b, E4, E6, E7, E8)",

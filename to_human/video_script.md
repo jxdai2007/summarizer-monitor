@@ -141,10 +141,10 @@ Wording limits for the raw lane:
 > 100%"}} summarizers right, from eleven vendors. {{source: same file:"T3: PASS (12 prospective
 > summarizers from 11 vendors)"}} In a second environment it was right on five of six. {{source:
 > summarizer-monitor/experiments/E7-canary-new-environment/results/analysis.txt:"labels matched 5/6"}} But on vendors
-> picked blind, all near the line, it was right half the time. Looking back over all twenty-four calls, it was never
-> wrong far from the line, so trust it only there.
+> picked blind, all near the line, it was right half the time. Far from the line it was never wrong, and a
+> preregistered test of that rule held eight of eight. Trust it there.
 > {{source: summarizer-monitor/experiments/E8-unselected-vendors/results/analysis.txt:"3/6" total;
-> distance_exploratory.txt: far 14/14, near 6/10}}
+> distance_exploratory.txt: far 14/14, near 6/10; E9-far-rule-prospective/results/analysis.txt: "FAR calls confirmed 8/8"}}
 
 E2-E2d are final and reviewed. The narration uses the Result 4d safe line from `findings.md` (shortened).
 - E2 (FAIL side): Q1 PASS 4/4 (weak test, n = 4, p = 0.0625 against coin-flip labels); Q2 PASS (Spearman 0.983 over
@@ -178,7 +178,7 @@ E2-E2d are final and reviewed. The narration uses the Result 4d safe line from `
 - If the rank correlation goes on screen, label it "17 summarizers, 5 scored before the prospective tests".
 
 On screen: fix bars (blame chain 16/28 → 0/28; agent-written detection at matched false alarms: full log 50, raw
-lane 49, luna summaries 46, all of 66 and none significantly different), then a terminal running the audit CLI with the caption "Called in advance: 12/12 in the first four tests; 20/24 over all tests (E7 5/6, blind-picked vendors E8 3/6)".
+lane 49, luna summaries 46, all of 66 and none significantly different), then a terminal running the audit CLI with the caption "Called in advance: 12/12 in the first four tests; 32/36 over all tests (E7 5/6, blind-picked vendors E8 3/6, far-rule test E9 8/8)".
 
 ## Beat 7 · 2:30-2:50 · Scope, said aloud
 

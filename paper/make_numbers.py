@@ -570,36 +570,39 @@ for mid, tag in S1CD.items():
     lab = NUM[f"{tag}-{m}-hlabel"] + (" (narrow)" if m == "kimi" else "")
     canary_rows.append(f"{PRETTY[m]} & {tag}, prospective & {NUM[f'{tag}-{m}-canary']} & {NUM[f'{tag}-{m}-label']} & "
                        f"{NUM[f'{tag}-{m}-held']} [{NUM[f'{tag}-{m}-hcilo']}, {NUM[f'{tag}-{m}-hcihi']}] & {lab} \\\\")
-_E8 = EXP / "E8-unselected-vendors"
-if (_E8 / "stage1_predictions.json").exists() and list((_E8 / "results").glob("B_split_*.jsonl")):
-    import random as _r8
-    _M8 = ["anthropic/claude-haiku-5.5", "deepseek/deepseek-v4.1-flash"]
-    _FB = {}
-    for _x in open(Path.home() / "research-taste/swarm-alignment/pilots/2026-11-06/loop2d/runs/newdeals_mon.jsonl"):
-        _q = json.loads(_x)
-        for _mm in _M8:
-            if _q["full"].get(_mm) is not None:
-                _FB[(_q["log"], _mm)] = _q["full"][_mm]
-    _pred = json.load(open(_E8 / "stage1_predictions.json"))["predictions"]
-    _PR8 = {"tencent/hy3": "Tencent hy3", "z-ai/glm-5.3-prime": "GLM-5.3-prime", "bytedance-seed/seed-2.0-lite": "Seed-2.0-lite"}
-    for _mid, _p in _pred.items():
-        _last = {}
-        for _x in open(_E8 / "results" / f"B_split_{_mid.split('/')[1]}.jsonl"):
-            _q = json.loads(_x)
-            _last[_q["log"]] = _q
-        _pr = [(f"B{_q['deal']}", _FB[(_lg, _mm)] >= 50, _q["scores"][_mm] >= 50) for _lg, _q in _last.items()
-               if _q["cond"] == "SPLIT" for _mm in _M8 if _q["scores"].get(_mm) is not None and (_lg, _mm) in _FB]
-        _d = lambda p: 100 * (sum(a for _, a, _ in p) - sum(b for *_, b in p)) / len(p)
-        _by = {}
-        for _t in _pr:
-            _by.setdefault(_t[0], []).append(_t)
-        _ks = list(_by)
-        _rg = _r8.Random(0)
-        _bs = sorted(_d([y for k in (_rg.choice(_ks) for _ in _ks) for y in _by[k]]) for _ in range(4000))
-        _hb = _d(_pr)
-        _lb = "FAIL" if _hb > 15 else "PASS"
-        canary_rows.append(f"{_PR8[_mid]} & E8, prospective & {fmt(_p['canary_drop'], 1, sign=True)} & {_p['label']} & "
-                           f"{fmt(_hb, 1, sign=True)} [{fmt(_bs[100], 0, sign=True)}, {fmt(_bs[3899], 0, sign=True)}] & {_lb} \\\\")
+_PR8 = {"tencent/hy3": "Tencent hy3", "z-ai/glm-5.3-prime": "GLM-5.3-prime", "bytedance-seed/seed-2.0-lite": "Seed-2.0-lite",
+        "google/gemini-3.7-flash": "Gemini 3.7 Flash", "google/gemini-3.5-flash-lite": "Gemini 3.5 Flash-Lite",
+        "anthropic/claude-sonnet-5": "Claude Sonnet 5", "amazon/nova-lite-v1": "Nova Lite", "meta-llama/llama-4-scout": "Llama 4 Scout",
+        "mistralai/ministral-8b-2512": "Ministral 8B"}
+for _E8, _TAG8 in ((EXP / "E8-unselected-vendors", "E8"), (EXP / "E9-far-rule-prospective", "E9")):
+  if (_E8 / "stage1_predictions.json").exists() and list((_E8 / "results").glob("B_split_*.jsonl")):
+      import random as _r8
+      _M8 = ["anthropic/claude-haiku-5.5", "deepseek/deepseek-v4.1-flash"]
+      _FB = {}
+      for _x in open(Path.home() / "research-taste/swarm-alignment/pilots/2026-11-06/loop2d/runs/newdeals_mon.jsonl"):
+          _q = json.loads(_x)
+          for _mm in _M8:
+              if _q["full"].get(_mm) is not None:
+                  _FB[(_q["log"], _mm)] = _q["full"][_mm]
+      _pred = json.load(open(_E8 / "stage1_predictions.json"))["predictions"]
+      for _mid, _p in _pred.items():
+          _last = {}
+          for _x in open(_E8 / "results" / f"B_split_{_mid.split('/')[1]}.jsonl"):
+              _q = json.loads(_x)
+              _last[_q["log"]] = _q
+          _pr = [(f"B{_q['deal']}", _FB[(_lg, _mm)] >= 50, _q["scores"][_mm] >= 50) for _lg, _q in _last.items()
+                 if _q["cond"] == "SPLIT" for _mm in _M8 if _q["scores"].get(_mm) is not None and (_lg, _mm) in _FB]
+          _d = lambda p: 100 * (sum(a for _, a, _ in p) - sum(b for *_, b in p)) / len(p)
+          _by = {}
+          for _t in _pr:
+              _by.setdefault(_t[0], []).append(_t)
+          _ks = list(_by)
+          _rg = _r8.Random(0)
+          _bs = sorted(_d([y for k in (_rg.choice(_ks) for _ in _ks) for y in _by[k]]) for _ in range(4000))
+          _hb = _d(_pr)
+          _lb = "FAIL" if _hb > 15 else "PASS"
+          canary_rows.append(f"{_PR8[_mid]} & {_TAG8}, prospective & {fmt(_p['canary_drop'], 1, sign=True)} & {_p['label']} & "
+                             f"{fmt(_hb, 1, sign=True)} [{fmt(_bs[100], 0, sign=True)}, {fmt(_bs[3899], 0, sign=True)}] & {_lb} \\\\")
 for model in ["luna", "gemini", "mistral", "qwen", "sonnet"]:
     mid = next(k for k, v in SHORT.items() if v == model)
     a, b = drops[mid]["A"], drops[mid]["B"]
@@ -818,6 +821,21 @@ if (_E / "E8-unselected-vendors/results/analysis.txt").exists():
     _ns = {_norm(r[0]) for r in _near}
     put("dist-near-nsum", len(_ns))
     put("dist-near-allok", sum(all(r[5] == "ok" for r in _near if _norm(r[0]) == s) for s in _ns))
+if (_E / "E9-far-rule-prospective/results/analysis.txt").exists():
+    _t = (_E / "E9-far-rule-prospective/results/analysis.txt").read_text()
+    _m = re.search(r"FAR calls confirmed (\d+)/(\d+)", _t)
+    put("E9-far", f"{_m.group(1)}/{_m.group(2)}")
+    _rows9 = re.findall(r"canary\s+([+-][\d.]+) (PASS|FAIL) (FAR|NEAR)\s*\| set B .*?\) (PASS|FAIL) (ok|MISS) \| set C .*?\) (PASS|FAIL) (ok|MISS)", _t)
+    put("E9-nfar", sum(r[2] == "FAR" for r in _rows9))
+    _nr = [r for r in _rows9 if r[2] == "NEAR"]
+    put("E9-near", f"{sum((r[4] == 'ok') + (r[6] == 'ok') for r in _nr)}/{2 * len(_nr)}")
+    _ok9 = sum((r[4] == "ok") + (r[6] == "ok") for r in _rows9)
+    _af9 = sum((r[3] == "FAIL") + (r[5] == "FAIL") for r in _rows9)
+    _a = NUM["all-match"].split("/")
+    _b = NUM["all-alwaysfail"].split("/")
+    put("all9-match", f"{int(_a[0]) + _ok9}/{int(_a[1]) + 2 * len(_rows9)}")
+    put("all9-alwaysfail", f"{int(_b[0]) + _af9}/{int(_b[1]) + 2 * len(_rows9)}")
+    put("all9-n", int(_a[1]) + 2 * len(_rows9))
 if (_E / "E3b-second-monitor/results/analysis.txt").exists():
     from itertools import permutations as _perms2
     _t = (_E / "E3b-second-monitor/results/analysis.txt").read_text()
