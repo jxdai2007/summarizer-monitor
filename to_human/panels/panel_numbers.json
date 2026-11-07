@@ -1,0 +1,231 @@
+{
+ "A": {
+  "rho6": 0.986,
+  "n_families": 6,
+  "n_earlier_cells": 9,
+  "n_earlier_within": 9,
+  "n_pros_cells": 8,
+  "n_pros_within": 7,
+  "exceptions": [
+   {
+    "summarizer": "Nova Pro",
+    "set": "A",
+    "pts": 8.8,
+    "own": "0/18",
+    "summ": "3/34"
+   }
+  ],
+  "luna_A": {
+   "full_pct": 87,
+   "sum_pct": 48,
+   "full_k": 55,
+   "sum_k": 30,
+   "n": 63,
+   "fa_k": 0,
+   "fa_n": 42
+  }
+ },
+ "B": {
+  "n_coord": 66,
+  "n_ctrl": 64,
+  "auc": {
+   "full": 0.924,
+   "luna": 0.87,
+   "lane": 0.944
+  },
+  "matched": {
+   "full log": {
+    "k": 50,
+    "n": 66,
+    "fa": 5,
+    "n_ctrl": 64
+   },
+   "luna summaries": {
+    "k": 46,
+    "n": 66,
+    "fa": 5,
+    "n_ctrl": 64
+   },
+   "raw lane (E1)": {
+    "k": 49,
+    "n": 66,
+    "fa": 5,
+    "n_ctrl": 64
+   }
+  },
+  "matched_cmp": {
+   "diff": 6.1,
+   "lo": -3.0,
+   "hi": 15.2,
+   "p": 0.34
+  },
+  "fixed50": {
+   "full log": {
+    "k": 48,
+    "n": 66,
+    "fa": 5,
+    "n_ctrl": 64
+   },
+   "luna summaries": {
+    "k": 37,
+    "n": 66,
+    "fa": 0,
+    "n_ctrl": 64
+   },
+   "raw lane (E1)": {
+    "k": 51,
+    "n": 66,
+    "fa": 8,
+    "n_ctrl": 64
+   }
+  },
+  "fixed50_cmp": {
+   "diff": 16.7,
+   "lo": 7.6,
+   "hi": 25.8,
+   "p": 0.00098
+  }
+ },
+ "C": {
+  "raw": [
+   0,
+   14
+  ],
+  "summary": [
+   16,
+   28
+  ],
+  "fix": [
+   0,
+   28
+  ],
+  "corr0": [
+   0,
+   24
+  ],
+  "corr1": [
+   10,
+   24
+  ]
+ },
+ "canary": {
+  "threshold": 15.0,
+  "n_earlier": 5,
+  "reviewed_batches": [
+   "E2",
+   "E2b",
+   "E2c"
+  ],
+  "n_prospective": 10,
+  "n_correct": 10,
+  "n_vendors": 9,
+  "n_fail_hit": 9,
+  "n_obs_fail": 9,
+  "n_pass_calls": 1,
+  "n_fail_calls": 9,
+  "n_summarizers": 15,
+  "rho": 0.967,
+  "mean_heldout_minus_canary": -12.9,
+  "unreviewed": null,
+  "batches": {
+   "E2": [
+    "Nova Pro",
+    "Command A+",
+    "MiniMax M3.1 Flash",
+    "GPT-5.6-terra"
+   ],
+   "E2b": [
+    "Gemini 4 Argon",
+    "Nemotron 3.5 Super",
+    "gpt-oss-120b"
+   ],
+   "E2c": [
+    "Llama 4 Maverick",
+    "Phi-4",
+    "Mistral Medium 3.5"
+   ],
+   "E2d": []
+  },
+  "pending": [],
+  "running": [
+   "E2d"
+  ],
+  "points": {
+   "Nova Pro": {
+    "canary": 79.0,
+    "heldout": 68.7,
+    "batch": "E2"
+   },
+   "Claude Sonnet 5.5": {
+    "canary": 10.0,
+    "heldout": 9.1,
+    "batch": "earlier"
+   },
+   "Command A+": {
+    "canary": 73.3,
+    "heldout": 63.3,
+    "batch": "E2"
+   },
+   "Gemini 3.8 Flash": {
+    "canary": -8.1,
+    "heldout": -14.5,
+    "batch": "earlier"
+   },
+   "Gemini 4 Argon": {
+    "canary": -12.5,
+    "heldout": -21.0,
+    "batch": "E2b"
+   },
+   "Llama 4 Maverick": {
+    "canary": 87.3,
+    "heldout": 67.5,
+    "batch": "E2c"
+   },
+   "Phi-4": {
+    "canary": 87.5,
+    "heldout": 66.3,
+    "batch": "E2c"
+   },
+   "MiniMax M3.1 Flash": {
+    "canary": 36.7,
+    "heldout": 26.7,
+    "batch": "E2"
+   },
+   "Mistral Large 4": {
+    "canary": 15.0,
+    "heldout": 13.2,
+    "batch": "earlier"
+   },
+   "Mistral Medium 3.5": {
+    "canary": 75.0,
+    "heldout": 52.4,
+    "batch": "E2c"
+   },
+   "Nemotron 3.5 Super": {
+    "canary": 19.7,
+    "heldout": 19.2,
+    "batch": "E2b"
+   },
+   "GPT-5.6-luna": {
+    "canary": 39.7,
+    "heldout": 37.5,
+    "batch": "earlier"
+   },
+   "GPT-5.6-terra": {
+    "canary": 22.2,
+    "heldout": 18.3,
+    "batch": "E2"
+   },
+   "gpt-oss-120b": {
+    "canary": 74.2,
+    "heldout": 52.4,
+    "batch": "E2b"
+   },
+   "Qwen3.8 Flash": {
+    "canary": 8.3,
+    "heldout": 12.8,
+    "batch": "earlier"
+   }
+  }
+ }
+}
