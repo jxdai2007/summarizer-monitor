@@ -350,7 +350,7 @@ def analyze():
         stab = heldout_stab(D[(s, "B")][0], hd["drop"])
         q1[s] = dict(canary=cd, heldout=hd["drop"], ci=hd["ci_deal"], pred=label(cd), obs=label(hd["drop"]), match=same,
                      err=hd["drop"] - cd, stab=stab)
-        P(f"  {s:30s} canary {cd:+.1f} [deal CI {pc['canary_drop_ci_deal'][0]:+.0f}, {pc['canary_drop_ci_deal'][1]:+.0f}] -> "
+        P(f"  {s:30s} canary {cd:+.1f} [deal CI {D[(s, 'A')][1]['ci_deal'][0]:+.0f}, {D[(s, 'A')][1]['ci_deal'][1]:+.0f}] -> "
           f"predicted {label(cd)}; held-out {hd['drop']:+.1f} [deal CI {hd['ci_deal'][0]:+.0f}, {hd['ci_deal'][1]:+.0f}] -> "
           f"{label(hd['drop'])}; {'MATCH' if same else 'MISS'}; held-out minus predicted drop {hd['drop'] - cd:+.1f} pts; "
           f"held-out label stability (log bootstrap) {stab:.0%}")
