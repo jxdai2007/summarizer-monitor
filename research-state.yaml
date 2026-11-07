@@ -101,3 +101,22 @@ workspace:
   to_human_dir: "to_human/"
   paper_dir: "paper/"
   pilot_records: "~/research-taste/swarm-alignment/pilots/2026-11-06/ (loop2c, loop2d, loop8, loop9, loop1c, review2)"
+
+block_2026-11-07:
+  started: "2026-11-07 06:40 PT"
+  stop: "2026-11-07 15:40 PT (loop job 428b4256; stop the loop and report)"
+  budget_usd: 80   # stop new paid runs if total ledger > $466 (it was $386.16 at the start)
+  aim: "Strengthen submission 1's impact and execution with defensive, deployer-facing experiments; keep claims reviewed."
+  plan:
+    - id: E6
+      what: "Per-summarizer recalibration: does setting each summarizer's threshold on half the controls restore matched detection on held-out sessions? (E3 records, $0)"
+      status: next
+    - id: E4
+      what: "Audit test-retest: rerun the canary on 3 summarizers; how stable is the PASS/FAIL call?"
+      status: planned
+    - id: E5
+      what: "Audit -> fix -> re-audit: a summarizer-prompt fix for a canary-FAIL summarizer; does the canary predict the held-out improvement?"
+      status: planned
+    - id: PKG
+      what: "Refresh progress.html; fold accepted results into paper via make_numbers.py; claims review before any paper change."
+      status: ongoing
