@@ -135,15 +135,14 @@ Wording limits for the raw lane:
 > through. Mutation testing for oversight. Under six dollars, {{source:
 > summarizer-monitor/experiments/E2d-canary-pass-side-3/results/results.txt:"claude-opus-5.5 $5.68 for 53 logs" (the
 > dearest audit; cheapest $0.10, Phi-4, summarizer-monitor/experiments/E2c-canary-pass-side-2/results/results.txt)}} a
-> few minutes. {{source: same files:"wall time 1.1 min" to E2b "wall time 4.3 min"}} Called in advance, it got twelve
+> few minutes. {{source: same files:"wall time 1.1 min" to E2b "wall time 4.3 min"}} In its first four tests it got twelve
 > of twelve {{source: summarizer-monitor/experiments/E2d-canary-pass-side-3/results/results.txt:"T3 match part: 12/12 =
-> 100%"}} summarizers right on unseen deals, from eleven vendors: {{source: same file:"T3: PASS (12 prospective
-> summarizers from 11 vendors)"}} it flagged all nine lossy ones and cleared three, {{source: same file:T3 table, 9
-> FAIL/FAIL and 3 PASS/PASS rows}} two clearly, one narrowly. {{source:
-> summarizer-monitor/experiments/E2d-canary-pass-side-3/analysis.md:"Kimi PASS in 80%" of log-bootstrap replicates;
-> findings.md Result 4d safe line}} In a second environment it was right on five of six; the miss was that narrow
-> one. {{source: summarizer-monitor/experiments/E7-canary-new-environment/results/analysis.txt:"labels matched 5/6";
-> Kimi +8.2 -> +18.1}}
+> 100%"}} summarizers right, from eleven vendors. {{source: same file:"T3: PASS (12 prospective
+> summarizers from 11 vendors)"}} In a second environment it was right on five of six. {{source:
+> summarizer-monitor/experiments/E7-canary-new-environment/results/analysis.txt:"labels matched 5/6"}} But on vendors
+> picked blind, all near the line, it was right half the time: trust it far from the threshold.
+> {{source: summarizer-monitor/experiments/E8-unselected-vendors/results/analysis.txt:"3/6" total;
+> distance_exploratory.txt: far 14/14, near 6/10}}
 
 E2-E2d are final and reviewed. The narration uses the Result 4d safe line from `findings.md` (shortened).
 - E2 (FAIL side): Q1 PASS 4/4 (weak test, n = 4, p = 0.0625 against coin-flip labels); Q2 PASS (Spearman 0.983 over
