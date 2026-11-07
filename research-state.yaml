@@ -25,7 +25,7 @@ literature:
   note: "Every citation must be verified against its abstract before submission (strategy.md risk list)."
 
 evidence_so_far:   # all pre-workspace results live in ~/research-taste/swarm-alignment/pilots/2026-11-06/
-  - "Planted split deals: GPT-5.6 summaries (luna cheap, sol flagship) cut detection 24-40 pts at 0 false alarms; Claude/Gemini summaries 0-10 (review2/l2_13.md)."
+  - "Planted split deals: GPT-5.6 summaries (luna cheap, sol flagship) cut detection 24-40 pts at 0 false alarms; Claude ~10 n.s., Gemini none (+8 vs full log) (review2/l2_13.md)."
   - "Monitor never beats its summarizer: 6/6 families, rho 0.99 (loop2d)."
   - "Second corpus ChatDev/MAST: 41/69 -> 21/69 (loop9)."
   - "Agent-written deals (loop8): Sonnet 48/66 -> 37/66 fixed threshold (two-sided p=0.001); matched-FA loss +6 (CI -3..15) n.s."
@@ -36,22 +36,33 @@ evidence_so_far:   # all pre-workspace results live in ~/research-taste/swarm-al
 hypotheses:
   - id: E1
     statement: "A raw cross-agent message lane (H1) recovers full-log detection on AGENT-WRITTEN deals (loop8) at <=10% false alarms."
-    status: pending
+    status: partially supported (P1 failed on false alarms 8/64 vs <=6; P2 pass 51 vs 37 p=0.0013; P3 pass AUC 0.944 vs 0.924; reviewed)
     priority: high
   - id: E2
     statement: "A canary audit on planted set A predicts whether a NEW summarizer loses >15 pts on held-out set B."
-    status: pending
+    status: supported for the warning side (4/4, all canary-FAIL; rho 0.983 over 9; reviewed); Q4 ceiling held in 7/8 cells
+    priority: high
+  - id: E2b
+    statement: "The canary audit's PASS calls are also right on held-out deals."
+    status: active (locked bec2a9b; model selection 0c5cb4d)
     priority: high
 
 experiments:
   proxy_metric: "split-deal detection (monitor reading view X) minus full-log detection, at 0 or matched false alarms"
-  total_runs: 0
-  trajectory: []
+  total_runs: 3
+  trajectory:
+    - {run_id: E1, metric: "Sonnet H1 51/66 caught, FA 8/64; matched-FA 49 vs FULL 50 vs LUNA 46", commit: 1258dec}
+    - {run_id: E2, metric: "canary labels 4/4; rho 0.983; FA 0/42; cost $0.38-1.68/audit", commit: e398a58}
 
 outer_loop:
-  cycle: 0
-  last_direction: null
-  last_reflection: "Bootstrapped from overnight loops + review2. Direction: package F; video first, then tool, then report."
+  cycle: 1
+  last_direction: conclude-pending-E2b
+  last_reflection: >
+    23:10. E1 and E2 answered the two open questions. The story holds in narrowed form: the summarizer is an
+    unannounced first monitor; GPT-5.6 summaries lose big on planted deals while Claude ~10 (n.s.) and Gemini none
+    (summaries beat full log by 8); realism effect small at matched FA; testimony laundering robust in narrow form;
+    raw lane matches full log once calibrated; canary audit predicts loss (warning side). Next: E2b, then report draft
+    plus a final claims review. Video assets exist (demo, script draft, figure).
 
 workspace:
   findings: "findings.md"

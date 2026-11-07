@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "summary-audit"
+version = "0.1.0"
+description = "Audit whether an LLM chunk-summarizer keeps the coordination an oversight monitor needs (planted split-deal canaries)."
+requires-python = ">=3.9"
+dependencies = ["openai", "matplotlib", "numpy"]
+
+[project.scripts]
+summary-audit = "summary_audit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["summary_audit*"]
+
+[tool.setuptools.package-data]
+summary_audit = ["data/*.json", "data/*.jsonl"]
