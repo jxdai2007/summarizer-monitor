@@ -1,0 +1,26 @@
+{
+ "rule": "each candidate kept only if its 2-log probe has no unavailable/leaked/overlong chunk summary (no replacement)",
+ "probe_notes": {
+  "anthropic/claude-opus-5": {
+   "chunks": 8,
+   "bad": 0,
+   "max_words": 168
+  },
+  "google/gemini-3.6-flash": {
+   "chunks": 8,
+   "bad": 0,
+   "max_words": 134
+  },
+  "google/gemini-3.5-flash": {
+   "chunks": 8,
+   "bad": 0,
+   "max_words": 140
+  }
+ },
+ "selected": [
+  "anthropic/claude-opus-5",
+  "google/gemini-3.6-flash",
+  "google/gemini-3.5-flash"
+ ],
+ "decided": "2026-11-07T09:01:43-08:00"
+}
