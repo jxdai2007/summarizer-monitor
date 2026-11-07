@@ -105,7 +105,7 @@ workspace:
 block_2026-11-07:
   started: "2026-11-07 06:40 PT"
   stop: "2026-11-07 15:40 PT (loop job 428b4256; stop the loop and report)"
-  budget_usd: 80   # stop new paid runs if total ledger > $466 (it was $386.16 at the start)
+  budget_usd: 80   # stop new paid runs if total ledger > $466 (it was $386.16 at the start; $450.92 at 09:12, block spend ~$65)
   aim: "Strengthen submission 1's impact and execution with defensive, deployer-facing experiments; keep claims reviewed."
   plan:
     - id: E6
@@ -134,4 +134,7 @@ block_2026-11-07:
       status: "done; judge: ~7/10, top-15 ~65%, LA prize ~25%; adaptive-attacker test skipped (stated as limitation instead); final claims review applied (2e715db)"
     - id: E9
       what: "Prospective test of the post-hoc >=22-pt far rule on 6 unaudited summarizers (sets B and C)"
-      status: "done PASS (6e800a5): FAR 8/8 (all FAIL side), NEAR 4/4; integrated 69784f0; review running"
+      status: "done PASS (6e800a5): FAR 8/8 (all FAIL side), NEAR 4/4; integrated 69784f0; review fixes 3e4fb42"
+    - id: E10
+      what: "Far rule on the PASS side (Claude Opus 5, Gemini 3.6/3.5 Flash)"
+      status: "INCONCLUSIVE (d0a3bbd): only Opus 5 far-PASS (canary -11.1); stage 2 not run; key2 exhausted (deviation a5c373b)"

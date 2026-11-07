@@ -837,6 +837,10 @@ if (_E / "E9-far-rule-prospective/results/analysis.txt").exists():
     put("all9-match", f"{int(_a[0]) + _ok9}/{int(_a[1]) + 2 * len(_rows9)}")
     put("all9-alwaysfail", f"{int(_b[0]) + _af9}/{int(_b[1]) + 2 * len(_rows9)}")
     put("all9-n", int(_a[1]) + 2 * len(_rows9))
+if (_E / "E10-far-pass-side/stage1_predictions.json").exists():
+    _p10 = json.load(open(_E / "E10-far-pass-side/stage1_predictions.json"))["predictions"]
+    put("E10-opus-canary", fmt(_p10["anthropic/claude-opus-5"]["canary_drop"], 1, sign=True))
+    put("E10-nfar", sum(v["zone"] == "FAR" for v in _p10.values()))
 if (_E / "E3b-second-monitor/results/analysis.txt").exists():
     from itertools import permutations as _perms2
     _t = (_E / "E3b-second-monitor/results/analysis.txt").read_text()

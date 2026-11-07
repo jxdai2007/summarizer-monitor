@@ -177,3 +177,7 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
     4/4.
   - All prospective calls E2-E9: 32/36 (always-FAIL 26/36).
   - The far-PASS side still rests on Argon and Opus.
+- **E10, far rule on the PASS side (CONFIRMATORY, d22a2db): INCONCLUSIVE.** Only Claude Opus 5 landed far-PASS (canary
+  −11.1); both Gemini Flash models landed near (−1.6, −3.2). With fewer than the 4 far calls the locked rule requires,
+  the held-out stage was not run. The far-PASS side still rests on Argon and Opus 5.5, and far-PASS summarizers seem rare.
+  OpenRouter key 2 is exhausted; key 1 works.
