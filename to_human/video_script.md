@@ -11,7 +11,7 @@ How to read this file:
 - `demo_numbers.json` means `summarizer-monitor/to_human/demo_numbers.json`, written by `src/build_demo.py`. It
   re-extracts the numbers below from the raw result files, so rerunning the build is the quickest check.
 - Markers are not spoken and do not count toward the budget.
-- `[SLOT E1]` and `[SLOT E2]` hold outcome variants. Speak one variant per slot. `⟨k⟩`, `⟨FA⟩` and `⟨n⟩` are the
+- `[SLOT E1]` and `[SLOT E2b]` hold outcome variants. E2 itself is final and is in the base narration. Speak one variant per slot. `⟨k⟩`, `⟨FA⟩` and `⟨n⟩` are the
   values to fill in from the experiment results.
 - On-screen material comes from `to_human/demo.html`, the cached replay that opens offline. Its tabs are 1 You are the
   monitor, 2 Raw vs summary, and 3 The framed agent. Number keys switch tabs.
@@ -27,7 +27,7 @@ On screen: a pipeline diagram (agents → raw log → **summarizer** → monitor
 
 Optional longer hook, only if you can source the incident figures (strategy.md asserts them; no record does): "In
 July, about twelve hundred agents exchanged over seventy thousand messages, and the swarm was found weeks later."
-That adds 18 words, so cut the ChatDev clause in beat 3 to stay under 420 in the worst case.
+That adds 18 words, so cut the ChatDev clause in beat 3 and skip the E2b line to stay near 420.
 
 ## Beat 2 · 0:15-0:35 · Setup
 
@@ -41,9 +41,10 @@ On screen: demo tab 2, Log 1, full-log view. It opens scrolled to the first high
 
 ## Beat 3 · 0:35-1:05 · The figure
 
-> Across six summarizer families {{source: loop2d/inherit_v1.txt:"H3 Spearman over 6 summarizers"}}, the monitor tracks
-> its own summarizer. Rank correlation 0.99 {{source:
-> loop2d/inherit_v1.txt:rho=0.99; demo_numbers.json:script.rho_families}}. The summarizer decides. With GPT-5.6-luna
+> Across six summarizer families {{source: loop2d/inherit_v1.txt:"H3 Spearman over 6 summarizers"}}, the monitor is capped
+> by its own summarizer: rank correlation 0.99 {{source: loop2d/inherit_v1.txt:rho=0.99;
+> demo_numbers.json:script.rho_families}}, one exception in eight new checks {{source: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:Q4 row
+> "7/8 cells pass. Miss: Nova Pro, set A ... +9 pts"}}. The summarizer decides. With GPT-5.6-luna
 > summaries, detection falls from 87 to 48 percent {{source: review2/l2_13_stress_results.txt:"set A (luna) SPLIT
 > pooled" FULL 55/63 (87%) -> SUM 30/63 (48%); demo_numbers.json:script.setA_luna}} at zero false alarms {{source:
 > review2/l2_13_stress_results.txt:"SUM: FA@50 0/42"}}; on ChatDev, 59 to 30 {{source: loop9/loop9_results.txt:"SPLIT:
@@ -58,9 +59,11 @@ labelled.
 
 Wording limits:
 - Say "the summarizer decides", never "summaries decide".
-- Say the monitor "tracks" its summarizer, not "never beats" it. The prospective ceiling check (E2 Q4: detection on a
-  summarizer's summaries ≤ its own full-log catch + 5 points) held in 7 of 8 new cells, so "never" is too strong
-  {{source: summarizer-monitor/experiments/E2-canary-audit-prospective/results/results.txt:"Q4: FAIL (7/8 ...)"}}.
+- Never say the monitor "never beats" its summarizer. Say it "is capped by" its summarizer, or "rarely beats it", and
+  give the count: 1 exception in 8 prospective summarizer-set checks (E2 Q4, rule: summaries ≤ own full-log catch + 5
+  points). The exception is Nova Pro on set A: its own full-log catch was 0/18, yet monitors on its summaries caught
+  3/34 (+9 points, deal-cluster CI 0 to +19) {{source: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:Q4 row and ceiling table}}. The 6 earlier families
+  all passed a looser +10 rule {{source: loop2d/PREDICTIONS.md:H2; loop2d/inherit_v1.txt:"H2 PASS" x6}}.
 - The sol loss sits mostly in one deal. Without deal 1 it is 12 points {{source: review2/l2_13.md:§2.4 "47/49 ->
   41/49"}}. Keep it as "still loses", not as a headline.
 - The 87→48 figure pools the Haiku and DeepSeek monitors.
@@ -109,9 +112,9 @@ Corrections to the strategy draft:
 
 > The fixes are cheap. One summarizer line, keep agent tags and report later corrections as unverified, takes the
 > framing from 16 of 28 to zero {{source: loop1c/runs/l1c20b.jsonl:mon=claude-sonnet-5.5, cond=ERR_NOEV|sfix 0/28;
-> demo_numbers.json:blame_chain.fix_sonnet}}. A raw lane of direct peer messages nearly closes the planted-deal gap at
-> under half the log's size {{source: loop9/loop9_results.txt:"H1 raw peer msgs only" 0.39 / 0.30 of full-log characters;
-> demo_numbers.json:script.h1_cost}}, by construction, since planted deals are peer to peer.
+> demo_numbers.json:blame_chain.fix_sonnet}}. A raw lane of peer messages nearly closes the planted-deal gap at under
+> half the log's size {{source: loop9/loop9_results.txt:"H1 raw peer msgs only" 0.39 / 0.30 of full-log characters;
+> demo_numbers.json:script.h1_cost}}, by construction: planted deals are peer to peer.
 
 **[SLOT E1: raw lane on agent-written deals.]** Speak one variant.
 
@@ -141,34 +144,34 @@ What the data shows now. These figures are unreviewed, read from
 - On loop8 the lane is 54% of full-log characters, not 30-40%.
 - Wait for the E1 agent's final verdict and claims review before you record.
 
-> Before trusting a summarizer, audit it: plant canary deals, measure what passes.
+> Before trusting a summarizer, audit it: plant canary deals. Under two dollars, a few minutes {{source:
+> summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:"one audit costs $0.4 to $1.7 and 2 to 4 minutes"}}. Four summarizers we'd never used: it called all four
+> lossy, and all four were, on unseen deals {{source: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:Q1 row "4/4 match (all four predicted FAIL, all
+> four FAIL on set B)"}}.
 
-**[SLOT E2: canary audit, prospective.]** Speak one variant.
+E2 is final for the FAIL side: Q1 PASS (4/4, a weak test with n = 4: p = 0.0625 against coin-flip labels), Q2 PASS
+(Spearman 0.983 over 9 summarizers, 5 of them scored earlier; deal-clustered CI 0.82 to 1.00), Q3 PASS, Q4 FAIL in
+1 of 8 cells {{source: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:verdict table}}. All four new summarizers were predicted FAIL, so the audit is
+validated only for flagging lossy summarizers. It also overstates the size of the loss by about 10 points (mean
+absolute error 8.6) {{source: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:"over-predicts the size of the loss by about 10 points"}}. If you show the
+rank correlation on screen, label it "9 summarizers, 5 scored earlier".
 
-- **E2-PASS** (Q1 and Q2 pass):
+**[SLOT E2b: does the audit also clear good summarizers? PASS-side prospective test, running now.]** Speak one
+variant, or none if E2b is not done.
 
-  > On ⟨n⟩ summarizers it had never seen, the canary call matched the held-out result ⟨k⟩ of ⟨n⟩ times.
+- **E2b-PASS** (its PASS calls hold):
 
-- **E2-FAIL** (Q1 or Q2 fails):
+  > It also cleared ⟨k⟩ of ⟨n⟩ new summarizers that held up.
 
-  > On new summarizers the canary matched held-out only ⟨k⟩ of ⟨n⟩ times, so we ship it as a harness, not a
-  > validated predictor.
+- **E2b-FAIL** (its PASS calls miss):
 
-What the data shows now (read from `summarizer-monitor/experiments/E2-canary-audit-prospective/results/results.txt`,
-committed e398a58, not yet claims-reviewed):
-- Q1 PASS: canary labels matched held-out labels for 4/4 new summarizers (⟨k⟩ = 4, ⟨n⟩ = 4). This is a weak test:
-  p = 0.0625 against coin-flip labels.
-- Q2 PASS: rho 0.983 over 9 summarizers, deal-clustered CI [0.82, 1.00].
-- Q3 PASS. Q4 FAIL (7/8), see the beat 3 wording limit.
-- This points to **E2-PASS**. The protocol allows the word "validated". Saying "four of four" aloud keeps the small n
-  visible.
+  > Its pass calls missed ⟨k⟩ of ⟨n⟩; it flags, not clears.
 
-Fallback if E2 is not done by 16:00 Saturday (strategy.md §6): "Its ranking matched held-out deals on six
-summarizers, rank correlation 0.93, measured after the fact" {{source: loop2d/l2d06_results.txt:"Spearman(A, B) =
-0.93"}}. Call it a harness. Kimi was dropped and replaced by Cohere before stage 2, as disclosed in `stage1_predictions.json`.
+- **E2b not done**: say nothing extra. On screen, add "validated for flagging lossy summarizers; clearing them is
+  untested".
 
 On screen: fix bars (blame chain 16/28 → 0/28; split-deal detection for the full log, luna summaries and the raw
-lane), then a terminal running the audit CLI.
+lane), then a terminal running the audit CLI with the caption "validated for flagging lossy summarizers".
 
 ## Beat 7 · 2:30-2:50 · Scope, said aloud
 
@@ -186,7 +189,7 @@ Wording limits: the matched-FA result comes first (review2 pitch fix 4). If p ap
 
 ## Beat 8 · 2:50-3:00 · Close
 
-> Treat your summarizer as a monitor. Audit it like one. Code and data are in the repo.
+> Treat your summarizer as a monitor. Audit it like one. Everything is in the repo.
 
 On screen: title card and repo link.
 
@@ -198,19 +201,19 @@ Each fill-in value counts as one word. The script below reproduces these numbers
 
 | Part | Words |
 |---|---|
-| Beats 1-8 without slots | 353 |
+| Beats 1-8 without slots (E2 result now in the base) | 380 |
 | E1-PASS / E1-FAIL / E1-CALIBRATE | 23 / 22 / 28 |
-| E2-PASS / E2-FAIL | 18 / 23 |
-| **Worst case (CALIBRATE + E2-FAIL)** | **404** |
-| Best case (FAIL + PASS) | 393 |
-| Current reading (CALIBRATE + E2-PASS) | 399 |
-| With the optional incident hook | 18 more in every case (worst 422: cut the ChatDev clause) |
+| E2b-PASS / E2b-FAIL / not done | 11 / 11 / 0 |
+| **Worst case (CALIBRATE + an E2b line)** | **419** |
+| Best case (E1-FAIL, no E2b line) | 402 |
+| Current reading (CALIBRATE, E2b not done) | 408 |
+| With the optional incident hook | 18 more in every case (worst 437: cut the ChatDev clause and skip the E2b line) |
 
 ```
 python3 - <<'PY'
 import re
 t = open('summarizer-monitor/to_human/video_script.md').read()
-secs = re.split(r'\n(?=## |- \*\*E[12]-|\*\*\[SLOT|What the data|Fallback|Optional longer)', t)
+secs = re.split(r'\n(?=## |- \*\*E[12]b?-|\*\*\[SLOT|What the data|Fallback|Optional longer|E2 is final|- \*\*E2b not)', t)
 for s in secs:
     q = [re.sub(r'^\s*> ?', '', l) for l in s.splitlines() if re.match(r'^\s*> ', l)]
     w = len(re.sub(r'\{\{.*?\}\}', '', ' '.join(q)).split())
@@ -225,7 +228,7 @@ PY
 | ~1,200 agents, >70,000 messages (optional hook only) | none in records | **unsourced; not in default narration** |
 | 18 agents | `loop2c/l2_13_summary_launder.py` docstring | ok |
 | 4 messages per deal | same docstring | ok |
-| 6 families, rho 0.99 | `loop2d/inherit_v1.txt` | ok (6 points, computed after the fact) |
+| 6 families, rho 0.99 | `loop2d/inherit_v1.txt` | ok (6 points, computed after the fact); pair with "capped by" |
 | 87% → 48% (55/63 → 30/63), 0/42 false alarms | `review2/l2_13_stress_results.txt`; recomputed in `demo_numbers.json:setA_recomputed` | ok, matches |
 | ChatDev 59% → 30% (41/69 → 21/69) | `loop9/loop9_results.txt` | ok |
 | sol −24 [+12, +37] | `review2/l2_13_stress_results.txt` | ok, one-deal caveat |
@@ -238,4 +241,7 @@ PY
 | raw lane 0.39 / 0.30 of the full log | `loop9/loop9_results.txt` | characters, not tokens; "nearly closes" (ChatDev +4, CI to +17) |
 | matched-FA +6 [−3, +15]; 73% → 56%, p 0.001 two-sided | `loop8/l8_results.txt`; stress results | ok, matched-FA first |
 | 6 templates per corpus; 17/17 untied deals lose | `review2/l2_13.md` §2.3, §2.5 | ok (review2 pitch fix 5) |
-| canary rho 0.93 (fallback only) | `loop2d/l2d06_results.txt` | exploratory, computed after the fact |
+| canary audit: under $2, a few minutes | `summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md` cost table ($0.38-1.68, 1.9-3.7 min) | ok |
+| 4 new summarizers, all called lossy, all lossy on unseen deals | `summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md` Q1 row (4/4) | ok; FAIL side only, n = 4 |
+| one exception in eight new checks | `summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md` Q4 row (Nova Pro set A, +9) | ok; say "capped by", never "never beats" |
+| Spearman 0.983 over 9 (on screen only) | `summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md` Q2 row | ok; 5 of the 9 scored earlier |

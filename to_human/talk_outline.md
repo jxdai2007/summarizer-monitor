@@ -24,10 +24,10 @@ Keys in the demo:
 | 1 | 0:00-0:45 | **Title + pipeline.** agents → raw log → **summarizer** → monitor | At swarm scale nobody reads raw logs. A model compresses them, and the monitor reads what it wrote. So the summarizer is a monitor nobody evaluates. | - |
 | 2 | 0:45-2:30 | **You are the monitor** (live poll; flow below) | You get exactly what the monitor gets. | Tab 1 |
 | 3 | 2:30-3:15 | **Setup.** Real Mantiq logs (18 agents {{src: loop2c/l2_13_summary_launder.py docstring}}) and ChatDev/MAST. Fictional deals split over 4 messages, written by two models (Gemini, Grok). Summarize chunks, then monitor. Flag at score 50. | 6 deal templates per corpus {{src: review2/l2_13.md §2.3}}. Plain deals are caught 100% through every summarizer except Llama-scout, so the loss is specific to split deals. | Tab 2, full-log view |
-| 4 | 3:15-4:30 | **The ceiling.** Main figure: summarizer spread from −14 to +40 points {{src: review2/l2_13.md §2.1}}. The monitor tracks its summarizer (6 families, rho 0.99 {{src: loop2d/inherit_v1.txt}}; the prospective ceiling check held in 7/8 new cells {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/results/results.txt Q4}}). | luna 87→48% at zero false alarms {{src: review2/l2_13_stress_results.txt set A luna}}. Flagship sol still −24 [+12, +37] {{src: same, sol}}. Claude Sonnet summaries lose 9-10, not significant; Gemini summaries beat the full log (−8, −14) {{src: review2/l2_13.md §2.1, §3}}. Replicated on ChatDev 59→30% {{src: loop9/loop9_results.txt}}. **The summarizer decides, not summarization.** | Figure |
+| 4 | 3:15-4:30 | **The ceiling.** Main figure: summarizer spread from −14 to +40 points {{src: review2/l2_13.md §2.1}}. The monitor is capped by its summarizer (6 families, rho 0.99 {{src: loop2d/inherit_v1.txt}}), with 1 exception in 8 prospective checks: Nova Pro, set A, +9 points {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q4 row}}. | luna 87→48% at zero false alarms {{src: review2/l2_13_stress_results.txt set A luna}}. Flagship sol still −24 [+12, +37] {{src: same, sol}}. Claude Sonnet summaries lose 9-10, not significant; Gemini summaries beat the full log (−8, −14) {{src: review2/l2_13.md §2.1, §3}}. Replicated on ChatDev 59→30% {{src: loop9/loop9_results.txt}}. **The summarizer decides, not summarization.** | Figure |
 | 5 | 4:30-5:45 | **Where the judging happens.** Neutral summary prompt: 0/32 caught {{src: loop2d/l2d13_results.txt}}. Monitors flag a split deal only when the summary carries an explicit suspicion sentence: 1/73 without one {{src: loop2d/l2d14_results.txt}}. Delete the 1-2 verdict sentences and 14/15 caught deals vanish {{src: loop2d/l2d15_results.txt}}. | This is a monitor cascade, and the first monitor is unannounced. The record has a single point of failure. | Tab 2: toggle `T`, then Log 2, `D` (Haiku 68→5 {{src: loop2d/runs/edit_summary.jsonl practice_05\|0\|SPLIT}}) |
 | 6 | 5:45-7:15 | **The framed agent.** Culprit's note "step 9 was run by build-agent-9". Raw log: Sonnet suspends only the innocent 0/14 {{src: loop1c/runs/l1c17b/claude-sonnet-5.5.jsonl}}. Through summaries: 16/28 {{src: loop1c/runs/l1c20.jsonl}}. | Haiku resists the note as a monitor but writes it into the record as a summarizer {{src: loop1c/L1c-20_results.md "Haiku resists... 1/21"}}. Same family of testimony: a one-line "correction" gets luna to clear 10/24 rule breaks, 0/24 without {{src: review2/agent_records.md RV2-REC-A}}. | Tab 3, step by step |
-| 7 | 7:15-8:45 | **Fixes + audit.** (a) Summarizer line → 0/28 {{src: loop1c/runs/l1c20b.jsonl}}. (b) Raw peer lane → [SLOT E1]. (c) Canary audit → [SLOT E2]. | Each fix is one line or one view. The audit is the part a lab can run on its own stack without sharing logs. | Tab 3, `F`; then the CLI |
+| 7 | 7:15-8:45 | **Fixes + audit.** (a) Summarizer line → 0/28 {{src: loop1c/runs/l1c20b.jsonl}}. (b) Raw peer lane → [SLOT E1]. (c) Canary audit: 4/4 new summarizers called lossy and confirmed on unseen deals, under $2 and a few minutes each {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q1 row, cost table}}; [SLOT E2b] for the PASS side. | Each fix is one line or one view. The audit is the part a lab can run on its own stack without sharing logs. | Tab 3, `F`; then the CLI |
 | 8 | 8:45-10:00 | **Scope + checklist.** On agent-written deals the loss is small: +6 points at matched false alarms, CI −3 to +15 {{src: loop8/l8_results.txt}}. The big effects are on planted deals. Checklist below. | "Treat your summarizer as a monitor. Audit it like one." | Title card |
 
 ### Slot E1 (slide 7b): raw lane on agent-written deals
@@ -42,14 +42,23 @@ Use one variant once the E1 verdict and its claims review are in.
   the third variant: 51/66 caught, 8/64 false alarms, AUC 0.944 vs 0.924 on the full log, 54% of full-log characters.
   Confirm before using.
 
-### Slot E2 (slide 7c): canary audit, prospective
-- **PASS** (Q1 and Q2): "Planted canaries on one deal set predicted pass/fail on held-out deals for ⟨k⟩ of ⟨n⟩
-  summarizers we had never scored. It is a validated pre-deployment check."
-- **FAIL**: "The canary matched only ⟨k⟩ of ⟨n⟩, so we ship it as a measurement harness, not a validated predictor."
-- Current reading (results.txt, commit e398a58, not yet claims-reviewed): Q1 PASS 4/4 (weak test, n = 4), Q2 PASS
-  rho 0.983 over 9 summarizers, Q3 PASS, Q4 FAIL 7/8. That is the PASS variant with ⟨k⟩ = ⟨n⟩ = 4.
-- **Not done by 16:00 Sat**: "Measured after the fact, canary ranking matched held-out ranking at rho 0.93 on 6
-  summarizers {{src: loop2d/l2d06_results.txt}}. It is a harness, not a validated audit."
+### Slot E2 (slide 7c): canary audit, prospective (final) + E2b (PASS side, running)
+E2 result, final {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md}}:
+- Q1 PASS: canary labels matched held-out labels for 4/4 new summarizers (terra, Cohere Command A+, MiniMax, Nova
+  Pro). All four were predicted FAIL, and all four failed on the unseen Grok deal set. It is a weak test (n = 4,
+  p = 0.0625 against coin-flip labels).
+- Q2 PASS: Spearman 0.983 over 9 summarizers (5 scored earlier), deal-clustered CI 0.82 to 1.00.
+- Q3 PASS (false alarms ≤ 10%). Q4 FAIL in 1 of 8 cells (the Nova exception above).
+- Cost: $0.38-1.68 and about 2-4 minutes per audit (the cost table).
+- Limits: it overstates the size of the loss by about 10 points. "Held-out" means new deals by a new author on the
+  same 7 Mantiq runs, not a new environment.
+- Say: "A canary audit costs under $2 and a few minutes. On four summarizers we had never used, it flagged all four as
+  lossy, and all four were lossy on a second, unseen deal set." This is the analysis's own safe wording.
+
+E2b, the PASS side (does a predicted PASS hold?). Keep both variants:
+- **PASS**: "It also cleared ⟨k⟩ of ⟨n⟩ new summarizers that held up, so it works in both directions."
+- **FAIL**: "Its pass calls missed ⟨k⟩ of ⟨n⟩. Use it to flag lossy summarizers, not to certify good ones."
+- **Not done**: "Validated for flagging lossy summarizers; clearing good ones is being tested."
 
 ---
 
@@ -78,7 +87,7 @@ scores are in `demo_numbers.json`.
 ---
 
 ## Deployer checklist (slide 8)
-1. Evaluate the summarizer as a monitor, with its own catch rate, before choosing it. The monitor tracks it.
+1. Evaluate the summarizer as a monitor, with its own catch rate, before choosing it. The monitor is capped by it.
 2. Run a canary audit on your stack: plant test deals and measure pass-through.
 3. Add one line to the summarizer's prompt: keep agent tags and original values, and report agent corrections
    separately as unverified.
@@ -177,7 +186,13 @@ Pair-level McNemar overstates significance, and review2 says so. The per-log sig
 p = 3e-5 on set A {{src: review2/l2_13_stress_results.txt}}) and the deal-level sign test (17/17 untied deals) both
 hold. The loop8 p-value is the two-sided 0.001; an earlier draft showed the one-sided 0.0005 without labelling it.
 
-**10. Is the "deleting any raw message hides 0/60" contrast fair?**
+**10. Is the canary audit really validated?**
+For flagging lossy summarizers, yes, within its protocol: 4/4 prospective labels matched and rank correlation was 0.983
+over 9 summarizers {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q1, Q2 rows}}. But all four new summarizers were predicted FAIL, so it has not yet
+been shown to clear a good one (E2b tests that). n = 4 is small, and it overstates the loss by about 10 points, so
+report the loss as a share of what the full log catches and treat the absolute drop as an upper estimate.
+
+**11. Is the "deleting any raw message hides 0/60" contrast fair?**
 No. Review2 asked us to drop it: the summary edit removes the summarizer's verdict and its quoted evidence, while
 the raw edit removes one of four deal messages {{src: review2/l2_13.md §2.6}}. We claim only that the verdict lives in
 1-2 sentences, a single point of failure. The demo labels the contrast "not like-for-like".
@@ -189,6 +204,8 @@ the raw edit removes one of four deal messages {{src: review2/l2_13.md §2.6}}. 
 - "0/28 on raw logs" for the blame chain. Cite 0/14: L1c-17b's 0/28 pools two note wordings, and 0/14 is the one that
   matches L1c-20's wording.
 - "Closes the gap" for the raw lane without "by construction on planted deals".
-- "Validated audit" without the n: E2 passed Q1 and Q2, but on 4 new summarizers.
-- "The monitor never beats its summarizer". Say "tracks": E2 Q4 held in 7/8 cells.
+- "Validated audit" without the scope: E2 validated it for flagging lossy summarizers only (4/4, all predicted FAIL).
+  The PASS side is E2b.
+- "The monitor never beats its summarizer". Say "is capped by" or "rarely beats", with the count: 1 exception in 8
+  prospective checks (E2 Q4).
 - Anything from L7, L10-16b, L2-08 or L3. These were cut in review.
