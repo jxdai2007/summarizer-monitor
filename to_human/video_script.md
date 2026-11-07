@@ -23,7 +23,7 @@ How to read this file:
 > and the same monitors catch fewer than half as many hidden deals {{source: summarizer-monitor/paper/numbers.tex:
 > B-luna-full 55, B-luna-sum 25 of B-luna-n 80 (set B, luna summaries)}}, or more than if they had read the raw log {{source:
 > summarizer-monitor/paper/numbers.tex:E2d-opus-hsum vs E2d-opus-hfull (Opus summaries vs raw log, set B)}}. The
-> summarizer is the real monitor, and a six-dollar test tells you which kind you have.
+> summarizer is the real monitor, and a six-dollar test tells you which kind you have, unless it's close.
 
 On screen: a pipeline diagram (agents → raw log → **summarizer** → monitor). The summarizer box lights up on "who".
 Then, on "fewer than half ... or more than if they had read the raw log": cut to the dial figure
@@ -52,7 +52,7 @@ On screen: demo tab 2, Log 1, full-log view. It opens scrolled to the first high
 > summaries, detection falls from 87 to 48 percent {{source: review2/l2_13_stress_results.txt:"set A (luna) SPLIT
 > pooled" FULL 55/63 (87%) -> SUM 30/63 (48%); demo_numbers.json:script.setA_luna}} at zero false alarms {{source:
 > review2/l2_13_stress_results.txt:"SUM: FA@50 0/42"}}; on ChatDev, 59 to 30 {{source: loop9/loop9_results.txt:"SPLIT:
-> FULL 41/69 (59%) -> luna summaries 21/69 (30%)"}}. Claude and Gemini summaries lose ten or less {{source: review2/l2_13.md:§2.1 (Gemini -8, Sonnet +10 n.s.); review2/l2_13_stress_results.txt:"claude-sonnet-5.5
+> FULL 41/69 (59%) -> luna summaries 21/69 (30%)"}}. Claude Sonnet 5.5 and Gemini 3.8 summaries lose ten or less {{source: review2/l2_13.md:§2.1 (Gemini -8, Sonnet +10 n.s.); review2/l2_13_stress_results.txt:"claude-sonnet-5.5
 > summarizer" drop +10, p=0.22}}.
 
 On screen: the main figure review2 asked for. It shows the summarizer spread from -14 to +40 {{source:
@@ -142,7 +142,7 @@ Wording limits for the raw lane:
 > summarizers from 11 vendors)"}} In a second environment it was right on five of six. {{source:
 > summarizer-monitor/experiments/E7-canary-new-environment/results/analysis.txt:"labels matched 5/6"}} But on vendors
 > picked blind, all near the line, it was right half the time. Far from the line it was never wrong, and a
-> preregistered test held eight of eight, all lossy-side. Trust it there.
+> preregistered test held eight of eight, all lossy-side. Trust its FAIL calls there.
 > {{source: summarizer-monitor/experiments/E8-unselected-vendors/results/analysis.txt:"3/6" total;
 > distance_exploratory.txt: far 14/14, near 6/10; E9-far-rule-prospective/results/analysis.txt: "FAR calls confirmed 8/8"}}
 
@@ -183,9 +183,7 @@ lane 49, luna summaries 46, all of 66 and none significantly different), then a 
 ## Beat 7 · 2:30-2:50 · Scope, said aloud
 
 > Scope: on agent-written deals, at matched false alarms, the gap is six points, not significant {{source:
-> loop8/l8_results.txt:"Sonnet matched-FA FULL vs LUNA ... diff +6 pts [CI -3, +15]"}}; 73 to 56 percent only at a
-> fixed threshold {{source: review2/l2_13_stress_results.txt:"claude-sonnet-5.5 FULL: T-COORD 48/66 ... LUNA: T-COORD
-> 37/66", exact McNemar two-sided p=0.00098}}. The big drops are on planted deals {{source:
+> loop8/l8_results.txt:"Sonnet matched-FA FULL vs LUNA ... diff +6 pts [CI -3, +15]"}}. The big drops are on planted deals {{source:
 > review2/l2_13.md:§2.3 "only 6 deal templates"}}.
 
 On screen: a small realism panel with bars at a fixed threshold and at matched false alarms.

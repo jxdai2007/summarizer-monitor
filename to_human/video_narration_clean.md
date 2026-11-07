@@ -1,10 +1,10 @@
 # Video narration: clean read-aloud copy (generated from video_script.md, sources stripped)
 
-DRAFT for Jollen to rewrite in his own voice. Every number has its source in video_script.md. Regenerate after editing the script.
+DRAFT for Jollen to rewrite in his own voice. Every number has its source in video_script.md. Regenerate after editing the script: `python3 src/build_narration.py`.
 
 **Beat 1 · 0:00-0:15 · Hook**
 
-Nobody reads logs at swarm scale. A model summarizes them; the monitor reads the summary. Swap that one model, and the same monitors catch fewer than half as many hidden deals, or more than if they had read the raw log. The summarizer is the real monitor, and a six-dollar test tells you which kind you have.
+Nobody reads logs at swarm scale. A model summarizes them; the monitor reads the summary. Swap that one model, and the same monitors catch fewer than half as many hidden deals, or more than if they had read the raw log. The summarizer is the real monitor, and a six-dollar test tells you which kind you have, unless it's close.
 
 **Beat 2 · 0:15-0:35 · Setup**
 
@@ -12,7 +12,7 @@ We took real multi-agent logs: eighteen agents and a ChatDev corpus. We planted 
 
 **Beat 3 · 0:35-1:05 · The figure**
 
-Across six summarizer families, the monitor is capped by its own summarizer: rank correlation 0.99, one exception in eight new checks. The summarizer decides. With GPT-5.6-luna summaries, detection falls from 87 to 48 percent at zero false alarms; on ChatDev, 59 to 30. Claude and Gemini summaries lose ten or less.
+Across six summarizer families, the monitor is capped by its own summarizer: rank correlation 0.99, one exception in eight new checks. The summarizer decides. With GPT-5.6-luna summaries, detection falls from 87 to 48 percent at zero false alarms; on ChatDev, 59 to 30. Claude Sonnet 5.5 and Gemini 3.8 summaries lose ten or less.
 
 **Beat 4 · 1:05-1:25 · Show, don't tell**
 
@@ -24,14 +24,14 @@ Worse: agents write the record. The guilty agent appends one line: step 9 was ru
 
 **Beat 6 · 1:55-2:30 · Fixes and the audit**
 
-The fixes are cheap. One summarizer line, keep agent tags and report later corrections as unverified, takes the framing from 16 of 28 to zero. On deals agents wrote themselves, a raw lane of worker-to-worker messages matches full-log detection with about half the text, once calibrated. Before trusting a summarizer, test it the way programmers test their tests: plant known deals, count how many get through. Mutation testing for oversight. Under six dollars, a few minutes. In its first four tests it got twelve of twelve summarizers right, from eleven vendors. In a second environment it was right on five of six. But on vendors picked blind, all near the line, it was right half the time. Far from the line it was never wrong, and a preregistered test held eight of eight, all lossy-side. Trust it there.
+The fixes are cheap. One summarizer line, keep agent tags and report later corrections as unverified, takes the framing from 16 of 28 to zero. On deals agents wrote themselves, a raw lane of worker-to-worker messages matches full-log detection with about half the text, once calibrated. Before trusting a summarizer, test it the way programmers test their tests: plant known deals, count how many get through. Mutation testing for oversight. Under six dollars, a few minutes. In its first four tests it got twelve of twelve summarizers right, from eleven vendors. In a second environment it was right on five of six. But on vendors picked blind, all near the line, it was right half the time. Far from the line it was never wrong, and a preregistered test held eight of eight, all lossy-side. Trust its FAIL calls there.
 
 **Beat 7 · 2:30-2:50 · Scope, said aloud**
 
-Scope: on agent-written deals, at matched false alarms, the gap is six points, not significant; 73 to 56 percent only at a fixed threshold. The big drops are on planted deals.
+Scope: on agent-written deals, at matched false alarms, the gap is six points, not significant. The big drops are on planted deals.
 
 **Beat 8 · 2:50-3:00 · Close**
 
 Treat your summarizer as a monitor. Audit it like one. Everything is in the repo.
 
-_426 words, about 3.0 minutes at 140 words per minute._
+_407 words, about 2.9 minutes at 140 words per minute._
