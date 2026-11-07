@@ -164,7 +164,7 @@ Across E2 and E2b, one audit costs $0.17 to $1.99 and 1.9 to 4.3 minutes.
 
 ## Independent review
 
-Fresh-context review (independent-reviewer subagent, 2026-11-06 ~23:25 PT) recomputed every drop, the labels, Spearman
+Fresh-context review (independent-reviewer subagent, 2026-11-06 ~23:18 PT) recomputed every drop, the labels, Spearman
 (average ranks), the false alarms and log-cluster CIs from the raw jsonl files with its own script, and recomputed the
 drops from the CSV for all 12 summarizers. It found 0 mismatches with `results/results.txt` or this file. Its R1-R4: 3/3
 labels match; 1 canary-PASS (Gemini 4 Argon, held-out -21.0); rho 0.979 over 12; false alarms 1/250 (max 2.4% per
