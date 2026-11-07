@@ -45,8 +45,10 @@ import l2_13x_harden as hx  # noqa: E402
 import l2_13i_newdeals as nd  # noqa: E402
 
 # Fixed selection rule (protocol): first 4 available of GPT-5.6-terra, Kimi latest, MiniMax latest, Nova latest pro tier,
-# Cohere Command latest. All five answered a probe call at 22:33 PT; ids verified against the OpenRouter /models list.
-# Kimi (moonshotai/kimi-k3.1-pro) was started first and DROPPED before any of its monitor scores was looked at, because it
+# Cohere Command latest. All five answered a probe call at ~22:27 PT, before the first run at 22:29:25 (the stage-1
+# predictions file says 22:33; that time is wrong); ids verified against the OpenRouter /models list.
+# Kimi (moonshotai/kimi-k3.1-pro) was started first and DROPPED before any of its monitor scores was looked at (they were
+# computed inline by the runner and kept in the aborted files, but not read before the swap), because it
 # cannot run the protocol pipeline inside the protocol's $12 budget:
 #   - default reasoning: ~$0.02 per chunk call (~1,400 reasoning tokens); 8 set-A logs cost $1.39; both sets + controls +
 #     own catch project to ~$8 for Kimi alone (records: results/aborted_A_sum_kimi-k3.1-pro_default-reasoning.jsonl);
@@ -54,7 +56,7 @@ import l2_13i_newdeals as nd  # noqa: E402
 #     chunk "summaries" over 300 words, up to 2,009 words, starting "I need produce summary..."), so the monitor would read
 #     the summarizer's reasoning, not a summary; 21 logs cost $1.48 before the cap
 #     (records: results/aborted_A_sum_kimi-k3.1-pro_no-reasoning.jsonl).
-# The 5th model in the fixed order, Cohere Command A Plus, takes its place (decided 22:41 PT, before the stage-1 commit).
+# The 5th model in the fixed order, Cohere Command A Plus, takes its place (decided ~22:39 PT, before the stage-1 commit).
 NEW = ["openai/gpt-5.6-terra", "cohere/command-a-plus", "minimax/minimax-m3.1-flash", "amazon/nova-pro-v1"]
 DROPPED = {"moonshotai/kimi-k3.1-pro": "over budget at default reasoning; reasoning trace leaks into summaries when disabled"}
 EXTRA = {"moonshotai/kimi-k3.1-pro": {"reasoning": {"enabled": False}}}  # used only by the aborted no-reasoning attempt
