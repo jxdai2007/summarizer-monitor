@@ -50,6 +50,20 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
 - Deviation: Kimi k3.1-pro was swapped out for cost and leaked reasoning text before its scores were read. Its partial,
   exploratory drops were +12.5 and +10, so it was the only family heading for PASS (see the E2 analysis).
 
+**Result 4b: the audit's PASS side (E2b, CONFIRMATORY, two-stage lock; reviewed, pass with fixes).**
+- 3 more summarizers by the fixed order rule: Gemini 4 Argon, gpt-oss-120b, Nemotron 3.5 Super.
+- Labels matched 3/3:
+  - Gemini: canary -12.5 → PASS; held-out -21.0 (deal CI -35 to -9), PASS. Its summaries beat the full log.
+  - gpt-oss: +74.2 → FAIL; held-out +52.4, FAIL.
+  - Nemotron: +19.7 → FAIL; held-out +19.2, FAIL, but borderline (it flips to PASS under Haiku alone or if empty
+    DeepSeek replies are counted as flags).
+- Spearman 0.979 over 12 summarizers (CI 0.87-0.99). False alarms 1/250.
+- Across E2 and E2b the canary calls 7/7 correctly, but only 1 of those calls is a PASS. Say "validated on both
+  sides, the PASS side with one case".
+- Deviation: Gemini's control design was switched from the optional fresh controls ($5.04) to the protocol design
+  ($4.14) after seeing the cost projection and before any monitor score existed; the controls were then run anyway.
+  This is disclosed in the E2b analysis.
+
 **Result 5: a raw worker-to-worker lane on agent-written deals (E1, CONFIRMATORY; reviewed, pass with fixes).**
 - The lane covers 53.6% of full-log characters.
 - At the fixed threshold, Sonnet catches 51/66 on the lane, against 37/66 on luna summaries (McNemar p=0.0013;
@@ -78,4 +92,4 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
 
 ## Open Questions
 - E1: answered. On agent-written deals the lane matches the full log (AUC), but needs its own threshold.
-- E2: answered for the warning side (4/4, rho 0.983). E2b: is the PASS side right too?
+- E2/E2b: answered. 7/7 canary calls correct (6 FAIL, 1 PASS); rho 0.979 over 12 summarizers. Open: more PASS-side cases.
