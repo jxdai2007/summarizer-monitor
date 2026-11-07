@@ -1,0 +1,11 @@
+E9: prospective test of the >= 22-point rule; canary on set A -> held-out set B and set C (ChatDev)
+  google/gemini-3.7-flash            canary   -3.3 PASS NEAR | set B   -7.4 (n=81) PASS ok | set C   +8.5 [-8,+28] (n=71) PASS ok | controls A 0, C 0/24
+  google/gemini-3.5-flash-lite       canary  +50.0 FAIL FAR  | set B  +47.6 (n=82) FAIL ok | set C  +27.8 [+21,+35] (n=72) FAIL ok | controls A 0, C 0/24
+  anthropic/claude-sonnet-5          canary  +15.2 FAIL NEAR | set B  +16.2 (n=80) FAIL ok | set C  +20.8 [+8,+33] (n=72) FAIL ok | controls A 0, C 0/24
+  amazon/nova-lite-v1                canary  +87.5 FAIL FAR  | set B  +69.9 (n=83) FAIL ok | set C  +56.9 [+40,+75] (n=72) FAIL ok | controls A 0, C 0/24
+  meta-llama/llama-4-scout           canary  +87.5 FAIL FAR  | set B  +69.9 (n=83) FAIL ok | set C  +61.1 [+40,+82] (n=72) FAIL ok | controls A 0, C 0/24
+  mistralai/ministral-8b-2512        canary  +87.5 FAIL FAR  | set B  +67.5 (n=83) FAIL ok | set C  +56.9 [+39,+78] (n=72) FAIL ok | controls A 0, C 0/24
+
+FAR calls confirmed 8/8
+P1 (>= 4 FAR calls, at most 1 miss): PASS
+E9 VERDICT: PASS
