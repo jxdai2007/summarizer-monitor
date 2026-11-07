@@ -1,0 +1,28 @@
+band +/- 5: near 3/5 correct; far 17/19 correct
+band +/-10: near 6/10 correct; far 14/14 correct
+band +/-15: near 6/10 correct; far 14/14 correct
+total prospective calls parsed: 24
+  tencent/hy3                      E8 set B   canary  +13.6 PASS -> held-out PASS ok  |dist|   1.4
+  tencent/hy3                      E8 set C   canary  +13.6 PASS -> held-out FAIL MISS  |dist|   1.4
+  z-ai/glm-5.3-prime               E8 set B   canary  +12.3 PASS -> held-out PASS ok  |dist|   2.7
+  z-ai/glm-5.3-prime               E8 set C   canary  +12.3 PASS -> held-out FAIL MISS  |dist|   2.7
+  Nemotron 3.5 Super               E2b set B  canary  +19.7 FAIL -> held-out FAIL ok  |dist|   4.7
+  Kimi k3.1 (low effort)           E2d set B  canary   +8.2 PASS -> held-out PASS ok  |dist|   6.8
+  moonshotai/kimi-k3.1-pro         E7 set C   canary   +8.2 PASS -> held-out FAIL MISS  |dist|   6.8
+  GPT-5.6-terra                    E2 set B   canary  +22.2 FAIL -> held-out FAIL ok  |dist|   7.2
+  bytedance-seed/seed-2.0-lite     E8 set B   canary  +23.8 FAIL -> held-out PASS MISS  |dist|   8.8
+  bytedance-seed/seed-2.0-lite     E8 set C   canary  +23.8 FAIL -> held-out FAIL ok  |dist|   8.8
+  MiniMax M3.1 Flash               E2 set B   canary  +36.7 FAIL -> held-out FAIL ok  |dist|  21.7
+  minimax/minimax-m3.1-flash       E7 set C   canary  +36.7 FAIL -> held-out FAIL ok  |dist|  21.7
+  Claude Opus 5.5                  E2d set B  canary   -8.1 PASS -> held-out PASS ok  |dist|  23.1
+  anthropic/claude-opus-5.5        E7 set C   canary   -8.1 PASS -> held-out PASS ok  |dist|  23.1
+  Gemini 4 Argon                   E2b set B  canary  -12.5 PASS -> held-out PASS ok  |dist|  27.5
+  google/gemini-4-argon            E7 set C   canary  -12.5 PASS -> held-out PASS ok  |dist|  27.5
+  Command A+                       E2 set B   canary  +73.3 FAIL -> held-out FAIL ok  |dist|  58.3
+  gpt-oss-120b                     E2b set B  canary  +74.2 FAIL -> held-out FAIL ok  |dist|  59.2
+  openai/gpt-oss-120b              E7 set C   canary  +74.2 FAIL -> held-out FAIL ok  |dist|  59.2
+  Mistral Medium 3.5               E2c set B  canary  +75.0 FAIL -> held-out FAIL ok  |dist|  60.0
+  Nova Pro                         E2 set B   canary  +79.0 FAIL -> held-out FAIL ok  |dist|  64.0
+  Llama 4 Maverick                 E2c set B  canary  +87.3 FAIL -> held-out FAIL ok  |dist|  72.3
+  Phi-4                            E2c set B  canary  +87.5 FAIL -> held-out FAIL ok  |dist|  72.5
+  microsoft/phi-4                  E7 set C   canary  +87.5 FAIL -> held-out FAIL ok  |dist|  72.5
