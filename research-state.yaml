@@ -8,7 +8,7 @@ project:
     When swarm monitors read LLM-written summaries instead of raw logs, how much of what they can catch is
     decided by the summarizer, does agent-authored testimony (corrections, blame notes) get laundered into the
     record as fact, and can a cheap audit predict a summarizer's pass-through before deployment?
-  status: active
+  status: concluded (experiments); deliverables drafted, owner items pending
   started: "2026-11-06"
   domain: "multi-agent oversight / AI control (Track 4, cross-listed T3)"
   approved_by_jollen: "2026-11-06 22:20 PT ('go' after package F recommendation)"
@@ -52,12 +52,12 @@ hypotheses:
     priority: high
   - id: E2d
     statement: "Opus 5.5 + Kimi k3.1 without cost line: >=2 PASS cases from >=2 vendors?"
-    status: active (locked da8341c)
+    status: supported (T1-T4 pass; Opus clear PASS, Kimi narrow PASS; pooled 12/12, 11 vendors; 165bb8b)
     priority: high
 
 experiments:
   proxy_metric: "split-deal detection (monitor reading view X) minus full-log detection, at 0 or matched false alarms"
-  total_runs: 5
+  total_runs: 6
   trajectory:
     - {run_id: E1, metric: "Sonnet H1 51/66 caught, FA 8/64; matched-FA 49 vs FULL 50 vs LUNA 46", commit: 1258dec}
     - {run_id: E2, metric: "canary labels 4/4; rho 0.983; FA 0/42; cost $0.38-1.68/audit", commit: e398a58}
@@ -72,11 +72,18 @@ deliverables:
   talk: "to_human/talk_outline.md"
   cli: "src/summary_audit (5/5 tests; smoke pass)"
   readme: "README.md"
-  pending_after_E2d: "update abstract/narration/slide 8 counts ('7 of 7' -> pooled); offset ~13 not ~10"
+  final_sync: "efccb58 - paper, script (417 words), slides, figures, READMEs synced to 12/12; final claims review PASS WITH FIXES"
+owner_items_for_jollen:
+  - "Full name + affiliation in paper/main.tex author line"
+  - "Repository link (paper + README)"
+  - "Review/approve the LLM-usage statement in the paper"
+  - "Decide whether to port the LaTeX text into Apart's Google Doc template"
+  - "Rewrite to_human/video_script.md in own voice; record video (<=3:00); submit by Sun 10:00 PT himself"
+  - "Submit report PDF himself by Sun 23:59 AoE"
 
 outer_loop:
   cycle: 1
-  last_direction: conclude-pending-E2b
+  last_direction: conclude
   last_reflection: >
     23:10. E1 and E2 answered the two open questions. The story holds in narrowed form: the summarizer is an
     unannounced first monitor; GPT-5.6 summaries lose big on planted deals while Claude ~10 (n.s.) and Gemini none
