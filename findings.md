@@ -168,5 +168,5 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
 - **Post-hoc distance analysis (24 prospective calls).**
   - Calls 21.7 or more points from the threshold were confirmed 14/14; calls within 9 points 6/10.
   - **The audit separates clearly lossy from clearly faithful summarizers; near the threshold its label is unreliable.**
-  - The deployer checklist now says to treat drops within about 10 points as undecided.
+  - The deployer checklist now says to act only on drops about 22+ points from the threshold (post-hoc rule).
   - The earlier clean 12/12 owed much to selection that produced mostly far-from-threshold summarizers.

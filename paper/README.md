@@ -44,12 +44,10 @@ and appendices.
 ## Citations
 All ten papers in `refs.bib` were checked against their arXiv abstracts (get_abstract) on 2026-11-06. Eight come from
 `literature/survey.md`; `cemri2025mast` (2503.13657, MAST) and `qian2023chatdev` (2307.07924, ChatDev) were added for the
-corpora and verified the same way. The two Hugging Face dataset URLs returned HTTP 200. Not cited: Sumers et al. 2025
-(hierarchical-summary monitoring, an Anthropic blog post): its URL was not verified, so the Introduction carries a red
-TODO where it belongs. Add it only after opening the post.
+corpora and verified the same way. The two Hugging Face dataset URLs returned HTTP 200. Sumers et al. 2025 (hierarchical-summary monitoring, an
+Anthropic blog post) was verified by opening the post on 2026-11-06 23:55 and is cited as `sumers2025monitoring`.
 
 ## For Jollen to fill or decide
-- Sumers et al. 2025 citation (red TODO in the Introduction): open the blog post, add a bib entry with its URL.
 - Author line: full name and affiliation (`\author{...}` in main.tex).
 - Repository link (Code and data paragraph).
 - LLM usage statement: describe your own role.

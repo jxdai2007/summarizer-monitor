@@ -92,8 +92,7 @@ are caught 100% through summaries, so that quote does not show the loss.
 > loop1c/runs/l1c17b/claude-sonnet-5.5.jsonl:cond=ERR_NOEV, suspend=="build-agent-9" 0/14;
 > demo_numbers.json:blame_chain.raw_sonnet}}. Reading a summary, 16 of 28 {{source:
 > loop1c/runs/l1c20.jsonl:mon=claude-sonnet-5.5, cond=ERR_NOEV 16/28; demo_numbers.json:blame_chain.sum_sonnet_note}}.
-> And the verdict lives in one or two sentences: delete them, and 14 of 15 caught deals vanish {{source:
-> loop2d/l2d15_results.txt:"DEL_FLAG: still caught 1/15"; demo_numbers.json:l2d15.flag_hidden}}.
+
 
 On screen: demo tab 3.
 1. The raw log with the note highlighted; this run's decision card reads build-agent-7. On raw logs Sonnet more often
@@ -142,7 +141,8 @@ Wording limits for the raw lane:
 > 100%"}} summarizers right, from eleven vendors. {{source: same file:"T3: PASS (12 prospective
 > summarizers from 11 vendors)"}} In a second environment it was right on five of six. {{source:
 > summarizer-monitor/experiments/E7-canary-new-environment/results/analysis.txt:"labels matched 5/6"}} But on vendors
-> picked blind, all near the line, it was right half the time: trust it far from the threshold.
+> picked blind, all near the line, it was right half the time. Looking back over all twenty-four calls, it was never
+> wrong far from the line, so trust it only there.
 > {{source: summarizer-monitor/experiments/E8-unselected-vendors/results/analysis.txt:"3/6" total;
 > distance_exploratory.txt: far 14/14, near 6/10}}
 
@@ -178,7 +178,7 @@ E2-E2d are final and reviewed. The narration uses the Result 4d safe line from `
 - If the rank correlation goes on screen, label it "17 summarizers, 5 scored before the prospective tests".
 
 On screen: fix bars (blame chain 16/28 → 0/28; agent-written detection at matched false alarms: full log 50, raw
-lane 49, luna summaries 46, all of 66 and none significantly different), then a terminal running the audit CLI with the caption "Called in advance: 12 of 12 right, 9 lossy flagged, 3 cleared (Kimi k3.1 narrowly)".
+lane 49, luna summaries 46, all of 66 and none significantly different), then a terminal running the audit CLI with the caption "Called in advance: 12/12 in the first four tests; 20/24 over all tests (E7 5/6, blind-picked vendors E8 3/6)".
 
 ## Beat 7 · 2:30-2:50 · Scope, said aloud
 

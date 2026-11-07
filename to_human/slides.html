@@ -234,8 +234,8 @@ ul.facts li.cli { border-top: 0; padding-top: 0; } .cli code { font-size: 19px; 
             <b>$0.10 to $5.68, 1 to 4 minutes</b> per audit.</li>
           <li><span class="num">12 of 12</span> prospective calls correct (E2 + E2b + E2c + E2d), 11 vendors:
             called in advance, it flagged all 9 lossy summarizers and cleared 3: two clearly
-            (Gemini 4 Argon, Claude Opus 5.5, whose summaries beat the raw log) and one narrowly (Kimi k3.1). Validated
-            prospectively on both sides, but the PASS side rests on 3 cases, one narrow.</li>
+            (Gemini 4 Argon, Claude Opus 5.5, whose summaries beat the raw log) and one narrowly (Kimi k3.1), in the first four tests. Over all 24 prospective calls: 20/24 right (always-FAIL scores 16/24);
+            vendors picked blind to outcome (E8) only 3/6, all near the threshold.</li>
           <li><b>Spearman ρ = 0.972</b> over 17 summarizers (5 scored before the
             prospective tests). The canary overstates the held-out loss by +11.6 points on average
             over the 12 prospective summarizers; the ranking transfers.</li>
@@ -265,11 +265,11 @@ ul.facts li.cli { border-top: 0; padding-top: 0; } .cli code { font-size: 19px; 
         <li><b>Repeatable:</b> re-running the audit gave the same label in 9/10 reruns.</li>
         <li><b>Its limit:</b> on three vendors picked blind to outcome, all near the threshold, it matched only
           3/6. Over all 24 prospective calls: far from the threshold
-          <span class="num">14/14</span>, near it 6/10 (post hoc). Treat drops within ~10 points of 15 as undecided.</li>
+          <span class="num">14/14</span>, near it 6/10 (post hoc). Act only on drops about 22+ points from 15; treat closer drops as undecided.</li>
         <li><b>Recalibrate per summarizer:</b> one carried-over threshold cost 21&ndash;43 points of
-          detection for 4 of 6 summarizers.</li>
+          detection for 4 of 6 summarizers (not predicted).</li>
       </ul></div>
-    <template class="notes"><h4>Narration · beat 6 · 1:55–2:30</h4><p>All preregistered; fresh reviewers recomputed every number. The distance split is post hoc.</p></template>
+    <template class="notes"><h4>Narration · beat 6 · 1:55–2:30</h4><p>All preregistered except two after-the-fact readings: the distance split and the detection cost of a carried-over threshold.</p></template>
   </section>
   <section class="slide " aria-label="Slide 11">
     <div class="eyebrow"><span>Beat 7 · Scope, said aloud</span><span class="tc">2:30–2:50</span></div>

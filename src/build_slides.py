@@ -263,8 +263,8 @@ def slides(N, B):
             <b>{N['cost']}, {N['minutes']} minutes</b> per audit.</li>
           <li><span class="num">{K['n_correct']} of {K['n_prospective']}</span> prospective calls correct ({rev}), {K['n_vendors']} vendors:
             called in advance, it flagged all {K['n_fail_hit']} lossy summarizers and cleared {K['n_pass_calls']}: two clearly
-            (Gemini 4 Argon, Claude Opus 5.5, whose summaries beat the raw log) and one narrowly (Kimi k3.1). Validated
-            prospectively on both sides, but the PASS side rests on {K['n_pass_calls']} cases, one narrow.</li>
+            (Gemini 4 Argon, Claude Opus 5.5, whose summaries beat the raw log) and one narrowly (Kimi k3.1), in the first four tests. Over all 24 prospective calls: 20/24 right (always-FAIL scores 16/24);
+            vendors picked blind to outcome (E8) only 3/6, all near the threshold.</li>
           <li><b>Spearman \u03c1 = {K['rho']:.3f}</b> over {K['n_summarizers']} summarizers ({K['n_earlier']} scored before the
             prospective tests). The canary overstates the held-out loss by {-K['mean_heldout_minus_canary']:+.1f} points on average
             over the {K['n_prospective']} prospective summarizers; the ranking transfers.</li>
@@ -291,11 +291,11 @@ def slides(N, B):
         <li><b>Repeatable:</b> re-running the audit gave the same label in {nt('E4-match')} reruns.</li>
         <li><b>Its limit:</b> on three vendors picked blind to outcome, all near the threshold, it matched only
           {nt('E8-matchall')}. Over all {nt('dist-ncalls')} prospective calls: far from the threshold
-          <span class="num">{nt('dist-far')}</span>, near it {nt('dist-near')} (post hoc). Treat drops within ~10 points of 15 as undecided.</li>
+          <span class="num">{nt('dist-far')}</span>, near it {nt('dist-near')} (post hoc). Act only on drops about 22+ points from 15; treat closer drops as undecided.</li>
         <li><b>Recalibrate per summarizer:</b> one carried-over threshold cost {nt('E6-detlosslo')}&ndash;{nt('E6-detlosshi')} points of
-          detection for {nt('E6-nzero')} of {nt('E6-nsum')} summarizers.</li>
+          detection for {nt('E6-nzero')} of {nt('E6-nsum')} summarizers (not predicted).</li>
       </ul>""", eyebrow="Added 7 Nov \u00b7 preregistered follow-ups (E3b, E4, E6, E7, E8)",
-        notes=["All preregistered; fresh reviewers recomputed every number. The distance split is post hoc."])
+        notes=["All preregistered except two after-the-fact readings: the distance split and the detection cost of a carried-over threshold."])
 
     # 8 scope
     fx, mc = Bn["fixed50_cmp"], Bn["matched_cmp"]
