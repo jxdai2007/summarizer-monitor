@@ -72,8 +72,25 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
 - Spearman 0.967 over 15 summarizers.
 - The $6 cost line priced out the likely-PASS candidates (Opus $12.57, Kimi $6.10). E2d (locked da8341c) runs those
   two without the line.
-- Safe wording now: "the audit flagged every lossy summarizer we tested in advance (9/9, 9 vendors, all confirmed on
-  unseen deals); its one PASS call held; the PASS side is preliminary".
+- (Superseded by E2d below.)
+
+**Result 4d: the PASS side without the cost line (E2d, CONFIRMATORY; reviewed, PASS WITH FIXES).**
+- Claude Opus 5.5: canary -8.1 → PASS; held out -20.5 (CI -35 to -9) → PASS.
+  - Like Gemini 4 Argon, its summaries make split deals *easier* to catch than raw logs (70/78 vs 54/78).
+  - It holds under the non-Anthropic monitor alone (DeepSeek: 0.0 on set A, -11.1 on set B).
+- Kimi k3.1 at low effort: canary +8.2 → PASS; held out +10.4 (CI +3 to +19) → PASS, but narrow.
+  - It holds in only 80% of bootstrap replicates.
+  - Under DeepSeek alone it is +17.1 (FAIL).
+  - Counting one more parse-failed pair would tip it to +15.5.
+- T1-T4 all PASS. Pooled E2-E2d: 12/12 canary calls correct across 11 vendors (9 lossy flagged, 3 cleared, from 3
+  vendors). Spearman 0.972 over 17 summarizers. False alarms 0/167.
+- The PASS part does not hinge on Kimi: Gemini 4 Argon and Opus give 2 clear PASS cases from 2 vendors.
+- Locked wording applies: "validated prospectively on both sides".
+- **Safe line:** "Called in advance, the canary audit got 12 of 12 summarizers right, from 11 vendors: it flagged all 9
+  lossy ones and cleared 3, two clearly (Gemini 4 Argon, Claude Opus 5.5) and one narrowly (Kimi k3.1). All 12 calls
+  were confirmed on unseen deals." Do not claim the PASS side is proven in general: it rests on 3 cases, one narrow.
+- Offset: the canary overstates held-out loss by +11.6 points on average over the 12 prospective summarizers.
+- Cost per audit: $0.10 (Phi-4) to $5.68 (Opus).
 
 **Result 5: a raw worker-to-worker lane on agent-written deals (E1, CONFIRMATORY; reviewed, pass with fixes).**
 - The lane covers 53.6% of full-log characters.
@@ -103,4 +120,4 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
 
 ## Open Questions
 - E1: answered. On agent-written deals the lane matches the full log (AUC), but needs its own threshold.
-- E2-E2c: 10/10 canary calls correct (9 FAIL, 1 PASS); rho 0.967 over 15 summarizers. Open: PASS side (E2d running: Opus 5.5, Kimi k3.1).
+- E2-E2d: answered. 12/12 canary calls correct (9 FAIL, 3 PASS from 3 vendors; Kimi narrow); rho 0.972 over 17.
