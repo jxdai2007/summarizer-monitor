@@ -139,3 +139,23 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
 - **Deviations and post-hoc items now live in paper Appendix "Deviations and post-hoc analyses"** (marked † in the
   text).
 - Fresh claims review: PASS WITH FIXES; all fixes applied.
+
+## 2026-11-07 block (06:40-15:40 PT): deployer-facing tests of the audit (all locked; fresh review PASS WITH FIXES)
+- **E7, new environment (CONFIRMATORY, 76c8c09).** The set-A canary label matched the ChatDev label for 5/6 summarizers.
+  - Spearman +0.94 (exact permutation p = 6/720).
+  - The miss is a false PASS: Kimi k3.1, the narrowest canary PASS, went +8.2 → +18.1.
+  - Opus and Argon summaries beat the raw log on ChatDev too.
+  - Limits: 6 runs and 6 deals; the change is confounded with chunk size and deal author.
+- **E4, repeatability (CONFIRMATORY).** Re-running the canary reproduced the label in 9/10 reruns, and 10/10 drops were
+  within 10 points. SD 0.7-5.5 over 3 runs. The one flip is Nemotron, nearest the threshold.
+- **E6, recalibration (re-analysis of E3, CONFIRMATORY in the analysis sense).**
+  - A carried-over threshold gave 0% false alarms for 4/6 summarizers but cost 21-43 points of detection (not predicted).
+  - Recalibrating on 32 controls brings mean test false alarms to 9-11%. A single 32-control recalibration can exceed
+    20% (5-14% of splits).
+  - P1 (FA drift) failed.
+- **E5, audit → fix → re-audit (CONFIRMATORY, weak).**
+  - A one-sentence fix moved canary drops −17 and −10 and held-out drops −7 and −2.
+  - The re-audit called both still FAIL, matching held-out. All labels were FAIL, so it doesn't test whether a re-audit
+    PASS can be trusted.
+  - The fix made MiniMax fail on 19.5% of chunk summaries.
+- **E8, outcome-blind vendor selection: running.** Tencent hy3, GLM-5.3-prime, Seed-2.0-lite, with held-out sets B and C.

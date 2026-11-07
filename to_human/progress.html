@@ -246,6 +246,17 @@
   exchange, so this lane contains all four deal messages by design; E1 tests it on agent-written deals.</p></div>
 </section>
 
+<section id="block-1107">
+  <h2>2026-11-07 block: does the audit hold up for a deployer?</h2>
+  <div class="result-grid">
+    <div class="stat-card positive"><div class="value" style="font-size:1.4rem">5 / 6</div><div class="label">E7: canary labels right in a new environment (ChatDev)</div><div style="font-size:0.8rem;color:#8b949e;margin-top:0.3rem">Spearman +0.94; the miss is a false PASS (Kimi, the narrowest PASS: +8.2 &rarr; +18.1)</div></div>
+    <div class="stat-card positive"><div class="value" style="font-size:1.4rem">9 / 10</div><div class="label">E4: same label when the audit is re-run</div><div style="font-size:0.8rem;color:#8b949e;margin-top:0.3rem">10/10 within 10 pts; SD 0.7&ndash;5.5; the flip is the summarizer nearest the threshold</div></div>
+    <div class="stat-card negative"><div class="value" style="font-size:1.4rem">&minus;21 to &minus;43 pts</div><div class="label">E6: detection lost by carrying one threshold over</div><div style="font-size:0.8rem;color:#8b949e;margin-top:0.3rem">4/6 summarizers at 0% false alarms but lost detection; recalibrating on 32 controls re-centres FA at 9&ndash;11% (mean)</div></div>
+    <div class="stat-card"><div class="value" style="font-size:1.4rem">2 / 2</div><div class="label">E5: re-audit after a prompt fix matches held-out</div><div style="font-size:0.8rem;color:#8b949e;margin-top:0.3rem">weak test (all FAIL); fix moved held-out only &minus;7 and &minus;2</div></div>
+  </div>
+  <div class="card"><p>All four were preregistered (protocol commits before results) and recomputed by a fresh reviewer (PASS WITH FIXES). E8, a canary on three vendors chosen without regard to likely outcome (Tencent hy3, GLM-5.3-prime, Seed-2.0-lite) with two held-out tests, is running.</p></div>
+</section>
+
 <section id="tool">
   <h2>summary-audit CLI</h2>
   <div class="card"><p><code>cd src &amp;&amp; python -m summary_audit run --format mantiq --run RUN --summarizer MODEL --monitor MODEL --base-url URL --api-key-env VAR</code>
