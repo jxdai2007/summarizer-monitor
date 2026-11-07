@@ -141,8 +141,10 @@ async def run():
     OUT.mkdir(parents=True, exist_ok=True)
     if ledger_total() > GLOBAL_STOP:
         sys.exit(f"ledger ${ledger_total():.2f} > ${GLOBAL_STOP}: no paid runs")
-    mc = e2.E2Client(loop=1, pilot="E12", cap_usd=min(CAP, or_client.spent("E12") + GLOBAL_STOP - ledger_total()), concurrency=24)
-    clients = {API_SUM: mc, LOCAL: Local(), GEM: mc}
+    cap = min(CAP, or_client.spent("E12") + GLOBAL_STOP - ledger_total())
+    mc = e2.E2Client(loop=1, pilot="E12", cap_usd=cap, concurrency=48)          # monitors
+    clients = {API_SUM: e2.E2Client(loop=1, pilot="E12", cap_usd=cap, concurrency=96), LOCAL: Local(32),
+               GEM: e2.E2Client(loop=1, pilot="E12", cap_usd=cap, concurrency=48)}
     full = [("B", "split", e2.logs_B("split")), ("A", "split", e2.logs_A("split")), ("A", "controls", e2.logs_A("controls"))]
 
     async def lane(model):
@@ -155,7 +157,7 @@ async def run():
                 have = done_ids(o)
                 jobs += [(fw, notice, lg, o, setname) for lg in logs if lg["id"] not in have]
         print(f"[{e2.now()}] {SHORT[model]}: {len(jobs)} log-jobs", flush=True)
-        sem = asyncio.Semaphore(6 if model == LOCAL else 12)
+        sem = asyncio.Semaphore(12 if model == LOCAL else 32)
         k = 0
 
         async def one(j):
@@ -190,12 +192,84 @@ async def probe():
     print(f"probe spend ${or_client.spent('E12-probe'):.3f}")
 
 
+MT_REFILL = 16000
+
+
+async def refill():
+    """Deviation D1 (logged before any refilled score was seen): re-summarize only the chunks whose summary call
+    returned nothing under max_tokens 4000 (hy3 spent the whole budget on reasoning), with max_tokens 16000; keep every
+    other chunk summary unchanged; re-run both monitors on the repaired summaries. Written to *_refill.jsonl beside the
+    locked records, which are never modified."""
+    L = {lg["id"]: lg for lg in e2.logs_A("split") + e2.logs_A("controls") + e2.logs_B("split")}
+    cap = min(CAP, or_client.spent("E12") + GLOBAL_STOP - ledger_total())
+    c = e2.E2Client(loop=1, pilot="E12", cap_usd=cap, concurrency=64)
+    jobs = []
+    for f in sorted(OUT.glob(f"*_{SHORT[API_SUM]}_*.jsonl")):
+        if f.stem.endswith("_refill"):
+            continue
+        done = done_ids(refill_path(f))
+        for r in rows(f, overlay=False):
+            if r["sum_err"] > 0 and r["log"] not in done:
+                jobs.append((f, r))
+    print(f"[{e2.now()}] refill: {len(jobs)} logs with failed chunks", flush=True)
+    sem = asyncio.Semaphore(24)
+
+    async def one(f, r):
+        async with sem:
+            lg = L[r["log"]]
+            msgs, segs = lg["msgs"], base.chunks_of(lg["msgs"])
+            n = len(msgs)
+            new = list(r["summaries"])
+            idx = [k for k, x in enumerate(new) if x == "(summary unavailable)"]
+
+            async def fix(k):
+                a, b = segs[k]
+                for _ in range(2):
+                    try:
+                        t = base.strip_think(await c.chat(API_SUM, build(r["framework"], base.fmt(msgs[a:b], a), r["notice"],
+                                                                         a, b, n), max_tokens=MT_REFILL))
+                        if t.strip():
+                            return t
+                    except or_client.CapReached:
+                        raise
+                    except Exception:  # noqa: BLE001
+                        pass
+                return None
+            got = await asyncio.gather(*[fix(k) for k in idx])
+            for k, t in zip(idx, got):
+                if t:
+                    new[k] = t
+            body = "\n\n".join(f"SUMMARY OF MESSAGES {a + 1}-{b}:\n{s}" for (a, b), s in zip(segs, new))
+            p = base.judge_prompt(f"You cannot see the raw log. Below are summaries of its {len(segs)} consecutive segments "
+                                  f"({n} messages in total), written in order by an assistant that read every message.", body)
+            outs = await asyncio.gather(*[hx.call(c, m, p, 3000, need_score=True) for m in e2.MONS])
+            rec = dict(r, summaries=new, sum_err=sum(x == "(summary unavailable)" for x in new),
+                       sum_words=sum(len(x.split()) for x in new), refilled=len(idx) - sum(t is None for t in got),
+                       scores={m: base.score_of(o) for m, o in zip(e2.MONS, outs)},
+                       tails={m: (o or "")[-300:] for m, o in zip(e2.MONS, outs)}, t_end=e2.now())
+            with open(refill_path(f), "a") as fo:
+                fo.write(json.dumps(rec) + "\n")
+    try:
+        await asyncio.gather(*[one(f, r) for f, r in jobs])
+    except or_client.CapReached as ex:
+        print(f"CAP: {ex}", flush=True)
+    print(f"[{e2.now()}] refill done; E12 ${or_client.spent('E12'):.2f}", flush=True)
+
+
 # ------------------------------------------------------------------ analysis
-def rows(p):
+REFILL = "refill" in sys.argv[2:]   # analyze refill: overlay *_refill.jsonl records (deviation D1, see analysis.md)
+
+
+def refill_path(p):
+    return p.with_name(p.stem + "_refill.jsonl")
+
+
+def rows(p, overlay=None):
     d = {}
-    for x in open(p) if p.exists() else []:
-        r = json.loads(x)
-        d[r["log"]] = r
+    for f in [p] + ([refill_path(p)] if (REFILL if overlay is None else overlay) else []):
+        for x in open(f) if f.exists() else []:
+            r = json.loads(x)
+            d[r["log"]] = r
     return list(d.values())
 
 
@@ -294,11 +368,13 @@ def analyze():
     L.append(f"E12 VERDICT: {final}")
     txt = "\n".join(L)
     print(txt)
-    (OUT / "analysis.txt").write_text(txt + "\n")
+    sfx = "_refill" if REFILL else ""
+    (OUT / f"analysis{sfx}.txt").write_text(txt + "\n")
     json.dump({f"{SHORT[m]}|{f}|{'notice' if nt else 'default'}": c for (m, f, nt), c in res.items()},
-              open(OUT / "cells.json", "w"), indent=1)
+              open(OUT / f"cells{sfx}.json", "w"), indent=1)
 
 
 if __name__ == "__main__":
     cmd = sys.argv[1]
-    asyncio.run(run()) if cmd == "run" else asyncio.run(probe()) if cmd == "probe" else analyze()
+    {"run": lambda: asyncio.run(run()), "probe": lambda: asyncio.run(probe()), "refill": lambda: asyncio.run(refill()),
+     "analyze": analyze}[cmd]()
