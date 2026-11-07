@@ -611,6 +611,7 @@ for model in ["luna", "gemini", "mistral", "qwen", "sonnet"]:
                        f"{fmt(b[0], 1, sign=True)} [{fmt(float(b[1]), 0, sign=True)}, {fmt(float(b[2]), 0, sign=True)}] & {lb} \\\\")
 TAB["TabCanary"] = "\n".join(canary_rows)
 put("canary-nrows", len(canary_rows))
+put("canary-npros", sum("prospective" in r for r in canary_rows))
 _hd = [float(re.search(r"& (PASS|FAIL) & ([^\[&]+)\[", r).group(2).replace("\\ensuremath{-}", "-")) for r in canary_rows]
 put("dial-best", fmt(min(_hd), 0, sign=True))
 put("dial-worst", fmt(max(_hd), 0, sign=True))

@@ -22,8 +22,8 @@ def fail(msg):
 
 def abstract():
     words = len(re.sub(r"\\[A-Za-z]+|[{}$\\]", " ", ABS).split())
-    if not 150 <= words <= 215:
-        fail(f"abstract has {words} words (want 150-215)")
+    if not 150 <= words <= 230:  # Apart allows 150-250; raised from 215 on 7 Nov to keep review-required precision
+        fail(f"abstract has {words} words (want 150-230)")
     if "raw log" not in ABS or "mutation" not in ABS.lower():
         fail("abstract lacks the dial framing ('raw log') or the mutation-testing framing")
     print(f"ABSTRACT_OK words={words}")

@@ -12,7 +12,7 @@ We took real multi-agent logs: eighteen agents and a ChatDev corpus. We planted 
 
 **Beat 3 · 0:35-1:05 · The figure**
 
-Across six summarizer families, the monitor is capped by its own summarizer: rank correlation 0.99, one exception in eight new checks. The summarizer decides. With GPT-5.6-luna summaries, detection falls from 87 to 48 percent at zero false alarms; on ChatDev, 59 to 30. Claude Sonnet 5.5 and Gemini 3.8 summaries lose ten or less.
+Across six summarizer families, the monitor is capped by its own summarizer: rank correlation 0.99, one exception in eight new checks. The summarizer decides. With GPT-5.6-luna summaries, detection falls from 87 to 48 percent at zero false alarms; on ChatDev, 59 to 30. Claude Sonnet 5.5 summaries lose about ten points, and Gemini 3.8 summaries beat the raw log.
 
 **Beat 4 · 1:05-1:25 · Show, don't tell**
 
@@ -34,4 +34,4 @@ Scope: on agent-written deals, at matched false alarms, the gap is six points, n
 
 Treat your summarizer as a monitor. Audit it like one. Everything is in the repo.
 
-_407 words, about 2.9 minutes at 140 words per minute._
+_412 words, about 2.9 minutes at 140 words per minute._

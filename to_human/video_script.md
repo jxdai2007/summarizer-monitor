@@ -52,7 +52,7 @@ On screen: demo tab 2, Log 1, full-log view. It opens scrolled to the first high
 > summaries, detection falls from 87 to 48 percent {{source: review2/l2_13_stress_results.txt:"set A (luna) SPLIT
 > pooled" FULL 55/63 (87%) -> SUM 30/63 (48%); demo_numbers.json:script.setA_luna}} at zero false alarms {{source:
 > review2/l2_13_stress_results.txt:"SUM: FA@50 0/42"}}; on ChatDev, 59 to 30 {{source: loop9/loop9_results.txt:"SPLIT:
-> FULL 41/69 (59%) -> luna summaries 21/69 (30%)"}}. Claude Sonnet 5.5 and Gemini 3.8 summaries lose ten or less {{source: review2/l2_13.md:§2.1 (Gemini -8, Sonnet +10 n.s.); review2/l2_13_stress_results.txt:"claude-sonnet-5.5
+> FULL 41/69 (59%) -> luna summaries 21/69 (30%)"}}. Claude Sonnet 5.5 summaries lose about ten points, and Gemini 3.8 summaries beat the raw log {{source: review2/l2_13.md:§2.1 (Gemini -8, Sonnet +10 n.s.); review2/l2_13_stress_results.txt:"claude-sonnet-5.5
 > summarizer" drop +10, p=0.22}}.
 
 On screen: the main figure review2 asked for. It shows the summarizer spread from -14 to +40 {{source:
