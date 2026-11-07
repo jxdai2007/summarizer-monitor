@@ -19,7 +19,7 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
   - luna, Grok-written deals: 55/80 -> 25/80;
   - ChatDev: 41/69 -> 21/69;
   - flagship sol: 89% -> 65%.
-- Claude Sonnet summaries lose about 10 points (n.s.) and Gemini summaries lose none (they beat the full log by 8). It is the summarizer, not summarization per se.
+- Claude Sonnet summaries lose about 10 points (n.s.) and Gemini summaries lose none (they beat the full log by 8-14 points). It is the summarizer, not summarization per se.
 - With a neutral summary prompt, monitors catch 0/32 split deals: the judging happens in the summarizer.
 
 **Result 2: realism.**
