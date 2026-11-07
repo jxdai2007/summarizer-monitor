@@ -81,6 +81,7 @@ E2d result, the two likeliest PASS cases without the cost line, final {{src: sum
 Pooled E2-E2d {{src: summarizer-monitor/experiments/E2d-canary-pass-side-3/results/results.txt T3 and Spearman rows}}:
 - 12/12 calls correct across 11 vendors: 9 lossy flagged, 3 cleared, from 3 vendors. An "always FAIL" rule would
   score 9/12. Spearman 0.972 over 17 summarizers. The canary overstates held-out loss by +11.6 points on average.
+- **Update 2026-11-07, say this instead of the unscoped 12/12:** "In its first four tests the audit got 12 of 12 right; in a second environment 5 of 6; but on three vendors picked blind, all near the pass line, only 3 of 6. Far from the line it was right every time (14/14, post hoc); near it, treat the label as undecided."
 - Say the safe line: "Called in advance, the canary audit got 12 of 12 summarizers right, from 11 vendors: it flagged
   all 9 lossy ones and cleared 3, two clearly (Gemini 4 Argon, Claude Opus 5.5) and one narrowly (Kimi k3.1). All 12
   calls were confirmed on unseen deals."
@@ -217,6 +218,7 @@ p = 3e-5 on set A {{src: review2/l2_13_stress_results.txt}}) and the deal-level 
 hold. The loop8 p-value is the two-sided 0.001; an earlier draft showed the one-sided 0.0005 without labelling it.
 
 **10. Is the canary audit really validated?**
+Short answer since 7 Nov: only far from the threshold. 20/24 prospective calls right overall; E8 (vendors chosen blind to outcome, all near the line) failed 3/6; post hoc, far calls 14/14, near calls 6/10. The original answer below is the E2-E2d record.
 Prospectively on both sides, with a caveat on the PASS side. Called in advance, it got 12 of 12 summarizers right on
 unseen deals, from 11 vendors: 9 lossy ones flagged and 3 cleared {{src: summarizer-monitor/experiments/E2d-canary-pass-side-3/results/results.txt T3 rows}}.
 Two PASS calls are clear: Gemini 4 Argon and Claude Opus 5.5, whose summaries beat the raw log, and Opus holds under

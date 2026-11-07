@@ -60,7 +60,8 @@ summarizer keeps and frames as suspicious.
   A, -11.1 on set B). Kimi k3.1 at low effort: canary +8.2 -> PASS; held-out +10.4 (CI +3 to +19) -> PASS, but
   narrow: PASS in 80% of bootstrap replicates, +17.1 (FAIL) under DeepSeek alone, and one more parse-failed
   pair would tip it to +15.5. False alarms 0/167. T1-T4 all PASS.
-  **Pooled E2-E2d (safe line):** "Called in advance, the canary audit got 12 of 12 summarizers right, from 11
+  **Update 2026-11-07 (supersedes the pooled line below for public wording).** Five preregistered two-stage tests plus a second environment: the canary call was right in 20/24 prospective held-out tests (an always-FAIL rule scores 16/24): 12/12 in the first four tests (E2-E2d), 5/6 in a second environment (ChatDev, E7), and only 3/6 for vendors chosen blind to outcome (E8, failed its locked test), all of which sat near the 15-point threshold. Post hoc: calls 22+ points from the threshold were confirmed 14/14 (9 summarizers, 2 of them PASS); calls within 9 points 6/10. Say: the audit separates clearly lossy summarizers (and two clearly faithful ones) from the rest; near the threshold its label is unreliable. -> [`experiments/E8-unselected-vendors/analysis.md`](experiments/E8-unselected-vendors/analysis.md)
+**Pooled E2-E2d (safe line):** "Called in advance, the canary audit got 12 of 12 summarizers right, from 11
   vendors: it flagged all 9 lossy ones and cleared 3, two clearly (Gemini 4 Argon, Claude Opus 5.5) and one
   narrowly (Kimi k3.1). All 12 calls were confirmed on unseen deals." Validated prospectively on both sides,
   but the PASS side rests on 3 cases, one of them narrow. Spearman 0.972 over 17 summarizers. The canary
