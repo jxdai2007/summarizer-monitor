@@ -11,8 +11,8 @@ python3 paper/make_numbers.py                                          # writes 
 cd paper && tectonic -X compile main.tex                                # main.pdf (tectonic runs bibtex itself)
 ```
 Every number in `main.tex` is a `\N{key}` macro from `numbers.tex`, or a row of a `tables.tex` table. Both are written by
-`make_numbers.py` from `data/*.csv`, the E1/E2/E2b `analysis.md` and `results/results.txt` files, the E2b
-`stage1_predictions.json`, and the review files `review2/l2_13.md`, `review2/agent_records.md` and loop2d result files in
+`make_numbers.py` from `data/*.csv`, the E1/E2-E2d `analysis.md` and `results/results.txt` files, the E2b-E2d
+`stage1_predictions.json` files, and the review files `review2/l2_13.md`, `review2/agent_records.md` and loop2d result files in
 `~/research-taste/swarm-alignment/pilots/2026-11-06/`. Review-file numbers are matched by regex; the script stops if a
 pattern disappears. An unknown key prints as a red `??key` in the PDF. Design constants (4 planted messages, 50-message
 chunks, threshold 50, the 15-point audit rule) are typed in the text. Commit hashes in Appendix E are copied from `git log`.

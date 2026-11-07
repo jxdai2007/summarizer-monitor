@@ -9,6 +9,8 @@ Sources (nothing below is typed by hand; review files are matched by regex and t
   experiments/E2-.../results/results.txt, analysis.md   E2 drops, Spearman, cost
   experiments/E2b-.../stage1_predictions.json            E2b canary drops (committed fd9228c before set B)
   experiments/E2b-.../analysis.md    E2b stage-2 results, only if present
+  experiments/E2c-.../, E2d-.../stage1_predictions.json, results/results.txt, analysis.md   E2c/E2d canary and held-out drops,
+      pooled E2-E2d tests (T3), Spearman, offset, cost and the E2c/E2d deviations
   ~/research-taste/.../review2/l2_13.md, agent_records.md   reviewed numbers not in a CSV
   ~/research-taste/.../loop2d/loop2d_results.txt, l2d15_results.txt   L2d-15 summary-deletion test
 """
@@ -371,7 +373,7 @@ if E2BA.exists():  # stage 2 analysed (results/results.txt via code/e2b_analyze.
     put("E2b-rho-pros", grab(E2BA, r"\(([\d.]+) over the 7 prospective ones\)"))
     put("E2b-mae", grab(E2BA, r"mean absolute error ([\d.]+)\)"))
     a, b = grab(E2BA, r"one audit costs \$([\d.]+) to \$([\d.]+)", 2)
-    put("audit-costlo", a); put("audit-costhi", b)
+    put("E2b-costlo", a); put("E2b-costhi", b)
     a, b = grab(E2BA, r"the held-out drop is \+([\d.]+) \(Haiku, PASS\s+side\) and \+([\d.]+) \(DeepSeek", 2)
     put("E2b-nemo-haiku", a); put("E2b-nemo-deepseek", b)
     put("E2b-nemo-asflag", grab(E2BA, r"If those 10 are counted as flagged, Nemotron's held-out drop is \+([\d.]+)"))
@@ -380,6 +382,85 @@ if E2BA.exists():  # stage 2 analysed (results/results.txt via code/e2b_analyze.
     put("E2b-gem-proj-ctrl", a)
     put("E2b-gem-proj", grab(E2BA, r"set-B controls reused the set-A summaries\): \$(\d+\.\d+)"))
     put("E2b-gem-actual", grab(E2BA, r"Gemini's actual total,\s+including the optional controls, was \$([\d.]+)"))
+
+# ---------------------------------------------------------------- E2c, E2d: more PASS-side cases (two-stage locks)
+# Canary drops from the committed stage-1 files; held-out drops, pooled tests and offsets from E2d's results.txt, which
+# recomputes every earlier held-out drop and cross-checks them against data/E2*_scores.csv ("10/10 ... identical").
+E2DR_P = EXP / "E2d-canary-pass-side-3/results/results.txt"
+E2DR = E2DR_P.read_text()
+E2CR_P = EXP / "E2c-canary-pass-side-2/results/results.txt"
+E2CR = E2CR_P.read_text()
+SHORT.update({"mistralai/mistral-medium-3-5": "mmedium", "microsoft/phi-4": "phi", "meta-llama/llama-4-maverick": "maverick",
+              "anthropic/claude-opus-5.5": "opus", "moonshotai/kimi-k3.1-pro": "kimi"})
+assert "CSV cross-check: 10/10 earlier held-out drops identical" in E2DR
+S1CD = {}
+for exp, tag in (("E2c-canary-pass-side-2", "E2c"), ("E2d-canary-pass-side-3", "E2d")):
+    sj = json.load(open(EXP / exp / "stage1_predictions.json"))
+    for mid, r in sj["summarizers"].items():
+        S1CD[mid] = tag
+        p = f"{tag}-{SHORT[mid]}"
+        put(f"{p}-canary", fmt(r["canary_drop_pts"], 1, sign=True)); put(f"{p}-label", r["predicted_heldout_label"])
+        put(f"{p}-cfull", f"{r['full_flagged']}/{r['canary_pairs']}"); put(f"{p}-csum", f"{r['summary_flagged']}/{r['canary_pairs']}")
+        put(f"{p}-cilo", fmt(r["canary_drop_ci_deal"][0], 0, sign=True)); put(f"{p}-cihi", fmt(r["canary_drop_ci_deal"][1], 0, sign=True))
+        m = re.search(r"^\s*B " + re.escape(mid) + r"\s+FULL (\d+/\d+) \(\d+%\) -> SUMMARY (\d+/\d+) \(\d+%\); drop ([+-][\d.]+) pts "
+                      r"\[deal-cluster CI ([+-]?\d+), ([+-]?\d+);", E2DR, flags=re.M)
+        assert m, mid
+        put(f"{p}-hfull", m.group(1)); put(f"{p}-hsum", m.group(2)); put(f"{p}-held", fmt(float(m.group(3)), 1, sign=True))
+        put(f"{p}-hcilo", fmt(float(m.group(4)), 0, sign=True)); put(f"{p}-hcihi", fmt(float(m.group(5)), 0, sign=True))
+        put(f"{p}-hlabel", "FAIL" if float(m.group(3)) > 15 else "PASS")
+        assert NUM[f"{p}-hlabel"] == r["predicted_heldout_label"], mid  # every E2c/E2d call matched (T1)
+# E2d details (Opus set-A/B counts, Kimi fragility, DeepSeek-alone drops)
+a = re.search(r"^\s*A anthropic/claude-opus-5.5\s+FULL (\d+/\d+) \(\d+%\) -> SUMMARY (\d+/\d+)", E2DR, flags=re.M)
+put("E2d-opus-afull", a.group(1)); put("E2d-opus-asum", a.group(2))
+put("E2d-kimi-boot", grab(E2DR_P, r"kimi-k3.1-pro\s+canary [^\n]*?held-out label stability \(log bootstrap\) (\d+)%"))
+put("E2d-opus-boot", grab(E2DR_P, r"claude-opus-5.5\s+canary [^\n]*?held-out label stability \(log bootstrap\) (\d+)%"))
+DS = E2DR.split("## Descriptive: drops under DeepSeek v4.1 Flash alone")[1].split("##")[0]
+for s, mid in (("A", "anthropic/claude-opus-5.5"), ("B", "anthropic/claude-opus-5.5"), ("A", "moonshotai/kimi-k3.1-pro"),
+               ("B", "moonshotai/kimi-k3.1-pro")):
+    m = re.search(r"^\s*" + s + " " + re.escape(mid) + r"\s+FULL .*?drop ([+-][\d.]+) pts", DS, flags=re.M)
+    put(f"E2d-{SHORT[mid]}-ds{s}", fmt(float(m.group(1)), 1, sign=True))
+put("E2d-kimi-worst", grab(EXP / "E2d-canary-pass-side-3/analysis.md", r"Kimi's held-out drop is \+([\d.]+), which is FAIL"))
+fa = [tuple(map(int, x)) for x in re.findall(r"FA (\d+)/(\d+) \(", E2DR)]
+put("E2d-fa", f"{sum(k for k, _ in fa)}/{sum(n for _, n in fa)}")
+fa = [tuple(map(int, x)) for x in re.findall(r"FA (\d+)/(\d+) \(", E2CR)]
+put("E2c-fa", f"{sum(k for k, _ in fa)}/{sum(n for _, n in fa)}")
+put("E2c-rho", grab(E2CR_P, r"rho = ([\d.]+) over 15 summarizers"))
+# pooled E2-E2d (T3 and descriptive)
+a, b = grab(E2DR_P, r"T3 match part: (\d+)/(\d+) =", 2)
+put("pool-match", a); put("pool-n", b)
+a, b = grab(E2DR_P, r"Clopper-Pearson 95% CI (\d+)%-(\d+)%\) -> ok; an always-FAIL rule would score (\d+/\d+)", 3)[:2]
+put("pool-cplo", a); put("pool-cphi", b)
+put("pool-alwaysfail", grab(E2DR_P, r"an always-FAIL rule would score (\d+/\d+)"))
+put("pool-vendors", grab(E2DR_P, r"T3: PASS \(\d+ prospective summarizers from (\d+) vendors\)"))
+T3 = E2DR.split("## T3")[1].split("T3 match part")[0]
+calls = re.findall(r"canary\s+[+-]?[\d.]+ (PASS|FAIL)\s+held-out\s+[+-]?[\d.]+ (PASS|FAIL)\s+MATCH", T3)
+assert len(calls) == int(NUM["pool-n"]) and all(a == b for a, b in calls)
+put("pool-nfail", sum(a == "FAIL" for a, _ in calls)); put("pool-npass", sum(a == "PASS" for a, _ in calls))
+put("pool-passvendors", grab(E2DR_P, r"confirmed held-out \([^)]*\) from (\d+) vendor"))
+a, b, c, d = grab(E2DR_P, r"rho = ([\d.]+) over (\d+) summarizers; .*?95% CI \[([\d.]+), ([\d.]+)\]", 4)
+put("pool-rho", a); put("pool-nsum", b); put("pool-rho-lo", c); put("pool-rho-hi", d)
+put("pool-rho-pros", grab(E2DR_P, r"rho over the 12 prospectively tested summarizers .*?= ([\d.]+)"))
+put("pool-offset", grab(E2DR_P, r"offset over the 12 prospective summarizers: mean \+([\d.]+) pts"))
+# cost and time per audit, every prospective summarizer (E2 analysis table; E2b-E2d results files)
+costs = [float(x) for x in re.findall(r"\| \$([\d.]+) \(\$[\d.]+/log\)", E2A)]
+mins = [float(x) for x in re.findall(r"\| ([\d.]+) min \|", E2A)]
+for f in ("E2b-canary-pass-side", "E2c-canary-pass-side-2", "E2d-canary-pass-side-3"):
+    t = (EXP / f / "results/results.txt").read_text()
+    costs += [float(x) for x in re.findall(r"^\s+\S+\s+\$([\d.]+) for 53 logs", t, flags=re.M)]
+    mins += [float(x) for x in re.findall(r"for 53 logs .*?wall time ([\d.]+) min", t)]
+assert len(costs) == 12 and len(mins) == 12, (costs, mins)
+put("audit-costlo", f"{min(costs):.2f}"); put("audit-costhi", f"{max(costs):.2f}")
+put("audit-minlo", fmt(min(mins), 0)); put("audit-minhi", fmt(max(mins), 0))
+# E2c/E2d deviations (analysis files, reviewed)
+E2CA = EXP / "E2c-canary-pass-side-2/analysis.md"
+put("E2c-chunks", grab(E2CA, r"per-chunk cost × (\d+) chunks"))
+put("E2c-skipline", grab(E2CA, r"skip line \$(\d+)"))
+put("E2c-opus-proj", grab(E2CA, r"\| Opus 5.5 \| \$([\d.]+) \| skip"))
+put("E2c-kimi-proj", grab(E2CA, r"\| Kimi k3.1 low \| \$([\d.]+) \| skip"))
+put("E2c-kimi-miss", grab(E2CA, r"Kimi missed by \$(\d+\.\d+)"))
+a, b = grab(E2CA, r"Under a (\d+)-chunk reading it would be \$([\d.]+)", 2)
+put("E2c-altchunks", a); put("E2c-kimi-altproj", b)
+put("E2d-nlogsB", grab(EXP / "E2d-canary-pass-side-3/analysis.md", r"all (\d+) set-B logs per summarizer"))
 
 # ---------------------------------------------------------------- Fixes on planted deals (loop 9)
 fx = rd("fix_designs.csv")
@@ -444,7 +525,9 @@ put("deepseek-empty", grab(AR, r"empty replies to (\d+/\d+) prompts under correc
 PRETTY = {"luna": "GPT-5.6-luna", "gemini": "Gemini 3.8 Flash", "llama": "Llama 4 Scout", "qwen": "Qwen3.8 Flash",
           "glm": "GLM-5.3 Flash", "mistral": "Mistral Large 4", "sol": "GPT-5.6-sol", "sonnet": "Claude Sonnet 5.5",
           "terra": "GPT-5.6-terra", "cohere": "Command A+", "minimax": "MiniMax M3.1 Flash", "nova": "Nova Pro",
-          "argon": "Gemini 4 Argon", "gptoss": "gpt-oss-120b", "nemotron": "Nemotron 3.5 Super"}
+          "argon": "Gemini 4 Argon", "gptoss": "gpt-oss-120b", "nemotron": "Nemotron 3.5 Super",
+          "mmedium": "Mistral Medium 3.5", "phi": "Phi-4", "maverick": "Llama 4 Maverick", "opus": "Claude Opus 5.5",
+          "kimi": "Kimi k3.1 (low effort)"}
 SETNAME = {"A": "A (Mantiq, Gemini deals)", "B": "B (Mantiq, Grok deals)", "C": "C (ChatDev/MAST)"}
 TAB = {}
 rows = []
@@ -463,7 +546,7 @@ for r in pros:
     rows.append(f"{r['deal_set']} & {PRETTY[m]} & {r['summarizer_own_k']}/{r['summarizer_own_n']} & "
                 f"{r['monitor_summary_k']}/{r['monitor_summary_n']} & {fmt(float(r['monitor_minus_own_pts']), 0, sign=True)} \\\\")
 TAB["TabCeilingPros"] = "\n".join(rows)
-# canary vs held-out over all 12 summarizers with both sets
+# canary vs held-out over all 17 summarizers with both sets
 canary_rows = []
 drops = {}
 for m in pat.finditer(E2R):
@@ -482,6 +565,11 @@ if E2BA.exists():
         lab = NUM[f"E2b-{m}-hlabel"] + (" (borderline)" if m == "nemotron" else "")
         canary_rows.append(f"{PRETTY[m]} & E2b, prospective & {NUM[f'E2b-{m}-canary']} & {NUM[f'E2b-{m}-label']} & "
                            f"{NUM[f'E2b-{m}-held']} [{NUM[f'E2b-{m}-hcilo']}, {NUM[f'E2b-{m}-hcihi']}] & {lab} \\\\")
+for mid, tag in S1CD.items():
+    m = SHORT[mid]
+    lab = NUM[f"{tag}-{m}-hlabel"] + (" (narrow)" if m == "kimi" else "")
+    canary_rows.append(f"{PRETTY[m]} & {tag}, prospective & {NUM[f'{tag}-{m}-canary']} & {NUM[f'{tag}-{m}-label']} & "
+                       f"{NUM[f'{tag}-{m}-held']} [{NUM[f'{tag}-{m}-hcilo']}, {NUM[f'{tag}-{m}-hcihi']}] & {lab} \\\\")
 for model in ["luna", "gemini", "mistral", "qwen", "sonnet"]:
     mid = next(k for k, v in SHORT.items() if v == model)
     a, b = drops[mid]["A"], drops[mid]["B"]

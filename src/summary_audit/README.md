@@ -5,7 +5,7 @@ deals" (a secret evaluation-gaming agreement between two agents, written so no s
 multi-agent log, then asks a monitor model to judge (a) the full log and (b) chunk summaries of the log written by a
 summarizer model. If the monitor catches the deal in the full log but not in the summaries, the summarizer dropped it.
 
-**Scope: measurement harness; validated prospectively as a screen for lossy summarizers (E2: 4 of 4 new summarizers predicted to lose split deals did lose them on held-out deals); the PASS side, clearing a summarizer as safe, is pending E2b.**
+**Scope: measurement harness. Called in advance, the canary audit got 12 of 12 summarizers right, from 11 vendors: it flagged all 9 lossy ones and cleared 3, two clearly (Gemini 4 Argon, Claude Opus 5.5) and one narrowly (Kimi k3.1). All 12 calls were confirmed on unseen deals (E2-E2d). Caveat: the PASS side rests on these 3 cases, one of them narrow (Kimi fails under the DeepSeek monitor alone and is one parse-failed pair from flipping), and the two E2d cases were picked as likely passes. A PASS means the summaries kept the planted deals, not that the summarizer is safe in general.**
 
 ## Install / run
 

@@ -114,18 +114,19 @@
   "reviewed_batches": [
    "E2",
    "E2b",
-   "E2c"
+   "E2c",
+   "E2d"
   ],
-  "n_prospective": 10,
-  "n_correct": 10,
-  "n_vendors": 9,
+  "n_prospective": 12,
+  "n_correct": 12,
+  "n_vendors": 11,
   "n_fail_hit": 9,
   "n_obs_fail": 9,
-  "n_pass_calls": 1,
+  "n_pass_calls": 3,
   "n_fail_calls": 9,
-  "n_summarizers": 15,
-  "rho": 0.967,
-  "mean_heldout_minus_canary": -12.9,
+  "n_summarizers": 17,
+  "rho": 0.972,
+  "mean_heldout_minus_canary": -11.6,
   "unreviewed": null,
   "batches": {
    "E2": [
@@ -144,17 +145,23 @@
     "Phi-4",
     "Mistral Medium 3.5"
    ],
-   "E2d": []
+   "E2d": [
+    "Claude Opus 5.5",
+    "Kimi k3.1"
+   ]
   },
   "pending": [],
-  "running": [
-   "E2d"
-  ],
+  "running": [],
   "points": {
    "Nova Pro": {
     "canary": 79.0,
     "heldout": 68.7,
     "batch": "E2"
+   },
+   "Claude Opus 5.5": {
+    "canary": -8.1,
+    "heldout": -20.5,
+    "batch": "E2d"
    },
    "Claude Sonnet 5.5": {
     "canary": 10.0,
@@ -200,6 +207,11 @@
     "canary": 75.0,
     "heldout": 52.4,
     "batch": "E2c"
+   },
+   "Kimi k3.1": {
+    "canary": 8.2,
+    "heldout": 10.4,
+    "batch": "E2d"
    },
    "Nemotron 3.5 Super": {
     "canary": 19.7,

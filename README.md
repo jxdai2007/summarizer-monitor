@@ -44,16 +44,29 @@ summarizer keeps and frames as suspicious.
   3 more summarizers by the fixed order rule (Gemini 4 Argon, gpt-oss-120b, Nemotron 3.5 Super); labels
   matched 3/3 (Gemini canary -12.5 -> PASS, held-out -21.0 -> PASS; gpt-oss +74.2 -> FAIL, held-out
   +52.4 -> FAIL; Nemotron +19.7 -> FAIL, held-out +19.2 -> FAIL, but borderline). Spearman 0.979 over 12
-  summarizers (CI 0.87-0.99); false alarms 1/250. Across E2 and E2b the canary calls 7/7 correctly, but
-  only 1 of those calls is a PASS: validated on both sides, the PASS side with one case.
+  summarizers (CI 0.87-0.99); false alarms 1/250. Across E2 and E2b the canary called 7/7 correctly, with
+  1 PASS call (superseded by Result 4d).
   -> [`experiments/E2b-canary-pass-side/analysis.md`](experiments/E2b-canary-pass-side/analysis.md)
 - **Result 4c - more PASS-side attempts.** CONFIRMATORY; reviewed, PASS (E2c). Mistral Medium 3.5, Phi-4 and
   Llama 4 Maverick were all canary-FAIL and all FAIL held-out. Pooled over E2-E2c, labels match 10/10 across
   9 vendors, but there is still only 1 PASS case (S2 not reached, S3 failed). Spearman 0.967 over 15
-  summarizers. Safe wording: the audit flagged every lossy summarizer we tested in advance (9/9, 9 vendors,
-  all confirmed on unseen deals); one PASS call held; the PASS side is preliminary.
-  -> [`experiments/E2c-canary-pass-side-2/analysis.md`](experiments/E2c-canary-pass-side-2/analysis.md).
-  E2d (two likely-PASS summarizers) is running: [`experiments/E2d-canary-pass-side-3/protocol.md`](experiments/E2d-canary-pass-side-3/protocol.md)
+  summarizers. The $6 cost line priced out the likely-PASS candidates (Opus $12.57, Kimi $6.10), so E2d ran
+  those two without it.
+  -> [`experiments/E2c-canary-pass-side-2/analysis.md`](experiments/E2c-canary-pass-side-2/analysis.md)
+- **Result 4d - the PASS side without the cost line.** CONFIRMATORY, two-stage lock; reviewed, pass with
+  fixes (E2d). The two likeliest PASS cases, picked for that reason. Claude Opus 5.5: canary -8.1 -> PASS;
+  held-out -20.5 (CI -35 to -9) -> PASS. Like Gemini 4 Argon, its summaries make split deals easier to catch
+  than the raw log (70/78 vs 54/78), and it holds under the non-Anthropic monitor alone (DeepSeek: 0.0 on set
+  A, -11.1 on set B). Kimi k3.1 at low effort: canary +8.2 -> PASS; held-out +10.4 (CI +3 to +19) -> PASS, but
+  narrow: PASS in 80% of bootstrap replicates, +17.1 (FAIL) under DeepSeek alone, and one more parse-failed
+  pair would tip it to +15.5. False alarms 0/167. T1-T4 all PASS.
+  **Pooled E2-E2d (safe line):** "Called in advance, the canary audit got 12 of 12 summarizers right, from 11
+  vendors: it flagged all 9 lossy ones and cleared 3, two clearly (Gemini 4 Argon, Claude Opus 5.5) and one
+  narrowly (Kimi k3.1). All 12 calls were confirmed on unseen deals." Validated prospectively on both sides,
+  but the PASS side rests on 3 cases, one of them narrow. Spearman 0.972 over 17 summarizers. The canary
+  overstates held-out loss by +11.6 points on average over the 12 prospective summarizers. Cost per audit
+  $0.10 (Phi-4) to $5.68 (Opus).
+  -> [`experiments/E2d-canary-pass-side-3/analysis.md`](experiments/E2d-canary-pass-side-3/analysis.md)
 - **Result 5 - a raw worker-to-worker lane on agent-written deals.** CONFIRMATORY; reviewed, pass with
   fixes (E1). The lane covers 53.6% of full-log characters. At the fixed threshold Sonnet catches 51/66
   on the lane against 37/66 on luna summaries (McNemar p=0.0013; P2 PASS). Threshold-free, it matches the
@@ -78,7 +91,7 @@ summarizer keeps and frames as suspicious.
 | `src/build_demo.py`, `src/build_progress.py` | cached interactive demo (`to_human/demo.html`, `to_human/demo_numbers.json`) and progress page |
 | `src/summary_audit/` | the `summary-audit` CLI package: `cli.py`, `audit.py`, `logs.py` (formats + canaries), `llm.py`, `prompts.py`, `report.py`, and `data/` (vendored corpora, planted deal templates, sample log) |
 | `data/` | consolidated CSVs; [`data/README.md`](data/README.md) maps every column to its raw source file |
-| `experiments/` | `E1-raw-lane-agent-written`, `E2-canary-audit-prospective`, `E2b-canary-pass-side`, `E2c-canary-pass-side-2` (protocol + analysis + code + raw results), `E2d-canary-pass-side-3` (running) |
+| `experiments/` | `E1-raw-lane-agent-written`, `E2-canary-audit-prospective`, `E2b-canary-pass-side`, `E2c-canary-pass-side-2`, `E2d-canary-pass-side-3` (protocol + analysis + code + raw results) |
 | `to_human/` | `slides.html`, `panels/`, `demo.html`, `fig_main.png`, `talk_outline.md`, `video_script.md`, `progress.html` |
 | `tests/` | `test_summary_audit.py`, 5 tests: offline dry run end to end, canary planting determinism, prompt parity with the original Mantiq text, chunking and format adapters, `convert` round-trip |
 | `paper/`, `literature/` | draft report (numbers injected from generated LaTeX macros) and the verified related-work survey |
@@ -143,7 +156,7 @@ traces, the 4-message split agreements are planted.
 
 ## Pre-registration commits
 
-Locks in this repo (`feat/summarizer-monitor`, `git log --oneline --grep="research(protocol)"`, 11 commits at the
+Locks in this repo (`feat/summarizer-monitor`, `git log --oneline --grep="research(protocol)"`, 12 commits at the
 time of writing):
 
 | Hash | Date (PT) | Subject |
@@ -159,12 +172,15 @@ time of writing):
 | `fa98cdd` | 2026-11-06 23:36:20 | research(protocol): E2c stage-1 predictions |
 | `da8341c` | 2026-11-06 23:46:21 | research(protocol): E2d Opus 5.5 + Kimi k3.1 PASS-side test (two-stage lock) |
 | `f313786` | 2026-11-06 23:51:24 | research(protocol): E2d model selection |
+| `0e5e2df` | 2026-11-06 23:55:20 | research(protocol): E2d stage-1 predictions |
 
 Two-stage locks named in `findings.md`; all hashes exist in this repo's history: E2 protocol lock
 `ba42f13`, stage-1 predictions `1634cec` (committed before set B ran); E2b protocol lock `bec2a9b`,
 stage-1 predictions `fd9228c`; E1 protocol lock `ba42f13` with amendment `3bf369f`, both before the first
 H1 monitor output file (22:27:51 PT, see `experiments/E1-raw-lane-agent-written/analysis.md`). E2c: protocol
-`3a5f181`, model selection `389dfe3`, stage-1 predictions `fa98cdd`. E2d: protocol `da8341c` (running).
+`3a5f181`, model selection `389dfe3`, stage-1 predictions `fa98cdd`. E2d: protocol `da8341c`, model selection
+`f313786`, stage-1 predictions `0e5e2df` (before the first set-B call at 23:55:28). E2b also has model selection
+`0c5cb4d`. Results commits: E2b `1aa3649`, E2c `077b27c`, E2d `165bb8b` (2026-11-07 00:06:30).
 
 The raw pilot records sit in a separate repository (`git rev-parse --show-toplevel` from
 `~/research-taste/swarm-alignment/pilots/2026-11-06` gives `~/research-taste`). Its history for that folder
@@ -202,9 +218,11 @@ Git commit time is authoritative; `d8d68de` records timestamp corrections inside
 - Thresholds do not transfer across summarizers: each summarizer sits at a different false-alarm level,
   so every view needs its own threshold. This is exactly why E1's lane failed its false-alarm bar
   (8/64 against the <=6 bar) while matching the full log threshold-free.
-- The canary audit's PASS side is preliminary: 10 of 10 prospective calls matched, but only 1 of them is a
-  PASS call, and that case is a Gemini model. An "always FAIL" rule would have scored 9/10. The canary
-  overstates held-out loss by about 10 points, so treat it as a screen, not a calibration.
+- "Validated prospectively on both sides" only with its caveat: 12 of 12 prospective calls matched, but
+  the PASS side rests on 3 cases (Gemini 4 Argon, Claude Opus 5.5, Kimi k3.1), and Kimi is narrow (PASS in
+  80% of bootstrap replicates, FAIL under DeepSeek alone, one parse-failed pair from flipping). The E2d
+  cases were picked as likely passes. An "always FAIL" rule would have scored 9/12. The canary overstates
+  held-out loss by +11.6 points on average, so treat it as a screen, not a calibration.
 - One ceiling exception is on the record: Nova summaries let monitors catch 9 points more than Nova's own
   full-log read on set A. Hence "capped by / rarely beats", never "never beats".
 - The concentration of failures in GPT-5.6 tiers across three oversight roles (summarizer, corrections
@@ -213,6 +231,10 @@ Git commit time is authoritative; `d8d68de` records timestamp corrections inside
   were read, so its partial drops (+12.5, +10) are exploratory. Gemini's E2b control design was switched
   from the optional fresh controls ($5.04) to the protocol design ($4.14) after the cost projection and
   before any monitor score existed, and the controls were run anyway; disclosed in the E2b analysis.
+  E2c: the $6 cost line priced out the likely-PASS models, and Kimi missed it by $0.10 under a 444-chunk
+  projection rule whose timing before the probes is self-reported (first committed in `389dfe3`). E2d:
+  selection was intentional (likeliest PASS cases); Kimi had exploratory set-A data from E2; one Opus set-B
+  summary chunk failed after retry (all 63 set-B logs per summarizer were still scored).
 - The blame-chain raw baseline is 0/14 like-for-like; the 0/28 figure pools two note wordings.
 - The CLI is a measurement harness. Its planted deal text keeps Mantiq-style references (planner `a01`,
   `/shared/claims`, task ids) in deal sets A and B, a known artefact on non-Mantiq logs.

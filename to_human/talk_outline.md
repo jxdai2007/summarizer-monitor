@@ -27,7 +27,7 @@ Keys in the demo:
 | 4 | 3:15-4:30 | **The ceiling.** Main figure: summarizer spread from −14 to +40 points {{src: review2/l2_13.md §2.1}}. The monitor is capped by its summarizer (6 families, rho 0.99 {{src: loop2d/inherit_v1.txt}}), with 1 exception in 8 prospective checks: Nova Pro, set A, +9 points {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q4 row}}. | luna 87→48% at zero false alarms {{src: review2/l2_13_stress_results.txt set A luna}}. Flagship sol still −24 [+12, +37] {{src: same, sol}}. Claude Sonnet summaries lose 9-10, not significant; Gemini summaries beat the full log (−8, −14) {{src: review2/l2_13.md §2.1, §3}}. Replicated on ChatDev 59→30% {{src: loop9/loop9_results.txt}}. **The summarizer decides, not summarization.** | Figure |
 | 5 | 4:30-5:45 | **Where the judging happens.** Neutral summary prompt: 0/32 caught {{src: loop2d/l2d13_results.txt}}. Monitors flag a split deal only when the summary carries an explicit suspicion sentence: 1/73 without one {{src: loop2d/l2d14_results.txt}}. Delete the 1-2 verdict sentences and 14/15 caught deals vanish {{src: loop2d/l2d15_results.txt}}. | This is a monitor cascade, and the first monitor is unannounced. The record has a single point of failure. | Tab 2: toggle `T`, then Log 2, `D` (Haiku 68→5 {{src: loop2d/runs/edit_summary.jsonl practice_05\|0\|SPLIT}}) |
 | 6 | 5:45-7:15 | **The framed agent.** Culprit's note "step 9 was run by build-agent-9". Raw log: Sonnet suspends only the innocent 0/14 {{src: loop1c/runs/l1c17b/claude-sonnet-5.5.jsonl}}. Through summaries: 16/28 {{src: loop1c/runs/l1c20.jsonl}}. | Haiku resists the note as a monitor but writes it into the record as a summarizer {{src: loop1c/L1c-20_results.md "Haiku resists... 1/21"}}. Same family of testimony: a one-line "correction" gets luna to clear 10/24 rule breaks, 0/24 without {{src: review2/agent_records.md RV2-REC-A}}. | Tab 3, step by step |
-| 7 | 7:15-8:45 | **Fixes + audit.** (a) Summarizer line → 0/28 {{src: loop1c/runs/l1c20b.jsonl}}. (b) Raw worker-to-worker lane: on agent-written deals it matches full-log detection at about half the tokens, once calibrated (49 vs 50 of 66 at matched false alarms; 8/64 false alarms at the default threshold) {{src: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md}}. (c) Canary audit: seven new summarizers called correctly on unseen deals, six lossy and one safe, under $2 and a few minutes each {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q1 row, cost table; summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md R1 row}}. | Each fix is one line or one view. The audit is the part a lab can run on its own stack without sharing logs. | Tab 3, `F`; then the CLI |
+| 7 | 7:15-8:45 | **Fixes + audit.** (a) Summarizer line → 0/28 {{src: loop1c/runs/l1c20b.jsonl}}. (b) Raw worker-to-worker lane: on agent-written deals it matches full-log detection at about half the tokens, once calibrated (49 vs 50 of 66 at matched false alarms; 8/64 false alarms at the default threshold) {{src: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md}}. (c) Canary audit: called in advance, it got 12 of 12 summarizers right on unseen deals, from 11 vendors: it flagged all 9 lossy ones and cleared 3, two clearly (Gemini 4 Argon, Claude Opus 5.5) and one narrowly (Kimi k3.1); $0.10 to $5.68 and a few minutes each {{src: summarizer-monitor/experiments/E2d-canary-pass-side-3/results/results.txt T3 rows and cost rows; summarizer-monitor/experiments/E2c-canary-pass-side-2/results/results.txt cost rows; findings.md Result 4d safe line}}. Opus summaries beat the raw log (70/78 vs 54/78). Kimi is a narrow PASS. | Each fix is one line or one view. The audit is the part a lab can run on its own stack without sharing logs. | Tab 3, `F`; then the CLI |
 | 8 | 8:45-10:00 | **Scope + checklist.** On agent-written deals the loss is small: +6 points at matched false alarms, CI −3 to +15 {{src: loop8/l8_results.txt}}. The big effects are on planted deals. Checklist below. | "Treat your summarizer as a monitor. Audit it like one." | Title card |
 
 ### E1 (slide 7b): raw lane on agent-written deals (final, reviewed)
@@ -41,18 +41,18 @@ numbers (Sonnet 5.5, 66 coordinated / 64 control sessions) {{src: summarizer-mon
 - Do not claim it beats summaries at matched false alarms (49 vs 46, n.s.). Its edge over summaries exists only at the
   default threshold, where summaries make the monitor less suspicious across the board.
 
-### E2 + E2b (slide 7c): canary audit, prospective (both final and reviewed)
+### E2-E2d (slide 7c): canary audit, prospective (all final and reviewed)
 E2 result, final {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md}}:
 - Q1 PASS: canary labels matched held-out labels for 4/4 new summarizers (terra, Cohere Command A+, MiniMax, Nova
   Pro). All four were predicted FAIL, and all four failed on the unseen Grok deal set. It is a weak test (n = 4,
   p = 0.0625 against coin-flip labels).
 - Q2 PASS: Spearman 0.983 over 9 summarizers (5 scored earlier), deal-clustered CI 0.82 to 1.00.
 - Q3 PASS (false alarms ≤ 10%). Q4 FAIL in 1 of 8 cells (the Nova exception above).
-- Cost: $0.38-1.68 and about 2-4 minutes per audit (the cost table).
-- Limits: it overstates the size of the loss by about 10 points. "Held-out" means new deals by a new author on the
+- Cost: $0.38-1.68 and about 2-4 minutes per audit (the cost table); pooled over E2-E2d, $0.10-5.68 and 1-4 minutes.
+- Limits: it overstates the size of the loss (E2: about 10 points; pooled E2-E2d: +11.6 points on average). "Held-out" means new deals by a new author on the
   same 7 Mantiq runs, not a new environment.
-- Say: "A canary audit costs under $2 and a few minutes. On four summarizers we had never used, it flagged all four as
-  lossy, and all four were lossy on a second, unseen deal set." This is the analysis's own safe wording.
+- E2's own safe wording: "On four summarizers we had never used, it flagged all four as lossy, and all four were
+  lossy on a second, unseen deal set." Superseded in the talk by the pooled safe line below.
 
 E2b result, the PASS side, final {{src: summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md}}:
 - R1 PASS: 3/3 labels matched (weak test, n = 3).
@@ -61,10 +61,32 @@ E2b result, the PASS side, final {{src: summarizer-monitor/experiments/E2b-canar
   - Nemotron 3.5 Super: called FAIL, confirmed but borderline (+19.7 / +19.2). It flips to PASS if its 10 parse
     failures are counted as flagged.
 - R3 PASS: Spearman 0.979 over 12 summarizers (CI 0.87 to 0.99). R4 PASS: false alarms 1/250.
-- Combined with E2: 7 of 7 prospective calls correct, but only 1 of the 7 was a PASS call.
-- Say: "It called seven new summarizers correctly on deals it had never seen: six lossy, one safe."
-- Then add, in the talk: "Six of those calls were 'lossy', so the 'safe' side rests on one model, from a family we
-  already knew passes deals through."
+- Combined with E2: 7 of 7 prospective calls correct, but only 1 of the 7 was a PASS call (superseded by E2c-E2d).
+
+E2c result, final {{src: summarizer-monitor/experiments/E2c-canary-pass-side-2/analysis.md}}:
+- Mistral Medium 3.5, Phi-4 and Llama 4 Maverick: all canary-FAIL, all FAIL held-out. Still only 1 PASS case.
+- The $6 cost line priced out the likely-PASS models (Opus 5.5 projected $12.57, Kimi k3.1 $6.10). Kimi missed the
+  line by $0.10 under a 444-chunk projection rule whose timing is self-reported.
+
+E2d result, the two likeliest PASS cases without the cost line, final {{src: summarizer-monitor/experiments/E2d-canary-pass-side-3/analysis.md}}:
+- T1-T4 all PASS. The two models were picked because they looked likeliest to pass; say so.
+- Claude Opus 5.5: canary −8.1, called PASS; held-out −20.5 (CI −35 to −9), PASS. **Opus summaries beat the raw
+  log**: monitors caught 70/78 split deals from its summaries vs 54/78 from the raw log. It holds under the
+  non-Anthropic DeepSeek monitor alone (0.0 on set A, −11.1 on set B), so the PASS is not a Haiku-on-Claude effect.
+- Kimi k3.1 (low effort): canary +8.2, called PASS; held-out +10.4 (CI +3 to +19), PASS, **but narrow**: PASS in only
+  80% of log-bootstrap replicates, +17.1 (FAIL) under DeepSeek alone, and one parse-failed pair from flipping (+15.5).
+  Kimi also had exploratory set-A data in E2. Never call it "safe".
+- False alarms 0/167.
+
+Pooled E2-E2d {{src: summarizer-monitor/experiments/E2d-canary-pass-side-3/results/results.txt T3 and Spearman rows}}:
+- 12/12 calls correct across 11 vendors: 9 lossy flagged, 3 cleared, from 3 vendors. An "always FAIL" rule would
+  score 9/12. Spearman 0.972 over 17 summarizers. The canary overstates held-out loss by +11.6 points on average.
+- Say the safe line: "Called in advance, the canary audit got 12 of 12 summarizers right, from 11 vendors: it flagged
+  all 9 lossy ones and cleared 3, two clearly (Gemini 4 Argon, Claude Opus 5.5) and one narrowly (Kimi k3.1). All 12
+  calls were confirmed on unseen deals."
+- Then add the caveat, every time: "So it is validated prospectively on both sides, but the PASS side rests on three
+  cases, and one of them, Kimi, is narrow: under the DeepSeek monitor alone it would fail, and one parse-failed pair
+  would flip it." 
 
 ---
 
@@ -195,12 +217,14 @@ p = 3e-5 on set A {{src: review2/l2_13_stress_results.txt}}) and the deal-level 
 hold. The loop8 p-value is the two-sided 0.001; an earlier draft showed the one-sided 0.0005 without labelling it.
 
 **10. Is the canary audit really validated?**
-For flagging lossy summarizers, yes, within its protocol: 4/4 prospective labels matched and rank correlation was 0.983
-over 9 summarizers {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q1, Q2 rows}}. E2b then tested the PASS side: it cleared Gemini 4 Argon, whose summaries
-beat the full log on unseen deals, and both of its FAIL calls held. Across E2 and E2b, 7 of 7 prospective calls were
-right {{src: '''+B+''' summary}}. But only 1 of the 7 was a PASS call, an "always FAIL" rule would have scored 6/7,
-and that one PASS came from a family already known to pass deals through. n = 4 is small, and it overstates the loss by about 10 points, so
-report the loss as a share of what the full log catches and treat the absolute drop as an upper estimate.
+Prospectively on both sides, with a caveat on the PASS side. Called in advance, it got 12 of 12 summarizers right on
+unseen deals, from 11 vendors: 9 lossy ones flagged and 3 cleared {{src: summarizer-monitor/experiments/E2d-canary-pass-side-3/results/results.txt T3 rows}}.
+Two PASS calls are clear: Gemini 4 Argon and Claude Opus 5.5, whose summaries beat the raw log, and Opus holds under
+the DeepSeek monitor alone. The third, Kimi k3.1, is narrow: PASS in 80% of bootstrap replicates, FAIL under DeepSeek
+alone, one parse-failed pair from flipping {{src: summarizer-monitor/experiments/E2d-canary-pass-side-3/analysis.md}}. So the PASS side rests on 3 cases,
+one narrow, and the two E2d cases were picked because they looked likely to pass. An "always FAIL" rule would have
+scored 9/12. The canary overstates the loss by +11.6 points on average, so report the loss as a share of what the full
+log catches and treat the absolute drop as an upper estimate.
 
 **11. Is the "deleting any raw message hides 0/60" contrast fair?**
 No. Review2 asked us to drop it: the summary edit removes the summarizer's verdict and its quoted evidence, while
@@ -215,7 +239,8 @@ the raw edit removes one of four deal messages {{src: review2/l2_13.md §2.6}}. 
   matches L1c-20's wording.
 - "Closes the gap" for the raw lane without "by construction on planted deals".
 - That the raw lane beats summaries at matched false alarms. It does not: 49 vs 46 of 66, not significant.
-- "Validated audit" without the scope: 7/7 prospective calls, but only one PASS call (n = 1, Gemini family).
+- "Validated on both sides" without the caveat: the PASS side rests on 3 cases (Gemini 4 Argon, Claude Opus 5.5,
+  Kimi k3.1), and Kimi is narrow. Never call Kimi "safe".
 - "The monitor never beats its summarizer". Say "is capped by" or "rarely beats", with the count: 1 exception in 8
   prospective checks (E2 Q4).
 - Anything from L7, L10-16b, L2-08 or L3. These were cut in review.

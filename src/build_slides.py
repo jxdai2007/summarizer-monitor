@@ -76,9 +76,11 @@ def numbers():
     bd = [r for r in rd("ceiling_by_deal.csv") if r["summarizer"] == "openai/gpt-5.6-luna" and r["direction"] != "tie"]
     testi = {r["result_id"]: r for r in rd("testimony.csv")}
     lane_chars = grab(EXP / "E1-raw-lane-agent-written/analysis.md", r"\*\*([\d.]+)% of the FULL message-list characters", "lane size").group(1)
-    cost = grab(EXP / "E2-canary-audit-prospective/analysis.md", r"one audit costs (\$[\d.]+ to \$[\d.]+) and (\d+ to \d+) minutes", "audit cost")
+    # cost and time per audit over all 12 prospective summarizers (E2-E2d), as computed by paper/make_numbers.py
+    pn = ROOT / "paper/numbers.tex"
+    cost = [grab(pn, r"\\numdef\{" + k + r"\}\{([\d.]+)\}", k).group(1) for k in ("audit-costlo", "audit-costhi", "audit-minlo", "audit-minhi")]
     return dict(P=P, demo=demo, dn=dn, card=card, ceil=ceil, bd=bd, testi=testi, lane_chars=lane_chars,
-                cost=cost.group(1), minutes=cost.group(2),
+                cost=f"${cost[0]} to ${cost[1]}", minutes=f"{cost[2]} to {cost[3]}",
                 team_n=grab(HUMAN / "demo.html", r"A team of (\d+) AI agents", "team size").group(1))
 
 
@@ -260,11 +262,12 @@ def slides(N, B):
           <li><b>Plant canary deals</b> in your own logs; compare the monitor on raw logs with the monitor on summaries.
             <b>{N['cost']}, {N['minutes']} minutes</b> per audit.</li>
           <li><span class="num">{K['n_correct']} of {K['n_prospective']}</span> prospective calls correct ({rev}), {K['n_vendors']} vendors:
-            it flagged {K['n_fail_hit']} of {K['n_obs_fail']} lossy summarizers on deals it never saw. {K['n_pass_calls']} PASS call
-            held; the PASS side is preliminary.</li>
+            called in advance, it flagged all {K['n_fail_hit']} lossy summarizers and cleared {K['n_pass_calls']}: two clearly
+            (Gemini 4 Argon, Claude Opus 5.5, whose summaries beat the raw log) and one narrowly (Kimi k3.1). Validated
+            prospectively on both sides, but the PASS side rests on {K['n_pass_calls']} cases, one narrow.</li>
           <li><b>Spearman \u03c1 = {K['rho']:.3f}</b> over {K['n_summarizers']} summarizers ({K['n_earlier']} scored before the
-            prospective tests). The canary overstates the loss (held-out minus canary {K['mean_heldout_minus_canary']:+.0f} pts on
-            average); the ranking transfers.</li>
+            prospective tests). The canary overstates the held-out loss by {-K['mean_heldout_minus_canary']:+.1f} points on average
+            over the {K['n_prospective']} prospective summarizers; the ranking transfers.</li>
           {slot}
           <li class="cli"><code>python -m summary_audit run --dry-run --format mantiq --run practice_07 --n-canaries 6 --out /tmp/sa_dry</code></li>
         </ul>

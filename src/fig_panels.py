@@ -35,7 +35,9 @@ SONNET = "anthropic/claude-sonnet-5.5"
 SHORT = dict(fm.SHORT)
 SHORT.update({"google/gemini-4-argon": "Gemini 4 Argon", "openai/gpt-oss-120b": "gpt-oss-120b",
               "nvidia/nemotron-3.5-super-vl": "Nemotron 3.5 Super", "meta-llama/llama-4-maverick": "Llama 4 Maverick",
-              "microsoft/phi-4": "Phi-4", "mistralai/mistral-medium-3-5": "Mistral Medium 3.5"})
+              "microsoft/phi-4": "Phi-4", "mistralai/mistral-medium-3-5": "Mistral Medium 3.5",
+              "anthropic/claude-opus-5.5": "Claude Opus 5.5", "moonshotai/kimi-k3.1-pro": "Kimi k3.1"})
+PURPLE = "#8a4fc7"  # E2d batch colour
 NUM: dict = {}  # everything drawn, for build_slides.py
 
 
@@ -360,7 +362,7 @@ def canary():
                          pending=[short(s) for s in a_only], running=running,
                          points={short(s): dict(canary=round(D[(s, "A")]["drop"], 1), heldout=round(D[(s, "B")]["drop"], 1),
                                                 batch=prospective.get(s, "earlier")) for s in both})
-    col = {b: c for (b, _, _), c in zip(batches, (BLUE, ORANGE, AQUA, INK2, INK2))}
+    col = {b: c for (b, _, _), c in zip(batches, (BLUE, ORANGE, AQUA, PURPLE, INK2))}
     mark = {b: m for (b, _, _), m in zip(batches, ("o", "s", "D", "P", "X"))}
     fig = plt.figure(figsize=(9.6, 8.0))
     fig.patch.set_facecolor(SURFACE)
@@ -382,19 +384,23 @@ def canary():
     place = {"Nova Pro": (-12, 6, "right", None), "Command A+": (-12, -4, "right", None), "Llama 4 Maverick": (0, 0, "right", (86, 82)),
              "Phi-4": (0, 0, "right", (97, 57)), "gpt-oss-120b": (-12, 2, "right", None), "Mistral Medium 3.5": (0, 0, "center", (80, 40)),
              "MiniMax M3.1 Flash": (12, 4, "left", None), "Nemotron 3.5 Super": (0, 0, "center", (-3, 31)),
-             "GPT-5.6-terra": (12, -6, "left", None), "Gemini 4 Argon": (12, -2, "left", None), "GPT-5.6-luna": (-12, 6, "right", None),
+             "GPT-5.6-terra": (12, -6, "left", None), "Gemini 4 Argon": (0, 0, "left", (3, -13)), "GPT-5.6-luna": (-12, 6, "right", None),
              "Gemini 3.8 Flash": (-12, -2, "right", None), "Mistral Large 4": (12, -12, "left", None),
-             "Qwen3.8 Flash": (-12, 6, "right", None), "Claude Sonnet 5.5": (-12, -8, "right", None)}
+             "Qwen3.8 Flash": (-12, 6, "right", None), "Claude Sonnet 5.5": (-12, -8, "right", None),
+             "Claude Opus 5.5": (0, 0, "left", (3, -25)), "Kimi k3.1": (0, 0, "left", (24, 0))}
+    # Kimi k3.1 cleared narrowly (E2d analysis: PASS in 80% of log-bootstrap replicates; FAIL under DeepSeek alone)
+    narrow = {"Kimi k3.1": "narrow PASS"}
     for s in both:
         x, y = D[(s, "A")]["drop"], D[(s, "B")]["drop"]
         b = prospective.get(s)
         dx, dy, ha, xyt = place.get(short(s), (12, 0, "left", None))
         kw = dict(xytext=xyt, textcoords="data", arrowprops=dict(arrowstyle="-", color=INK2, lw=1.1, shrinkA=2, shrinkB=7)) if xyt else \
             dict(xytext=(dx, dy), textcoords="offset points")
+        lab = short(s) + (f" ({narrow[short(s)]})" if short(s) in narrow else "")
         if b:
             ax.scatter(x, y, s=230 if b == "E2c" else 260, marker=mark[b], color=col[b], edgecolor=SURFACE, linewidth=2.5,
                        zorder=4.5 if b == "E2c" else 4)
-            ax.annotate(short(s), (x, y), ha=ha, va="center", fontsize=14, color=INK, zorder=5, fontweight="bold",
+            ax.annotate(lab, (x, y), ha=ha, va="center", fontsize=14, color=INK, zorder=5, fontweight="bold",
                         bbox=dict(boxstyle="square,pad=0.08", fc=SURFACE, ec="none", alpha=0.8), **kw)
         else:
             ax.scatter(x, y, s=150, facecolor=SURFACE, edgecolor=GRAY, linewidth=2.2, zorder=3)
