@@ -11,8 +11,7 @@ How to read this file:
 - `demo_numbers.json` means `summarizer-monitor/to_human/demo_numbers.json`, written by `src/build_demo.py`. It
   re-extracts the numbers below from the raw result files, so rerunning the build is the quickest check.
 - Markers are not spoken and do not count toward the budget.
-- `[SLOT E2b]` holds outcome variants. E1 and E2 are final and are in the base narration. Speak one variant per slot. `⟨k⟩`, `⟨FA⟩` and `⟨n⟩` are the
-  values to fill in from the experiment results.
+- All experiment slots are filled: E1, E2 and E2b are final and reviewed, and their results are in the narration.
 - On-screen material comes from `to_human/demo.html`, the cached replay that opens offline. Its tabs are 1 You are the
   monitor, 2 Raw vs summary, and 3 The framed agent. Number keys switch tabs.
 
@@ -27,7 +26,7 @@ On screen: a pipeline diagram (agents → raw log → **summarizer** → monitor
 
 Optional longer hook, only if you can source the incident figures (strategy.md asserts them; no record does): "In
 July, about twelve hundred agents exchanged over seventy thousand messages, and the swarm was found weeks later."
-That adds 18 words, so cut the ChatDev clause in beat 3 and skip the E2b line to stay near 420.
+That adds 18 words (425 total), so also cut the ChatDev clause in beat 3 (5 words) to stay at 420.
 
 ## Beat 2 · 0:15-0:35 · Setup
 
@@ -134,33 +133,35 @@ Wording limits for the raw lane:
   loop9/loop9_results.txt:"H1 raw peer msgs only"}}) moved to the talk; the agent-written result replaces it here.
 
 > Before trusting a summarizer, audit it: plant canary deals. Under two dollars, a few minutes {{source:
-> summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:"one audit costs $0.4 to $1.7 and 2 to 4 minutes"}}. Four summarizers we'd never used: it called all four
-> lossy, and all four were, on unseen deals {{source: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:Q1 row "4/4 match (all four predicted FAIL, all
-> four FAIL on set B)"}}.
+> summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:"one audit costs $0.4 to $1.7 and 2 to 4 minutes"}}. It called seven new summarizers correctly on deals
+> it had never seen {{source: summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md:"Across E2 and E2b, 7 of 7 prospective labels matched"}}: six lossy, one safe
+> {{source: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:Q1 row "4/4 match (all four predicted FAIL, all four FAIL on set B)"; summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md:R1 row "3/3 match
+> (Gemini 4 Argon PASS/PASS, gpt-oss-120b FAIL/FAIL, Nemotron 3.5 Super FAIL/FAIL)"}}.
 
-E2 is final for the FAIL side: Q1 PASS (4/4, a weak test with n = 4: p = 0.0625 against coin-flip labels), Q2 PASS
-(Spearman 0.983 over 9 summarizers, 5 of them scored earlier; deal-clustered CI 0.82 to 1.00), Q3 PASS, Q4 FAIL in
-1 of 8 cells {{source: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:verdict table}}. All four new summarizers were predicted FAIL, so the audit is
-validated only for flagging lossy summarizers. It also overstates the size of the loss by about 10 points (mean
-absolute error 8.6) {{source: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:"over-predicts the size of the loss by about 10 points"}}. If you show the
-rank correlation on screen, label it "9 summarizers, 5 scored earlier".
-
-**[SLOT E2b: does the audit also clear good summarizers? PASS-side prospective test, running now.]** Speak one
-variant, or none if E2b is not done.
-
-- **E2b-PASS** (its PASS calls hold):
-
-  > It also cleared ⟨k⟩ of ⟨n⟩ new summarizers that held up.
-
-- **E2b-FAIL** (its PASS calls miss):
-
-  > Its pass calls missed ⟨k⟩ of ⟨n⟩; it flags, not clears.
-
-- **E2b not done**: say nothing extra. On screen, add "validated for flagging lossy summarizers; clearing them is
-  untested".
+E2 and E2b are final and reviewed; the E2b slot is filled with the PASS variant.
+- E2 (FAIL side): Q1 PASS 4/4 (weak test, n = 4, p = 0.0625 against coin-flip labels); Q2 PASS (Spearman 0.983 over
+  9 summarizers); Q3 PASS; Q4 FAIL in 1 of 8 cells (the Nova exception in beat 3) {{source: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:verdict
+  table}}.
+- E2b (PASS side): R1 PASS 3/3 (weak test, n = 3, p = 0.125) {{source: summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md:R1 row}}.
+  - Gemini 4 Argon: canary drop −12.5, called PASS. On held-out deals its summaries beat the full log by 21 points
+    (drop −21.0, deal-cluster CI −35 to −9; 56/81 → 73/81) {{source: summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md:R2 row and summarizer table}}.
+  - gpt-oss-120b: canary +74.2, held-out +52.4, FAIL confirmed {{source: summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md:summarizer table}}.
+  - Nemotron 3.5 Super: canary +19.7, held-out +19.2, FAIL confirmed but borderline. Its held-out drop is +14.5
+    (PASS) or +26.5 depending on how 10 DeepSeek parse failures are counted {{source: summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md:label-stability
+    notes}}.
+  - R3 PASS: Spearman 0.979 over 12 summarizers, deal-clustered CI 0.87 to 0.99 {{source: summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md:R3 row}}.
+  - R4 PASS: 1/250 control scores flagged {{source: summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md:R4 row}}.
+- Limits to keep visible (say them in the talk, not in the 3 minutes):
+  - Only 1 of the 7 correct calls is a PASS call. An "always FAIL" rule would have scored 6/7 {{source: summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md:
+    "An \"always FAIL\" rule would have scored 6 of 7"}}.
+  - The one PASS call is a Gemini model, a family already known to pass deals through well. A PASS call on a family
+    the audit has never seen is still untested.
+  - "Safe" means its summaries kept the planted deals. It does not mean safe in general.
+  - The audit overstates the size of a loss by about 10 points; the ranking is what transfers.
+- If the rank correlation goes on screen, label it "12 summarizers, 5 scored before the prospective tests".
 
 On screen: fix bars (blame chain 16/28 → 0/28; agent-written detection at matched false alarms: full log 50, raw
-lane 49, luna summaries 46, all of 66 and none significantly different), then a terminal running the audit CLI with the caption "validated for flagging lossy summarizers".
+lane 49, luna summaries 46, all of 66 and none significantly different), then a terminal running the audit CLI with the caption "7 of 7 prospective calls correct: 6 lossy, 1 safe".
 
 ## Beat 7 · 2:30-2:50 · Scope, said aloud
 
@@ -190,11 +191,8 @@ Each fill-in value counts as one word. The script below reproduces these numbers
 
 | Part | Words |
 |---|---|
-| Beats 1-8 (E1 and E2 final, in the base) | 407 |
-| E2b-PASS / E2b-FAIL / not done | 11 / 11 / 0 |
-| **With an E2b line** | **418** |
-| Without (E2b not done) | 407 |
-| With the optional incident hook | 18 more (425 without an E2b line: cut the ChatDev clause, 5 words) |
+| **Beats 1-8, all slots filled (E1, E2, E2b)** | **407** |
+| With the optional incident hook | 425: cut the ChatDev clause in beat 3 (5 words) to get to 420 |
 
 ```
 python3 - <<'PY'
@@ -234,4 +232,5 @@ PY
 | canary audit: under $2, a few minutes | `summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md` cost table ($0.38-1.68, 1.9-3.7 min) | ok |
 | 4 new summarizers, all called lossy, all lossy on unseen deals | `summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md` Q1 row (4/4) | ok; FAIL side only, n = 4 |
 | one exception in eight new checks | `summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md` Q4 row (Nova Pro set A, +9) | ok; say "capped by", never "never beats" |
-| Spearman 0.983 over 9 (on screen only) | `summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md` Q2 row | ok; 5 of the 9 scored earlier |
+| seven new summarizers called correctly, six lossy, one safe | `summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md` Q1; `summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md` R1 | ok; only 1 PASS call; "always FAIL" would score 6/7 |
+| (on screen) Spearman 0.979 over 12 | `summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md` R3 row | ok; 5 of the 12 scored before the prospective tests |

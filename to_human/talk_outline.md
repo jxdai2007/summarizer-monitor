@@ -27,7 +27,7 @@ Keys in the demo:
 | 4 | 3:15-4:30 | **The ceiling.** Main figure: summarizer spread from −14 to +40 points {{src: review2/l2_13.md §2.1}}. The monitor is capped by its summarizer (6 families, rho 0.99 {{src: loop2d/inherit_v1.txt}}), with 1 exception in 8 prospective checks: Nova Pro, set A, +9 points {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q4 row}}. | luna 87→48% at zero false alarms {{src: review2/l2_13_stress_results.txt set A luna}}. Flagship sol still −24 [+12, +37] {{src: same, sol}}. Claude Sonnet summaries lose 9-10, not significant; Gemini summaries beat the full log (−8, −14) {{src: review2/l2_13.md §2.1, §3}}. Replicated on ChatDev 59→30% {{src: loop9/loop9_results.txt}}. **The summarizer decides, not summarization.** | Figure |
 | 5 | 4:30-5:45 | **Where the judging happens.** Neutral summary prompt: 0/32 caught {{src: loop2d/l2d13_results.txt}}. Monitors flag a split deal only when the summary carries an explicit suspicion sentence: 1/73 without one {{src: loop2d/l2d14_results.txt}}. Delete the 1-2 verdict sentences and 14/15 caught deals vanish {{src: loop2d/l2d15_results.txt}}. | This is a monitor cascade, and the first monitor is unannounced. The record has a single point of failure. | Tab 2: toggle `T`, then Log 2, `D` (Haiku 68→5 {{src: loop2d/runs/edit_summary.jsonl practice_05\|0\|SPLIT}}) |
 | 6 | 5:45-7:15 | **The framed agent.** Culprit's note "step 9 was run by build-agent-9". Raw log: Sonnet suspends only the innocent 0/14 {{src: loop1c/runs/l1c17b/claude-sonnet-5.5.jsonl}}. Through summaries: 16/28 {{src: loop1c/runs/l1c20.jsonl}}. | Haiku resists the note as a monitor but writes it into the record as a summarizer {{src: loop1c/L1c-20_results.md "Haiku resists... 1/21"}}. Same family of testimony: a one-line "correction" gets luna to clear 10/24 rule breaks, 0/24 without {{src: review2/agent_records.md RV2-REC-A}}. | Tab 3, step by step |
-| 7 | 7:15-8:45 | **Fixes + audit.** (a) Summarizer line → 0/28 {{src: loop1c/runs/l1c20b.jsonl}}. (b) Raw worker-to-worker lane: on agent-written deals it matches full-log detection at about half the tokens, once calibrated (49 vs 50 of 66 at matched false alarms; 8/64 false alarms at the default threshold) {{src: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md}}. (c) Canary audit: 4/4 new summarizers called lossy and confirmed on unseen deals, under $2 and a few minutes each {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q1 row, cost table}}; [SLOT E2b] for the PASS side. | Each fix is one line or one view. The audit is the part a lab can run on its own stack without sharing logs. | Tab 3, `F`; then the CLI |
+| 7 | 7:15-8:45 | **Fixes + audit.** (a) Summarizer line → 0/28 {{src: loop1c/runs/l1c20b.jsonl}}. (b) Raw worker-to-worker lane: on agent-written deals it matches full-log detection at about half the tokens, once calibrated (49 vs 50 of 66 at matched false alarms; 8/64 false alarms at the default threshold) {{src: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md}}. (c) Canary audit: seven new summarizers called correctly on unseen deals, six lossy and one safe, under $2 and a few minutes each {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q1 row, cost table; summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md R1 row}}. | Each fix is one line or one view. The audit is the part a lab can run on its own stack without sharing logs. | Tab 3, `F`; then the CLI |
 | 8 | 8:45-10:00 | **Scope + checklist.** On agent-written deals the loss is small: +6 points at matched false alarms, CI −3 to +15 {{src: loop8/l8_results.txt}}. The big effects are on planted deals. Checklist below. | "Treat your summarizer as a monitor. Audit it like one." | Title card |
 
 ### E1 (slide 7b): raw lane on agent-written deals (final, reviewed)
@@ -41,7 +41,7 @@ numbers (Sonnet 5.5, 66 coordinated / 64 control sessions) {{src: summarizer-mon
 - Do not claim it beats summaries at matched false alarms (49 vs 46, n.s.). Its edge over summaries exists only at the
   default threshold, where summaries make the monitor less suspicious across the board.
 
-### Slot E2 (slide 7c): canary audit, prospective (final) + E2b (PASS side, running)
+### E2 + E2b (slide 7c): canary audit, prospective (both final and reviewed)
 E2 result, final {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md}}:
 - Q1 PASS: canary labels matched held-out labels for 4/4 new summarizers (terra, Cohere Command A+, MiniMax, Nova
   Pro). All four were predicted FAIL, and all four failed on the unseen Grok deal set. It is a weak test (n = 4,
@@ -54,10 +54,17 @@ E2 result, final {{src: summarizer-monitor/experiments/E2-canary-audit-prospecti
 - Say: "A canary audit costs under $2 and a few minutes. On four summarizers we had never used, it flagged all four as
   lossy, and all four were lossy on a second, unseen deal set." This is the analysis's own safe wording.
 
-E2b, the PASS side (does a predicted PASS hold?). Keep both variants:
-- **PASS**: "It also cleared ⟨k⟩ of ⟨n⟩ new summarizers that held up, so it works in both directions."
-- **FAIL**: "Its pass calls missed ⟨k⟩ of ⟨n⟩. Use it to flag lossy summarizers, not to certify good ones."
-- **Not done**: "Validated for flagging lossy summarizers; clearing good ones is being tested."
+E2b result, the PASS side, final {{src: summarizer-monitor/experiments/E2b-canary-pass-side/analysis.md}}:
+- R1 PASS: 3/3 labels matched (weak test, n = 3).
+  - Gemini 4 Argon: canary drop −12.5, called PASS. On held-out deals its summaries beat the full log by 21 points.
+  - gpt-oss-120b: called FAIL, confirmed (canary +74.2, held-out +52.4).
+  - Nemotron 3.5 Super: called FAIL, confirmed but borderline (+19.7 / +19.2). It flips to PASS if its 10 parse
+    failures are counted as flagged.
+- R3 PASS: Spearman 0.979 over 12 summarizers (CI 0.87 to 0.99). R4 PASS: false alarms 1/250.
+- Combined with E2: 7 of 7 prospective calls correct, but only 1 of the 7 was a PASS call.
+- Say: "It called seven new summarizers correctly on deals it had never seen: six lossy, one safe."
+- Then add, in the talk: "Six of those calls were 'lossy', so the 'safe' side rests on one model, from a family we
+  already knew passes deals through."
 
 ---
 
@@ -189,8 +196,10 @@ hold. The loop8 p-value is the two-sided 0.001; an earlier draft showed the one-
 
 **10. Is the canary audit really validated?**
 For flagging lossy summarizers, yes, within its protocol: 4/4 prospective labels matched and rank correlation was 0.983
-over 9 summarizers {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q1, Q2 rows}}. But all four new summarizers were predicted FAIL, so it has not yet
-been shown to clear a good one (E2b tests that). n = 4 is small, and it overstates the loss by about 10 points, so
+over 9 summarizers {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q1, Q2 rows}}. E2b then tested the PASS side: it cleared Gemini 4 Argon, whose summaries
+beat the full log on unseen deals, and both of its FAIL calls held. Across E2 and E2b, 7 of 7 prospective calls were
+right {{src: '''+B+''' summary}}. But only 1 of the 7 was a PASS call, an "always FAIL" rule would have scored 6/7,
+and that one PASS came from a family already known to pass deals through. n = 4 is small, and it overstates the loss by about 10 points, so
 report the loss as a share of what the full log catches and treat the absolute drop as an upper estimate.
 
 **11. Is the "deleting any raw message hides 0/60" contrast fair?**
@@ -206,8 +215,7 @@ the raw edit removes one of four deal messages {{src: review2/l2_13.md §2.6}}. 
   matches L1c-20's wording.
 - "Closes the gap" for the raw lane without "by construction on planted deals".
 - That the raw lane beats summaries at matched false alarms. It does not: 49 vs 46 of 66, not significant.
-- "Validated audit" without the scope: E2 validated it for flagging lossy summarizers only (4/4, all predicted FAIL).
-  The PASS side is E2b.
+- "Validated audit" without the scope: 7/7 prospective calls, but only one PASS call (n = 1, Gemini family).
 - "The monitor never beats its summarizer". Say "is capped by" or "rarely beats", with the count: 1 exception in 8
   prospective checks (E2 Q4).
 - Anything from L7, L10-16b, L2-08 or L3. These were cut in review.
