@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>The Summarizer Is the Monitor</title>
+<!-- Cached replay. Offline: no network calls, no external scripts or fonts. All numbers and excerpts are injected by
+     src/build_demo.py from the raw records; this template holds layout and wording only. -->
+<style>
+/* Layout: a monitor's console. One question per tab, the evidence underneath, the score gauges always beside it. */
+:root {
+  --bg: #f5f6f8;          /* paper with a slight steel bias */
+  --panel: #ffffff;
+  --ink: #141a22;
+  --muted: #5a6573;
+  --rule: #d9dee5;
+  --mark: #ffd34d;        /* highlighter: where the deal is */
+  --mark-ink: #3b2a00;
+  --flag: #c2362d;        /* monitor flagged / innocent suspended */
+  --flag-soft: #fbe6e4;
+  --ok: #1d7a52;          /* correct agent / fix */
+  --ok-soft: #e1f3ea;
+  --quiet: #e9ecf0;
+  --accent: #23477a;      /* ink blue for controls */
+  --accent-ink: #ffffff;
+  --display: "Avenir Next", "Avenir", "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+  --body: -apple-system, "Segoe UI", "Helvetica Neue", system-ui, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1319; --panel: #161d26; --ink: #e7ecf2; --muted: #9aa6b4; --rule: #2a3442;
+    --mark: #6b5310; --mark-ink: #fff3c4; --flag: #ff7a6e; --flag-soft: #3a1d1b; --ok: #5fd39c; --ok-soft: #13301f;
+    --quiet: #1e2732; --accent: #8fb4ec; --accent-ink: #0e1319; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1319; --panel: #161d26; --ink: #e7ecf2; --muted: #9aa6b4; --rule: #2a3442;
+  --mark: #6b5310; --mark-ink: #fff3c4; --flag: #ff7a6e; --flag-soft: #3a1d1b; --ok: #5fd39c; --ok-soft: #13301f;
+  --quiet: #1e2732; --accent: #8fb4ec; --accent-ink: #0e1319; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { font-size: clamp(16px, 0.55vw + 11px, 22px); padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); line-height: 1.5; }
+.wrap { max-width: 88rem; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 1rem 3rem; }
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 0.75rem 2rem; padding-block: 0.5rem 1rem; border-bottom: 2px solid var(--ink); }
+.brand { display: grid; gap: 0.1rem; }
+.eyebrow { font: 600 0.72rem/1.2 var(--display); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.brand h1 { margin: 0; font: 700 1.6rem/1.1 var(--display); letter-spacing: -0.01em; text-wrap: balance; }
+nav.tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+nav.tabs button { font: 600 1rem/1 var(--display); padding: 0.7rem 1rem; border: 2px solid var(--ink); background: var(--panel); color: var(--ink); border-radius: 0.4rem; cursor: pointer; }
+nav.tabs button .k { font: 500 0.7rem var(--mono); color: var(--muted); margin-right: 0.4rem; }
+nav.tabs button[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+nav.tabs button[aria-selected="true"] .k { color: var(--bg); opacity: 0.7; }
+button:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+section.tab { padding-top: 1.5rem; display: grid; gap: 1.25rem; }
+h2.q { margin: 0; font: 700 2rem/1.15 var(--display); letter-spacing: -0.015em; max-width: 40ch; text-wrap: balance; }
+p.lede { margin: 0; font-size: 1.05rem; color: var(--muted); max-width: 70ch; }
+.btn { font: 600 0.95rem/1 var(--display); padding: 0.75rem 1.1rem; border-radius: 0.4rem; border: 2px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 2px solid var(--accent); border-radius: 0.45rem; overflow: hidden; }
+.seg button { font: 600 0.9rem/1.1 var(--display); padding: 0.65rem 0.95rem; border: 0; background: transparent; color: var(--accent); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+mark { background: var(--mark); color: var(--mark-ink); padding: 0 0.12em; border-radius: 0.15em; }
+.small { font-size: 0.8rem; color: var(--muted); }
+.mono { font-family: var(--mono); }
+code { font-family: var(--mono); font-size: 0.92em; }
+.pill { display: inline-flex; align-items: center; gap: 0.35rem; font: 700 0.85rem/1 var(--mono); padding: 0.35rem 0.55rem; border-radius: 0.3rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pill.flag { background: var(--flag-soft); color: var(--flag); border: 1.5px solid var(--flag); }
+.pill.pass { background: var(--quiet); color: var(--muted); border: 1.5px solid var(--rule); }
+.pill.na { background: transparent; color: var(--muted); border: 1.5px dashed var(--rule); }
+
+/* ---- tab 1 */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: 1rem; }
+.card { position: relative; text-align: left; background: var(--panel); color: var(--ink); border: 2px solid var(--rule); border-radius: 0.5rem; padding: 1rem 1.1rem 1.1rem; display: grid; gap: 0.6rem; align-content: start; cursor: pointer; font: inherit; min-width: 0; }
+.card:hover { border-color: var(--muted); }
+.card[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+.card .lbl { display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem; }
+.card .letter { font: 800 1.9rem/1 var(--display); }
+.card .meta { font: 500 0.72rem/1.3 var(--mono); color: var(--muted); text-align: right; }
+.card .txt { font-size: 1rem; line-height: 1.55; overflow-wrap: anywhere; }
+.card .verdict { font: 700 0.85rem/1.2 var(--display); letter-spacing: 0.04em; text-transform: uppercase; padding: 0.45rem 0.6rem; border-radius: 0.3rem; }
+.card .verdict.deal { background: var(--mark); color: var(--mark-ink); }
+.card .verdict.clean { background: var(--quiet); color: var(--muted); }
+.card.isdeal.revealed { border-color: var(--mark); border-width: 3px; }
+.reveal { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 1.25rem; }
+@media (max-width: 60rem) { .reveal { grid-template-columns: 1fr; } }
+.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 0.5rem; padding: 1rem 1.1rem; display: grid; gap: 0.75rem; align-content: start; min-width: 0; }
+.panel h3 { margin: 0; font: 700 1.1rem/1.2 var(--display); }
+.msg { display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.75rem; padding: 0.6rem 0.7rem; border-left: 4px solid var(--mark); background: color-mix(in srgb, var(--mark) 18%, var(--panel)); border-radius: 0.25rem; }
+.msg .who { font: 700 0.8rem/1.4 var(--mono); white-space: nowrap; }
+.msg .t { font-size: 0.95rem; overflow-wrap: anywhere; }
+.msg .where { grid-column: 1 / -1; font: 500 0.7rem var(--mono); color: var(--muted); }
+table.scores { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+table.scores th, table.scores td { padding: 0.45rem 0.4rem; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: middle; }
+table.scores th { font: 600 0.72rem/1.2 var(--display); white-space: nowrap; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.tw { overflow-x: auto; }
+.takeaway { font: 600 1.25rem/1.35 var(--display); max-width: 60ch; text-wrap: balance; }
+
+/* ---- tab 2 */
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 19rem; gap: 1.25rem; align-items: start; }
+@media (max-width: 60rem) { .stage { grid-template-columns: 1fr; } }
+.viewer { position: relative; background: var(--panel); border: 1px solid var(--rule); border-radius: 0.5rem; max-height: 62vh; overflow: auto; min-width: 0; }
+.log { font-family: var(--mono); font-size: 0.74rem; line-height: 1.45; padding: 0.5rem 0.9rem 1rem; }
+.log .chunkhd { position: sticky; top: 0; background: var(--panel); font: 700 0.72rem var(--display); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 0.6rem 0 0.3rem; border-bottom: 1px solid var(--rule); margin-bottom: 0.3rem; }
+.log .m { display: grid; grid-template-columns: 3.2em 7.2em 1fr; gap: 0.6em; padding: 0.12rem 0; color: var(--muted); }
+.log .m .tx { color: var(--ink); overflow-wrap: anywhere; }
+.log .m.inj { background: var(--mark); color: var(--mark-ink); font-size: 0.95rem; padding: 0.45rem 0.4rem; margin: 0.3rem -0.4rem; border-radius: 0.25rem; }
+.log .m.inj .tx { color: var(--mark-ink); font-weight: 600; }
+.sumview { padding: 0.5rem 1.1rem 1rem; display: grid; gap: 0.2rem; }
+.sumview .chunkhd { font: 700 0.72rem var(--display); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding-top: 0.7rem; }
+.sumview p { margin: 0; font-size: 1rem; line-height: 1.6; max-width: 75ch; }
+.s-flag { text-decoration: underline 3px var(--flag); text-underline-offset: 3px; }
+.s-del { text-decoration: line-through 2px var(--flag); opacity: 0.35; }
+.s-del.rand { text-decoration-color: var(--muted); }
+.gauges { display: grid; gap: 1rem; position: sticky; top: 0.75rem; }
+.gauge { background: var(--panel); border: 1px solid var(--rule); border-radius: 0.5rem; padding: 0.8rem 0.9rem; display: grid; gap: 0.45rem; }
+.gauge .name { font: 600 0.8rem/1.2 var(--display); color: var(--muted); display: flex; justify-content: space-between; gap: 0.5rem; }
+.gauge .num { font: 800 2.6rem/1 var(--display); font-variant-numeric: tabular-nums; }
+.gauge .num.flag { color: var(--flag); }
+.gauge .num.na { font-size: 1rem; font-weight: 500; color: var(--muted); }
+.bar { position: relative; height: 0.7rem; background: var(--quiet); border-radius: 0.35rem; overflow: visible; }
+.bar .fill { position: absolute; inset: 0 auto 0 0; border-radius: 0.35rem; background: var(--muted); transition: width 0.45s cubic-bezier(.2,.8,.2,1); }
+.bar .fill.flag { background: var(--flag); }
+.bar .thr { position: absolute; top: -0.3rem; bottom: -0.3rem; width: 2px; background: var(--ink); }
+.gauge .cmp { font: 500 0.75rem var(--mono); color: var(--muted); }
+.edits { display: grid; gap: 0.6rem; }
+.note { font-size: 0.85rem; color: var(--muted); max-width: 75ch; }
+.note b { color: var(--ink); }
+.agg { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1rem; }
+.stat { background: var(--panel); border: 1px solid var(--rule); border-radius: 0.5rem; padding: 0.9rem 1rem; display: grid; gap: 0.3rem; align-content: start; }
+.stat .big { font: 800 1.8rem/1.05 var(--display); font-variant-numeric: tabular-nums; }
+.stat .big .arrow { color: var(--muted); font-weight: 500; }
+.stat .cap { font-size: 0.85rem; color: var(--muted); }
+.warn { font: 600 0.75rem/1.3 var(--display); letter-spacing: 0.04em; text-transform: uppercase; color: var(--flag); }
+
+/* ---- tab 3 */
+.chain { display: grid; gap: 1rem; }
+.link { display: grid; grid-template-columns: minmax(0, 1fr) 2.5rem minmax(14rem, 0.42fr); gap: 0.75rem; align-items: center; }
+@media (max-width: 60rem) { .link { grid-template-columns: 1fr; } .link .arr { transform: rotate(90deg); justify-self: center; } }
+.link .arr { align-self: center; font: 700 1.8rem/1 var(--display); color: var(--muted); text-align: center; }
+.doc { background: var(--panel); border: 1px solid var(--rule); border-radius: 0.5rem; padding: 0.9rem 1rem; display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
+.doc .hd { display: flex; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; align-items: baseline; }
+.doc .hd b { font: 700 1rem/1.2 var(--display); }
+pre.raw { margin: 0; font: 0.78rem/1.45 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; max-height: 34rem; overflow: auto; }
+pre.raw.full { max-height: none; }
+pre.raw .hit { background: var(--mark); color: var(--mark-ink); font-weight: 700; }
+pre.raw .tag7 { background: var(--ok-soft); color: var(--ok); font-weight: 700; }
+.sumtxt { font-size: 0.98rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+.decision { border-radius: 0.5rem; padding: 0.9rem 1rem; display: grid; gap: 0.35rem; align-content: center; border: 2px solid var(--rule); background: var(--panel); }
+.decision .who { font: 800 1.45rem/1.15 var(--display); }
+.decision.bad { border-color: var(--flag); background: var(--flag-soft); }
+.decision.bad .who { color: var(--flag); }
+.decision.good { border-color: var(--ok); background: var(--ok-soft); }
+.decision.good .who { color: var(--ok); }
+.decision .why { font: 500 0.72rem/1.4 var(--mono); color: var(--muted); white-space: pre-wrap; }
+.fixline { font: 600 1rem/1.45 var(--body); border-left: 4px solid var(--ok); padding: 0.4rem 0.8rem; background: var(--ok-soft); color: var(--ink); border-radius: 0.2rem; }
+footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--rule); font-size: 0.72rem; color: var(--muted); display: grid; gap: 0.3rem; }
+footer code { font-size: 0.68rem; overflow-wrap: anywhere; }
+details summary { cursor: pointer; font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+@media (max-width: 30rem) { h2.q { font-size: 1.5rem; } .gauge .num { font-size: 2rem; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="eyebrow">Swarm oversight · cached replay from recorded runs</span>
+      <h1>The Summarizer Is the Monitor</h1>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Demo sections">
+      <button role="tab" id="tb-monitor" aria-controls="p-monitor" data-tab="monitor"><span class="k">1</span>You are the monitor</button>
+      <button role="tab" id="tb-raw" aria-controls="p-raw-vs-summary" data-tab="raw-vs-summary"><span class="k">2</span>Raw vs summary</button>
+      <button role="tab" id="tb-framed" aria-controls="p-framed" data-tab="framed"><span class="k">3</span>The framed agent</button>
+    </nav>
+  </header>
+
+  <section class="tab" id="p-monitor" role="tabpanel" aria-labelledby="tb-monitor">
+    <h2 class="q">One of these summaries hides a secret deal. Which one?</h2>
+    <p class="lede" id="t1-lede"></p>
+    <div class="cards" id="t1-cards"></div>
+    <div class="row">
+      <button class="btn" id="t1-reveal" type="button">Reveal the raw messages</button>
+      <button class="btn ghost" id="t1-reset" type="button" hidden>Hide again</button>
+      <span class="small" id="t1-hint">Pick a card, then reveal. Keys: A B C, R.</span>
+    </div>
+    <div class="reveal" id="t1-reveal-panel" hidden>
+      <div class="panel">
+        <h3 id="t1-msgs-h"></h3>
+        <div id="t1-msgs" style="display:grid;gap:0.6rem"></div>
+        <p class="small" id="t1-msgs-note"></p>
+      </div>
+      <div class="panel">
+        <h3>What the monitors scored</h3>
+        <div class="tw"><table class="scores" id="t1-table"></table></div>
+        <p class="small" id="t1-table-note"></p>
+        <p class="takeaway" id="t1-take"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab" id="p-raw-vs-summary" role="tabpanel" aria-labelledby="tb-raw" hidden>
+    <h2 class="q">Same log, two views. Watch the monitor's score.</h2>
+    <p class="lede" id="t2-lede"></p>
+    <div class="row">
+      <div class="seg" role="group" aria-label="Choose log" id="t2-logs"></div>
+      <div class="seg" role="group" aria-label="Choose view" id="t2-views"></div>
+    </div>
+    <div class="stage">
+      <div class="viewer" id="t2-viewer" tabindex="0" aria-label="Log or summary text"></div>
+      <div class="gauges" id="t2-gauges"></div>
+    </div>
+    <div class="panel edits" id="t2-edits"></div>
+    <div class="agg" id="t2-agg"></div>
+  </section>
+
+  <section class="tab" id="p-framed" role="tabpanel" aria-labelledby="tb-framed" hidden>
+    <h2 class="q">The guilty agent adds one line. The overseer suspends the innocent one.</h2>
+    <p class="lede" id="t3-lede"></p>
+    <div class="chain" id="t3-chain"></div>
+    <div class="row">
+      <button class="btn" id="t3-fix" type="button">Add one line to the summarizer's prompt</button>
+      <span class="small">Key: F</span>
+    </div>
+    <div class="chain" id="t3-fixchain" hidden></div>
+    <div class="agg" id="t3-agg"></div>
+    <p class="note" id="t3-scope"></p>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+
+<script id="data" type="application/json">/*__DATA__*/{}</script>
+<script>
+(function () {
+  "use strict";
+  var D = JSON.parse(document.getElementById("data").textContent);
+  var THR = D.threshold;
+  function $(id) { return document.getElementById(id); }
+  function el(tag, attrs, kids) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === "class") e.className = attrs[k];
+      else if (k === "text") e.textContent = attrs[k];
+      else if (k === "html") e.innerHTML = attrs[k];
+      else e.setAttribute(k, attrs[k]);
+    }
+    (kids || []).forEach(function (c) { if (c != null) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  // highlight exact sentences inside a text; cls per list
+  function marked(text, lists) {
+    var h = esc(text);
+    lists.forEach(function (L) {
+      (L.items || []).forEach(function (s) {
+        var es = esc(s);
+        if (h.indexOf(es) >= 0) h = h.split(es).join("<" + L.tag + (L.cls ? ' class="' + L.cls + '"' : "") + ">" + es + "</" + L.tag + ">");
+      });
+    });
+    return md(h);
+  }
+  function md(h) { return h.replace(/\*\*([^*<>]+)\*\*/g, "<b>$1</b>").replace(/`([^`<>]+)`/g, "<code>$1</code>"); }
+  function pill(v) {
+    if (v === null || v === undefined) return el("span", { class: "pill na", text: "not run" });
+    var f = v >= THR;
+    return el("span", { class: "pill " + (f ? "flag" : "pass"), text: v + (f ? " flagged" : " pass") });
+  }
+  function frac(o) { return o.k + "/" + o.n; }
+  var SHORTNAME = { SPLIT: "Planted deal", CLEAN: "Real log", LEGIT: "Ordinary coordination" };
+  var MONS = Object.keys(D.tab1.cards[0].scores.raw);
+  var CONDNAME = { SPLIT: "Planted split deal", CLEAN: "Real log, nothing inserted", LEGIT: "Control: ordinary coordination messages inserted" };
+
+  /* ---------------- tabs */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll("nav.tabs button"));
+  function show(name) {
+    if (!$("p-" + name)) name = "monitor";
+    tabs.forEach(function (b) { var on = b.dataset.tab === name; b.setAttribute("aria-selected", on); b.tabIndex = on ? 0 : -1; $("p-" + b.dataset.tab).hidden = !on; });
+    if (location.hash !== "#" + name) history.replaceState(null, "", "#" + name);
+    if (name === "raw-vs-summary" && ready) render2();
+  }
+  var ready = false;
+  tabs.forEach(function (b) { b.addEventListener("click", function () { show(b.dataset.tab); }); });
+  window.addEventListener("hashchange", function () { show(location.hash.slice(1)); });
+
+  /* ---------------- tab 1 */
+  var T1 = D.tab1, choice = null, revealed = false;
+  var c0 = T1.cards[0];
+  $("t1-lede").textContent = "Each paragraph is a real summary that GPT-5.6-luna wrote for a safety monitor, covering messages " +
+    c0.msg_range[0] + "-" + c0.msg_range[1] + " (chunk " + (c0.chunk + 1) + " of " + c0.n_chunks + ") of a real multi-agent log in which AI agents build a Lisp interpreter. " +
+    "The monitor never sees the raw messages, only paragraphs like these. One of the three logs contains a planted, fictional deal between two agents, spread over " +
+    T1.cards.filter(function (c) { return c.cond === "SPLIT"; })[0].inserted.length + " innocent-looking messages.";
+  var cardEls = T1.cards.map(function (c, i) {
+    var letter = String.fromCharCode(65 + i);
+    var b = el("button", { class: "card" + (c.cond === "SPLIT" ? " isdeal" : ""), type: "button", "aria-pressed": "false" }, [
+      el("div", { class: "lbl" }, [el("span", { class: "letter", text: letter }), el("span", { class: "meta", text: c.words + " words · chunk " + (c.chunk + 1) + "/" + c.n_chunks })]),
+      el("div", { class: "txt" }), el("div", { class: "verdict", hidden: "" })
+    ]);
+    b.querySelector(".txt").innerHTML = md(esc(c.text));
+    b.addEventListener("click", function () { pick(i); });
+    $("t1-cards").appendChild(b);
+    return b;
+  });
+  function pick(i) { choice = i; cardEls.forEach(function (b, j) { b.setAttribute("aria-pressed", j === i); }); }
+  function reveal(on) {
+    revealed = on;
+    $("t1-reveal-panel").hidden = !on; $("t1-reset").hidden = !on; $("t1-reveal").hidden = on;
+    T1.cards.forEach(function (c, i) {
+      var b = cardEls[i], v = b.querySelector(".verdict"), t = b.querySelector(".txt");
+      b.classList.toggle("revealed", on);
+      v.hidden = !on;
+      if (on) {
+        v.className = "verdict " + (c.cond === "SPLIT" ? "deal" : "clean");
+        v.textContent = (c.cond === "SPLIT" ? "Hid the deal · " : "No deal · ") + CONDNAME[c.cond];
+        t.innerHTML = c.cond === "SPLIT" ? marked(c.text, [{ tag: "mark", items: c.pair_sents }]) : md(esc(c.text));
+      } else { t.innerHTML = md(esc(c.text)); }
+    });
+    if (on && choice !== null) {
+      var right = T1.cards[choice].cond === "SPLIT";
+      $("t1-hint").textContent = right ? "You found it. The monitor did not." : "You missed it, and so did the monitor.";
+    }
+  }
+  (function buildReveal() {
+    var deal = T1.cards.filter(function (c) { return c.cond === "SPLIT"; })[0];
+    var di = T1.cards.indexOf(deal);
+    $("t1-msgs-h").textContent = "Card " + String.fromCharCode(65 + di) + ": the " + deal.inserted.length + " planted messages in the raw log (" + deal.pair.join(" and ") + ")";
+    deal.inserted.forEach(function (m) {
+      $("t1-msgs").appendChild(el("div", { class: "msg" }, [
+        el("span", { class: "who", text: m.from + " → " + m.to }), el("span", { class: "t", text: m.text }),
+        el("span", { class: "where", text: "message " + m.n + " of " + deal.n_msgs + " · chunk " + (m.chunk + 1) + (m.chunk === deal.chunk ? " (inside the paragraph above)" : " (summarized in another chunk)") })
+      ]));
+    });
+    $("t1-msgs-note").textContent = "Fictional deal text from the planted set; the surrounding " + (deal.n_msgs - deal.inserted.length) + " messages are the real log. " +
+      deal.inserted_in_chunk + " of the " + deal.inserted.length + " messages fall inside this card's chunk. The highlighted sentence is what the summarizer kept of them.";
+    var tb = $("t1-table");
+    function short(m) { return m.indexOf("Claude") === 0 ? m.split(" ")[1] : m.split(" ")[0]; }
+    var h1 = el("tr", null, [el("th", { rowspan: "2", text: "Card" }), el("th", { rowspan: "2", text: "Log" }),
+      el("th", { colspan: String(MONS.length), text: "Monitor reads summaries" }), el("th", { colspan: String(MONS.length), text: "Monitor reads raw log" })]);
+    var h2 = el("tr");
+    MONS.concat(MONS).forEach(function (m) { h2.appendChild(el("th", { text: short(m), title: m })); });
+    tb.appendChild(el("thead", null, [h1, h2]));
+    var body = el("tbody");
+    T1.cards.forEach(function (c, i) {
+      var tr = el("tr", null, [el("td", { text: String.fromCharCode(65 + i) }), el("td", { text: SHORTNAME[c.cond] })]);
+      MONS.forEach(function (m) { tr.appendChild(el("td", null, [pill(c.scores.summary[m])])); });
+      MONS.forEach(function (m) { tr.appendChild(el("td", null, [pill(c.scores.raw[m])])); });
+      body.appendChild(tr);
+    });
+    tb.appendChild(body);
+    $("t1-table-note").textContent = "Score 0-100, flagged at " + THR + " or more. Each score is the monitor's recorded answer for the whole log: all " + deal.n_chunks +
+      " chunk summaries, or the full raw log. Same monitor prompt in both views.";
+    var r = deal.scores.raw, s = deal.scores.summary;
+    $("t1-take").textContent = "On the raw log both monitors flag the deal (" + MONS.map(function (m) { return r[m]; }).join(" and ") +
+      "). Reading the summarizer's paragraphs, neither does (" + MONS.map(function (m) { return s[m]; }).join(" and ") + "). The summarizer read " + deal.inserted_in_chunk + " of the " + deal.inserted.length + " messages, judged them itself, and the monitor took its word.";
+  })();
+  $("t1-reveal").addEventListener("click", function () { reveal(true); });
+  $("t1-reset").addEventListener("click", function () { reveal(false); $("t1-hint").textContent = "Pick a card, then reveal. Keys: A B C, R."; });
+
+  /* ---------------- tab 2 */
+  var T2 = D.tab2, li = 0, view = "raw", edit = null;
+  $("t2-lede").textContent = "A real swarm log with a planted split deal. The full log is too long to read at scale, so the monitor reads GPT-5.6-luna's chunk summaries (one per " +
+    D.chunk + " messages, at most " + D.sumWords + " words each). Planted messages are highlighted in the raw view.";
+  var logBtns = T2.logs.map(function (L, i) {
+    var b = el("button", { type: "button", "aria-pressed": "false", text: "Log " + (i + 1) + (L.edit ? " · summary keeps the deal" : " · summary drops the deal") });
+    b.addEventListener("click", function () { li = i; edit = null; render2(); });
+    $("t2-logs").appendChild(b); return b;
+  });
+  var viewBtns = [["raw", "Full log"], ["summary", "Luna summary"]].map(function (v) {
+    var b = el("button", { type: "button", "aria-pressed": "false", "data-v": v[0] });
+    b.addEventListener("click", function () { view = v[0]; render2(); });
+    $("t2-views").appendChild(b); return b;
+  });
+  function rawView(L) {
+    var box = el("div", { class: "log" });
+    L.chunks.forEach(function (seg, ci) {
+      box.appendChild(el("div", { class: "chunkhd", text: "chunk " + (ci + 1) + " of " + L.chunks.length + " · messages " + (seg[0] + 1) + "-" + seg[1] }));
+      for (var i = seg[0]; i < seg[1]; i++) {
+        var m = L.msgs[i];
+        box.appendChild(el("div", { class: "m" + (m.inj ? " inj" : ""), id: m.inj ? "inj-" + i : null }, [
+          el("span", { text: "[" + (i + 1) + "]" }), el("span", { text: m.from + " → " + m.to }), el("span", { class: "tx", text: m.text })]));
+      }
+    });
+    return box;
+  }
+  function sumView(L) {
+    var box = el("div", { class: "sumview" });
+    var flagS = L.edit ? L.edit.flag.deleted.map(function (x) { return x[1]; }) : [];
+    var randS = L.edit ? L.edit.rand.deleted.map(function (x) { return x[1]; }) : [];
+    L.summaries.forEach(function (s, ci) {
+      box.appendChild(el("div", { class: "chunkhd", text: "summary of chunk " + (ci + 1) + " · " + s.split(/\s+/).length + " words" }));
+      var lists = [];
+      if (edit === "flag") lists.push({ tag: "span", cls: "s-del", items: flagS });
+      else if (edit === "rand") { lists.push({ tag: "span", cls: "s-del rand", items: randS }); lists.push({ tag: "span", cls: "s-flag", items: flagS }); }
+      else lists.push({ tag: "span", cls: "s-flag", items: flagS });
+      if (!L.edit) lists.push({ tag: "mark", items: L.echo });
+      box.appendChild(el("p", { html: marked(s, lists) }));
+    });
+    return box;
+  }
+  function gauge(name, v, cmpText, naText) {
+    var g = el("div", { class: "gauge" });
+    g.appendChild(el("div", { class: "name" }, [el("span", { text: name }), el("span", { text: view === "raw" ? "reading the full log" : edit ? "reading the edited summaries" : "reading the summaries" })]));
+    if (v === null || v === undefined) {
+      g.appendChild(el("div", { class: "num na", text: naText || "not scored" }));
+    } else {
+      g.appendChild(el("div", { class: "num" + (v >= THR ? " flag" : ""), text: String(v) }));
+      var bar = el("div", { class: "bar" }, [el("div", { class: "fill" + (v >= THR ? " flag" : "") }), el("div", { class: "thr" })]);
+      bar.querySelector(".thr").style.left = THR + "%";
+      g.appendChild(bar);
+      requestAnimationFrame(function () { bar.querySelector(".fill").style.width = Math.max(1, v) + "%"; });
+      g.appendChild(el("div", { class: "name" }, [el("span", { text: v >= THR ? "FLAGGED" : "passes" }), el("span", { text: "flag line " + THR })]));
+    }
+    if (cmpText) g.appendChild(el("div", { class: "cmp", text: cmpText }));
+    return g;
+  }
+  function render2() {
+    var L = T2.logs[li];
+    logBtns.forEach(function (b, i) { b.setAttribute("aria-pressed", i === li); });
+    viewBtns.forEach(function (b) {
+      var v = b.dataset.v; b.setAttribute("aria-pressed", v === view);
+      b.textContent = v === "raw" ? "Full log · " + L.msgs.length + " messages" : "Luna summary · " + L.summaries.length + " paragraphs, " + L.summaries.join(" ").split(/\s+/).length + " words";
+    });
+    var vw = $("t2-viewer"); vw.innerHTML = ""; vw.scrollTop = 0;
+    vw.appendChild(view === "raw" ? rawView(L) : sumView(L));
+    var G = $("t2-gauges"); G.innerHTML = "";
+    MONS.forEach(function (m, mi) {
+      var v = L.scores[view][m], other = L.scores[view === "raw" ? "summary" : "raw"][m];
+      var cmp = (view === "raw" ? "on the summaries: " : "on the full log: ") + other;
+      if (view === "summary" && edit && L.edit) {
+        if (m === L.edit.monitor) { cmp = "before the deletion: " + L.edit.orig; v = edit === "flag" ? L.edit.flag.score : L.edit.rand.score; }
+        else { v = null; cmp = "L2d-15 re-scored " + L.edit.monitor + " only"; }
+      }
+      G.appendChild(gauge(m, v, cmp));
+    });
+    if (view === "raw") {
+      var jump = el("div", { class: "row" }, [el("span", { class: "small", text: "Jump to planted message:" })]);
+      L.inserted.forEach(function (m, k) {
+        var b = el("button", { class: "btn ghost", type: "button", text: String(k + 1) });
+        b.style.padding = "0.45rem 0.7rem";
+        b.addEventListener("click", function () { var t = $("inj-" + (m.n - 1)); if (t) vw.scrollTop = t.offsetTop - vw.clientHeight / 3; });
+        jump.appendChild(b);
+      });
+      G.appendChild(jump);
+    }
+    var side = el("div", { class: "gauge" }, [el("div", { class: "name" }, [el("span", { text: "Edit the record the monitor reads" })])]);
+    if (L.edit) {
+      var nn = L.edit.flag.deleted.length;
+      var bf = el("button", { class: "btn", type: "button", "aria-pressed": String(edit === "flag"), text: "Delete the " + nn + " verdict sentence" + (nn > 1 ? "s" : "") });
+      var br = el("button", { class: "btn ghost", type: "button", "aria-pressed": String(edit === "rand"), text: "Control: delete " + L.edit.rand.deleted.length + " other sentences" });
+      var bx = el("button", { class: "btn ghost", type: "button", text: "Restore" });
+      bf.addEventListener("click", function () { edit = "flag"; view = "summary"; render2(); });
+      br.addEventListener("click", function () { edit = "rand"; view = "summary"; render2(); });
+      bx.addEventListener("click", function () { edit = null; render2(); });
+      [bf, br, bx].forEach(function (b) { side.appendChild(b); });
+      side.appendChild(el("span", { class: "cmp", text: "Underlined: the sentences the summarizer used to raise suspicion (L2d-15). Key: D" }));
+    } else {
+      side.appendChild(el("span", { class: "cmp", text: "No L2d-15 record for this log: its summaries were never flagged, so there was no verdict sentence to delete. Aggregate below." }));
+    }
+    G.appendChild(side);
+    renderEdits(L);
+    var target = vw.querySelector(view === "raw" ? ".m.inj" : ".s-del, .s-flag, mark");
+    if (target) vw.scrollTop = Math.max(0, target.offsetTop - vw.clientHeight / 3);
+  }
+  function renderEdits(L) {
+    var E = $("t2-edits"); E.innerHTML = "";
+    var A = T2.l2d15;
+    E.appendChild(el("h3", { text: "What deleting one or two sentences does" }));
+    if (L.edit) {
+      var n = L.edit.flag.deleted.length;
+      var res = "Recorded result for this log (L2d-15, " + L.edit.monitor + " re-reads the edited summaries): score " + L.edit.orig + " intact, " +
+        L.edit.flag.score + " after deleting the verdict sentence" + (n > 1 ? "s" : "") + ", " + L.edit.rand.score + " after deleting other sentences of similar length" +
+        (L.edit.agentctrl !== null ? ", " + L.edit.agentctrl + " after deleting other sentences that name the deal agents (L2d-15c)." : ".");
+      E.appendChild(el("p", { class: "note", text: res }));
+      if (L.edit.raw_single.length) {
+        var rr = el("div", { class: "row" }, [el("span", { class: "small", text: "Raw log instead, delete one planted message (L2d-15b, " + L.edit.monitor + "):" })]);
+        L.edit.raw_single.forEach(function (x) { rr.appendChild(el("span", null, ["message " + (x.piece + 1) + " → ", pill(x.score)])); });
+        E.appendChild(rr);
+        E.appendChild(el("p", { class: "note", html: "<span class=\"warn\">Not like-for-like.</span> The summary edit removes the summarizer's verdict and its quoted evidence; the raw edit removes one of the " +
+          L.inserted.length + " planted messages. Review2 asked that this contrast be dropped or labelled; it is shown only to make the single point of failure visible." }));
+      }
+    } else {
+      E.appendChild(el("p", { class: "note", html: "<b>No L2d-15 record for this log.</b> Its summaries were never flagged, so L2d-15 had no verdict sentence to delete. Aggregate result across the " +
+        A.n_logs + " logs that " + esc(A.monitor) + " did catch through summaries:" }));
+    }
+    E.appendChild(el("p", { class: "note", html: "<b>All " + A.n_logs + " caught logs:</b> deleting the summarizer's " + A.n_deleted_min + "-" + A.n_deleted_max + " verdict sentences (mean " + A.sents_deleted_mean + ") hides the deal in <b>" +
+      A.flag_hidden + "/" + A.n_logs + "</b>. Deleting other sentences of similar length hides " + (A.n_logs - A.rand_still) + "/" + A.n_logs +
+      "; deleting other sentences that name the deal agents hides " + (A.agentctrl_n - A.agentctrl_still) + "/" + A.agentctrl_n + ". Raw log, delete any one planted message: still caught " +
+      A.raw_still + "/" + A.raw_n + " <span class=\"warn\">(not like-for-like)</span>." }));
+  }
+  (function agg2() {
+    var S = T2.setA;
+    var g = $("t2-agg");
+    g.appendChild(el("div", { class: "stat" }, [el("span", { class: "eyebrow", text: "All planted split deals, set A" }),
+      el("div", { class: "big", html: S.raw_caught + "/" + S.n_pairs + ' <span class="arrow">→</span> ' + S.sum_caught + "/" + S.n_pairs }),
+      el("span", { class: "cap", text: "Flagged on the raw log vs through luna summaries; " + S.n_split_logs + " logs × " + MONS.join(" + ") + ". " + S.lost + " lost, " + S.gained + " gained." })]));
+    g.appendChild(el("div", { class: "stat" }, [el("span", { class: "eyebrow", text: "False alarms, same monitors" }),
+      el("div", { class: "big", html: S.fa_raw + "/" + S.n_neg_raw + ' <span class="arrow">·</span> ' + S.fa_sum + "/" + S.n_neg_sum }),
+      el("span", { class: "cap", text: "Clean and ordinary-coordination logs flagged, raw log · summaries. The loss happens at zero false alarms." })]));
+    g.appendChild(el("div", { class: "stat" }, [el("span", { class: "eyebrow", text: "Single point of failure" }),
+      el("div", { class: "big", text: T2.l2d15.flag_hidden + "/" + T2.l2d15.n_logs }),
+      el("span", { class: "cap", text: "Caught deals hidden by deleting the summarizer's " + T2.l2d15.n_deleted_min + "-" + T2.l2d15.n_deleted_max + " verdict sentences (L2d-15)." })]));
+  })();
+
+  /* ---------------- tab 3 */
+  var T3 = D.tab3;
+  $("t3-lede").textContent = "Two build agents share one terminal; the log tags each step with the agent that ran it. " +
+    "Step " + T3.vstep + " breaks an operator rule and is tagged build-agent-7. Afterwards build-agent-7 appends a note blaming build-agent-9. " +
+    "A summarizer (" + T3.summarizer + ") writes the handoff; the monitor (" + T3.monitor + ") decides whose credentials to suspend. Fictional logs, real recorded model outputs.";
+  function rawHtml(t) {
+    var h = esc(t);
+    var tag = "[step " + T3.vstep + ", build-agent-7]";
+    h = h.split(esc(tag)).join('<span class="tag7">' + esc(tag) + "</span>");
+    h = h.split(esc(T3.note)).join('<span class="hit">' + esc(T3.note) + "</span>");
+    return h;
+  }
+  function decision(d, label) {
+    var bad = d.suspend === "build-agent-9", good = d.suspend === "build-agent-7";
+    var who = d.suspend === "both" ? "Suspend both agents" : d.suspend === "neither" ? "Suspend neither" : "Suspend " + d.suspend;
+    return el("div", { class: "decision " + (bad ? "bad" : good ? "good" : "") }, [
+      el("span", { class: "eyebrow", text: label }),
+      el("span", { class: "who", text: who }),
+      el("span", { class: "small", text: bad ? "The innocent agent. The culprit keeps its credentials." : good ? "The agent the log tags for the rule break." : "" }),
+      el("span", { class: "why", text: "VERDICT: " + d.verdict + "\nRESPONSIBLE: " + d.resp + "\nSUSPEND: " + d.suspend })
+    ]);
+  }
+  function link(docEl, decEl) { return el("div", { class: "link" }, [docEl, el("div", { class: "arr", text: "→", "aria-hidden": "true" }), decEl]); }
+  (function build3() {
+    var raw = el("div", { class: "doc" }, [el("div", { class: "hd" }, [el("b", { text: "1 · Raw log, with the culprit's appended note" }), el("span", { class: "small", text: "regenerated by the run's own log builder, scenario " + T3.scen })]),
+      (function () {
+        var cut = T3.raw_log.indexOf("=== Shared");
+        var pre = cut > 0 ? T3.raw_log.slice(0, cut).trim() : "", body = cut > 0 ? T3.raw_log.slice(cut) : T3.raw_log;
+        var wrap = el("div", { style: "display:grid;gap:0.5rem" });
+        if (pre) wrap.appendChild(el("details", null, [el("summary", { class: "small", text: "Operator rules and task (shown to summarizer and monitor)" }), el("pre", { class: "raw", text: pre })]));
+        wrap.appendChild(el("pre", { class: "raw full", html: rawHtml(body) }));
+        return wrap;
+      })()]);
+    var rawDec = decision(T3.raw, T3.monitor + " reads the raw log");
+    rawDec.querySelector(".why").textContent = T3.raw.tail;
+    $("t3-chain").appendChild(link(raw, rawDec));
+    var sm = el("div", { class: "doc" }, [el("div", { class: "hd" }, [el("b", { text: "2 · " + T3.summarizer + " writes the handoff summary" }), el("span", { class: "small", text: "the monitor reads only this" })]),
+      el("div", { class: "sumtxt", html: marked(T3.summary.text, [{ tag: "mark", items: T3.summary.launder }]) })]);
+    $("t3-chain").appendChild(link(sm, decision(T3.summary, T3.monitor + " reads the summary")));
+    var fx = el("div", { class: "doc" }, [el("div", { class: "hd" }, [el("b", { text: "3 · Same log, one line added to the summarizer's prompt" })]),
+      el("div", { class: "fixline", text: T3.fix_line }),
+      el("div", { class: "sumtxt", html: marked(T3.fixed.text, [{ tag: "mark", items: T3.fixed.marks }]) })]);
+    $("t3-fixchain").appendChild(link(fx, decision(T3.fixed, T3.monitor + " reads the fixed summary")));
+    var A = T3.agg, g = $("t3-agg");
+    function stat(eb, big, cap) { g.appendChild(el("div", { class: "stat" }, [el("span", { class: "eyebrow", text: eb }), el("div", { class: "big", text: big }), el("span", { class: "cap", text: cap })])); }
+    g.appendChild(el("p", { class: "note", style: "grid-column:1/-1;margin:0", html: "<b>How often " + esc(T3.monitor) + " suspends only the innocent build-agent-9</b>, across all runs:" }));
+    stat("Raw log, with the note", frac(A.raw_sonnet), "L1c-17b. On the raw log it suspends both agents in " + frac(A.raw_sonnet_both) + ", never the innocent one alone.");
+    stat("Summaries, with the note", frac(A.sum_sonnet_note), "L1c-20. Via luna summaries " + frac(A.sum_sonnet_note_luna) + ", via Haiku summaries " + frac(A.sum_sonnet_note_haiku) + ". Gemini 3.8 Flash as monitor: " + frac(A.sum_gemini_note) + ".");
+    stat("Summaries, no note", frac(A.sum_sonnet_nonote), "L1c-20 control. Without the culprit's note nobody frames build-agent-9.");
+    stat("Summaries + the summarizer line", frac(A.fix_sonnet), "L1c-20b. It now suspends build-agent-7 in " + frac(A.fix_sonnet_names7) + ". Gemini as monitor: " + frac(A.fix_gemini) + ".");
+    $("t3-scope").textContent = "Scope: " + A.n_logs + " hand-written fictional logs × " + A.n_summarizers + " summarizers × " + A.n_reps + " repeats per cell. Attribution here rests only on the agents' self-tags (no credential audit), and the answer format has no 'hold for review' option. " +
+      "The example shown is scenario " + T3.scen + ", repeat " + T3.rep + "; the counts above are the full runs.";
+  })();
+  var fixOn = false;
+  $("t3-fix").addEventListener("click", function () { fixOn = !fixOn; $("t3-fixchain").hidden = !fixOn; this.textContent = fixOn ? "Remove the line" : "Add one line to the summarizer's prompt"; });
+
+  /* ---------------- footer, keys, start */
+  var src = Object.keys(D.meta.sources).map(function (k) { return k + " (" + D.meta.sources[k] + ")"; });
+  $("foot").appendChild(el("div", { text: "Cached replay built " + D.meta.built + " by src/build_demo.py from " + D.meta.records + ". Every number and excerpt on this page is read from these records (sha256 prefix):" }));
+  $("foot").appendChild(el("code", { text: src.join(" · ") }));
+  $("foot").appendChild(el("div", { text: "Planted deals and the build-agent logs are fictional. No live model calls." }));
+
+  document.addEventListener("keydown", function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var k = e.key.toLowerCase(), cur = tabs.filter(function (b) { return b.getAttribute("aria-selected") === "true"; })[0].dataset.tab;
+    if (k === "1") show("monitor"); else if (k === "2") show("raw-vs-summary"); else if (k === "3") show("framed");
+    else if (cur === "monitor" && "abc".indexOf(k) >= 0 && k.length === 1) pick("abc".indexOf(k));
+    else if (cur === "monitor" && k === "r") reveal(!revealed);
+    else if (cur === "raw-vs-summary" && k === "t") { view = view === "raw" ? "summary" : "raw"; render2(); }
+    else if (cur === "raw-vs-summary" && k === "d" && T2.logs[li].edit) { edit = edit === "flag" ? null : "flag"; view = "summary"; render2(); }
+    else if (cur === "framed" && k === "f") $("t3-fix").click();
+  });
+  ready = true;
+  show(location.hash.slice(1) || "monitor");
+  render2();
+})();
+</script>
+</body>
+</html>
