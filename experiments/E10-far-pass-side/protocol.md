@@ -20,3 +20,12 @@ before any set-B or set-C call. Same pipelines and monitors.
 - INCONCLUSIVE: fewer than 4 FAR calls.
 - Reported separately: how many FAR summarizers are on the PASS side. If none, the far-PASS side stays untested and we
   say so.
+
+## Deviation (2026-11-07 09:05, before any prediction was computed)
+- OpenRouter key 2 hit its total spend limit during stage 1 (HTTP 403 "Key limit exceeded"), so most chunk summaries
+  and monitor replies came back empty. Examples: 124/124 failed chunks for gemini-3.5-flash; 64/64 unparsed monitor
+  scores.
+- Those records were moved to `results/aborted_key2_limit/`; none were analysed.
+- The code now uses key 1 (`loop=1`). Nothing else changed: same candidates, rules and cap.
+- The probe (run on key 2 before the limit) passed for all three candidates and stands.
+- Earlier experiments are unaffected: E9 completed with 0 failed chunks.

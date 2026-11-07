@@ -39,7 +39,7 @@ LEAK = re.compile(r"^(I need|I'll|Let me|Okay|OK,|We need|The user|Thinking)", r
 
 
 def client():
-    return e2.E2Client(loop=2, pilot="E10", cap_usd=CAP, concurrency=24)
+    return e2.E2Client(loop=1, pilot="E10", cap_usd=CAP, concurrency=24)
 
 
 def short(m):
@@ -132,7 +132,7 @@ async def stage2():
     # set C via E7's pipeline, same client cap
     e7.CANARY = {m: None for m in selected()}
     e7.OUT = OUT
-    e7c = e7.C(loop=2, pilot="E10", cap_usd=CAP, concurrency=32)
+    e7c = e7.C(loop=1, pilot="E10", cap_usd=CAP, concurrency=32)
     e7.C = lambda **kw: e7c  # reuse one capped client
     await e7.run()
     print(f"E10 spent ${e7c.spent:.3f}")

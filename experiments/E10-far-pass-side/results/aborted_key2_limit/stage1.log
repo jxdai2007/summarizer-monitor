@@ -1,0 +1,13 @@
+stage1: 159 log-jobs
+E10 spent $3.762
+Traceback (most recent call last):
+  File "/Users/macstudio/projects/swarm-alignment/summarizer-monitor/experiments/E10-far-pass-side/code/e10_run.py", line 181, in <module>
+    {"predict": predict, "analyze": analyze}[cmd]()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/macstudio/projects/swarm-alignment/summarizer-monitor/experiments/E10-far-pass-side/code/e10_run.py", line 105, in predict
+    d, n = drop(OUT / f"A_split_{short(m)}.jsonl", FA)
+           ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/macstudio/projects/swarm-alignment/summarizer-monitor/experiments/E10-far-pass-side/code/e10_run.py", line 97, in drop
+    return 100 * (sum(a for a, _ in pr) - sum(b for _, b in pr)) / len(pr), len(pr)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+ZeroDivisionError: division by zero
