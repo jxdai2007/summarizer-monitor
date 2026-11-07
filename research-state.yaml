@@ -109,14 +109,17 @@ block_2026-11-07:
   aim: "Strengthen submission 1's impact and execution with defensive, deployer-facing experiments; keep claims reviewed."
   plan:
     - id: E6
-      what: "Per-summarizer recalibration: does setting each summarizer's threshold on half the controls restore matched detection on held-out sessions? (E3 records, $0)"
-      status: next
+      what: "Per-summarizer recalibration on held-out controls (E3 records, $0)"
+      status: "done MIXED (8f5b06e): P2,P3 pass (FA 9-11% all views), P1 fail; exploratory: fixed threshold loses up to 42 pts detection"
+    - id: E7
+      what: "Canary transfer to a new environment (ChatDev set C), 6 summarizers"
+      status: running (locked 76c8c09)
     - id: E4
-      what: "Audit test-retest: rerun the canary on 3 summarizers; how stable is the PASS/FAIL call?"
-      status: planned
+      what: "Audit test-retest: rerun the set-A canary twice on 5 summarizers"
+      status: running (locked, E4 commit)
     - id: E5
-      what: "Audit -> fix -> re-audit: a summarizer-prompt fix for a canary-FAIL summarizer; does the canary predict the held-out improvement?"
-      status: planned
+      what: "Audit -> fix -> re-audit: one-sentence summarizer fix on gpt-oss-120b and MiniMax"
+      status: running (locked ebbee5b)
     - id: PKG
       what: "Refresh progress.html; fold accepted results into paper via make_numbers.py; claims review before any paper change."
       status: ongoing
