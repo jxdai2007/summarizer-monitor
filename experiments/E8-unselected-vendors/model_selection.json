@@ -1,0 +1,36 @@
+{
+ "rule": "per vendor, first model in ORDER whose 2-log probe has no unavailable/leaked/overlong chunk summary",
+ "probe_notes": {
+  "tencent/hy4": {
+   "chunks": 8,
+   "bad": 4,
+   "max_words": 141
+  },
+  "tencent/hy3": {
+   "chunks": 8,
+   "bad": 0,
+   "max_words": 117
+  },
+  "z-ai/glm-5.3-prime": {
+   "chunks": 8,
+   "bad": 0,
+   "max_words": 147
+  },
+  "bytedance-seed/seed-2-1-turbo": {
+   "chunks": 8,
+   "bad": 2,
+   "max_words": 106
+  },
+  "bytedance-seed/seed-2.0-lite": {
+   "chunks": 8,
+   "bad": 0,
+   "max_words": 88
+  }
+ },
+ "selected": [
+  "tencent/hy3",
+  "z-ai/glm-5.3-prime",
+  "bytedance-seed/seed-2.0-lite"
+ ],
+ "decided": "2026-11-07T07:08:33-08:00"
+}
