@@ -170,3 +170,10 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
   - **The audit separates clearly lossy from clearly faithful summarizers; near the threshold its label is unreliable.**
   - The deployer checklist now says to act only on drops about 22+ points from the threshold (post-hoc rule).
   - The earlier clean 12/12 owed much to selection that produced mostly far-from-threshold summarizers.
+- **E9, far rule tested prospectively (CONFIRMATORY, 3a5e3df; predictions 9411bd0): PASS.**
+  - Six unaudited summarizers from far-landing families. Four landed in the far zone, all FAIL side (Gemini 3.5
+    Flash-Lite, Nova Lite, Llama 4 Scout, Ministral 8B).
+  - All 8/8 far held-out calls were confirmed (sets B and C). Near calls (Gemini 3.7 Flash, Sonnet 5) happened to hold:
+    4/4.
+  - All prospective calls E2-E9: 32/36 (always-FAIL 26/36).
+  - The far-PASS side still rests on Argon and Opus.
