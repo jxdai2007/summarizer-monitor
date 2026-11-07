@@ -1,0 +1,94 @@
+{
+ "protocol": "summarizer-monitor/experiments/E2b-canary-pass-side/protocol.md (locked bec2a9b, 2026-11-06 22:58:44 PT)",
+ "decided": "2026-11-06 ~23:05 PT, before any E2b monitor call",
+ "rule": "first 3 available on OpenRouter, in the fixed order, whose 2-log probe projects <= $5 for the full E2b run and (Kimi only) whose summaries carry no deliberation text; every new model's summaries checked on >= 2 chunks for leaked reasoning before any monitor call",
+ "fixed_order_resolved_to_ids": {
+  "1 Gemini latest Pro": "google/gemini-4-argon (Google's flagship Gemini 4 model; the alias ~google/gemini-pro-latest is served as google/gemini-4-argon, checked 23:03 PT)",
+  "2 gpt-oss-120b": "openai/gpt-oss-120b",
+  "3 Nemotron latest": "nvidia/nemotron-3.5-super-vl (newest paid non-safety Nemotron on OpenRouter)",
+  "4 Phi latest": "microsoft/phi-4",
+  "5 Mistral Medium latest": "mistralai/mistral-medium-3-5",
+  "6 Kimi": "moonshotai/kimi-k3.1-pro at reasoning effort low"
+ },
+ "selected": [
+  "google/gemini-4-argon",
+  "openai/gpt-oss-120b",
+  "nvidia/nemotron-3.5-super-vl"
+ ],
+ "skipped": {
+  "microsoft/phi-4": "not reached (first 3 in the order fit)",
+  "mistralai/mistral-medium-3-5": "not reached",
+  "moonshotai/kimi-k3.1-pro": "not reached"
+ },
+ "projection": "required design, as run in E2: per-chunk summary cost from the probe x 365 chunks (set A 124 SPLIT + 79 control chunks; set B 162 SPLIT chunks; set-B controls = the same 21 logs, set-A summaries reused) + a $0.01/log allowance for the two monitors x 95 logs (E2's cheapest audit, MiniMax, cost $0.007/log summaries + monitors together, so the allowance is an upper bound). Also shown: with optional fresh set-B control summaries (444 chunks, 116 logs).",
+ "request_settings": "OpenRouter defaults (no reasoning override) for all three, exactly as E2's summarizers; max_tokens 4000 per chunk as in E2",
+ "set_B_controls_plan": "as declared in E2: fresh set-B summaries of the 21 control logs are an optional extra, run for every selected summarizer after its set-B SPLIT run if the E2b total stays within the $15 budget (projected ~$8 with them); if any is not run, R4's set-B cell for it reuses the set-A control summaries (stated in results)",
+ "probes": {
+  "google/gemini-4-argon": {
+   "served_model": "google/gemini-4-argon",
+   "request_extra": {},
+   "probe_logs": [
+    "practice_02|1|SPLIT",
+    "practice_02|0|SPLIT"
+   ],
+   "probe_chunks": 8,
+   "probe_usd_summaries": 0.07,
+   "usd_per_chunk": 0.00875,
+   "projected_full_E2b_usd": 4.14,
+   "fits_5usd": true,
+   "chunk_errors": 0,
+   "chunk_words_min_max_mean": [
+    145,
+    210,
+    181
+   ],
+   "leaked_reasoning_flags": 0,
+   "leak_check": "heuristic (starts with / first 200 chars contain deliberation phrases) + manual read of all 8 chunks: clean summaries, no deliberation text",
+   "projected_with_fresh_setB_controls_usd": 5.04
+  },
+  "openai/gpt-oss-120b": {
+   "served_model": "openai/gpt-oss-120b",
+   "request_extra": {},
+   "probe_logs": [
+    "practice_02|1|SPLIT",
+    "practice_02|0|SPLIT"
+   ],
+   "probe_chunks": 8,
+   "probe_usd_summaries": 0.0021,
+   "usd_per_chunk": 0.00027,
+   "projected_full_E2b_usd": 1.05,
+   "fits_5usd": true,
+   "chunk_errors": 0,
+   "chunk_words_min_max_mean": [
+    151,
+    376,
+    233
+   ],
+   "leaked_reasoning_flags": 0,
+   "leak_check": "heuristic (starts with / first 200 chars contain deliberation phrases) + manual read of all 8 chunks: clean summaries, no deliberation text",
+   "projected_with_fresh_setB_controls_usd": 1.28
+  },
+  "nvidia/nemotron-3.5-super-vl": {
+   "served_model": "nvidia/nemotron-3.5-super-vl",
+   "request_extra": {},
+   "probe_logs": [
+    "practice_02|1|SPLIT",
+    "practice_02|0|SPLIT"
+   ],
+   "probe_chunks": 8,
+   "probe_usd_summaries": 0.0122,
+   "usd_per_chunk": 0.00153,
+   "projected_full_E2b_usd": 1.51,
+   "fits_5usd": true,
+   "chunk_errors": 0,
+   "chunk_words_min_max_mean": [
+    102,
+    134,
+    122
+   ],
+   "leaked_reasoning_flags": 0,
+   "leak_check": "heuristic (starts with / first 200 chars contain deliberation phrases) + manual read of all 8 chunks: clean summaries, no deliberation text",
+   "projected_with_fresh_setB_controls_usd": 1.84
+  }
+ }
+}
