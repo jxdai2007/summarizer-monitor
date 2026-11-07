@@ -27,20 +27,19 @@ Keys in the demo:
 | 4 | 3:15-4:30 | **The ceiling.** Main figure: summarizer spread from −14 to +40 points {{src: review2/l2_13.md §2.1}}. The monitor is capped by its summarizer (6 families, rho 0.99 {{src: loop2d/inherit_v1.txt}}), with 1 exception in 8 prospective checks: Nova Pro, set A, +9 points {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q4 row}}. | luna 87→48% at zero false alarms {{src: review2/l2_13_stress_results.txt set A luna}}. Flagship sol still −24 [+12, +37] {{src: same, sol}}. Claude Sonnet summaries lose 9-10, not significant; Gemini summaries beat the full log (−8, −14) {{src: review2/l2_13.md §2.1, §3}}. Replicated on ChatDev 59→30% {{src: loop9/loop9_results.txt}}. **The summarizer decides, not summarization.** | Figure |
 | 5 | 4:30-5:45 | **Where the judging happens.** Neutral summary prompt: 0/32 caught {{src: loop2d/l2d13_results.txt}}. Monitors flag a split deal only when the summary carries an explicit suspicion sentence: 1/73 without one {{src: loop2d/l2d14_results.txt}}. Delete the 1-2 verdict sentences and 14/15 caught deals vanish {{src: loop2d/l2d15_results.txt}}. | This is a monitor cascade, and the first monitor is unannounced. The record has a single point of failure. | Tab 2: toggle `T`, then Log 2, `D` (Haiku 68→5 {{src: loop2d/runs/edit_summary.jsonl practice_05\|0\|SPLIT}}) |
 | 6 | 5:45-7:15 | **The framed agent.** Culprit's note "step 9 was run by build-agent-9". Raw log: Sonnet suspends only the innocent 0/14 {{src: loop1c/runs/l1c17b/claude-sonnet-5.5.jsonl}}. Through summaries: 16/28 {{src: loop1c/runs/l1c20.jsonl}}. | Haiku resists the note as a monitor but writes it into the record as a summarizer {{src: loop1c/L1c-20_results.md "Haiku resists... 1/21"}}. Same family of testimony: a one-line "correction" gets luna to clear 10/24 rule breaks, 0/24 without {{src: review2/agent_records.md RV2-REC-A}}. | Tab 3, step by step |
-| 7 | 7:15-8:45 | **Fixes + audit.** (a) Summarizer line → 0/28 {{src: loop1c/runs/l1c20b.jsonl}}. (b) Raw peer lane → [SLOT E1]. (c) Canary audit: 4/4 new summarizers called lossy and confirmed on unseen deals, under $2 and a few minutes each {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q1 row, cost table}}; [SLOT E2b] for the PASS side. | Each fix is one line or one view. The audit is the part a lab can run on its own stack without sharing logs. | Tab 3, `F`; then the CLI |
+| 7 | 7:15-8:45 | **Fixes + audit.** (a) Summarizer line → 0/28 {{src: loop1c/runs/l1c20b.jsonl}}. (b) Raw worker-to-worker lane: on agent-written deals it matches full-log detection at about half the tokens, once calibrated (49 vs 50 of 66 at matched false alarms; 8/64 false alarms at the default threshold) {{src: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md}}. (c) Canary audit: 4/4 new summarizers called lossy and confirmed on unseen deals, under $2 and a few minutes each {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md Q1 row, cost table}}; [SLOT E2b] for the PASS side. | Each fix is one line or one view. The audit is the part a lab can run on its own stack without sharing logs. | Tab 3, `F`; then the CLI |
 | 8 | 8:45-10:00 | **Scope + checklist.** On agent-written deals the loss is small: +6 points at matched false alarms, CI −3 to +15 {{src: loop8/l8_results.txt}}. The big effects are on planted deals. Checklist below. | "Treat your summarizer as a monitor. Audit it like one." | Title card |
 
-### Slot E1 (slide 7b): raw lane on agent-written deals
-Use one variant once the E1 verdict and its claims review are in.
-- **PASS** (P1 holds): "On deals the agents wrote themselves, the raw lane catches ⟨k⟩/66 against 48/66 on the full log,
-  with ⟨FA⟩/64 false alarms. It is a real fix, not just a construction artefact."
-- **FAIL on detection**: "On agent-written deals the lane does not recover detection (⟨k⟩/66 vs 48/66). It is a fix for
-  planted cross-agent deals only, and we say so."
-- **FAIL on false alarms only** (protocol interpretation 3): "It catches more than the full log (⟨k⟩/66 vs 48/66) but
-  false alarms rise to ⟨FA⟩/64 from 5/64. Use it with its own threshold."
-- The current, unreviewed reading of `summarizer-monitor/experiments/E1-raw-lane-agent-written/results/results.txt` is
-  the third variant: 51/66 caught, 8/64 false alarms, AUC 0.944 vs 0.924 on the full log, 54% of full-log characters.
-  Confirm before using.
+### E1 (slide 7b): raw lane on agent-written deals (final, reviewed)
+Say: "A raw worker-to-worker lane matches full-log detection at about half the tokens, once calibrated." Supporting
+numbers (Sonnet 5.5, 66 coordinated / 64 control sessions) {{src: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md}}:
+- Size: 53.6% of the full log's characters.
+- At matched false alarms: lane 49, full log 50, luna summaries 46 of 66. None of the differences is significant.
+- At the default threshold: lane 51/66 vs luna summaries 37/66 (exact McNemar p = 0.0013), but with 8/64 false alarms
+  against a pre-set bar of ≤ 6. So P1 failed on false alarms only, and the lane needs its own threshold.
+- AUC: 0.944 for the lane vs 0.924 for the full log, within the pre-set 0.03 margin (P3 PASS).
+- Do not claim it beats summaries at matched false alarms (49 vs 46, n.s.). Its edge over summaries exists only at the
+  default threshold, where summaries make the monitor less suspicious across the board.
 
 ### Slot E2 (slide 7c): canary audit, prospective (final) + E2b (PASS side, running)
 E2 result, final {{src: summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md}}:
@@ -173,7 +172,9 @@ review2/l2_13_stress_results.txt L2d-05}}. A stronger monitor did not recover wh
 Cost and length. Luna summaries are about 0.14 of full-log characters {{src: loop9/loop9_results.txt PLAIN row}}.
 Adding the raw log next to summaries does not help either: summaries next to raw evidence lower detection
 (summary + raw < raw, H2 vs H1 {{src: loop9/loop9_results.txt mechanism notes}}). The raw peer lane alone is the
-cheaper middle ground. On planted deals it works by construction; see E1 for agent-written deals.
+cheaper middle ground. On planted deals it works by construction (0.39 / 0.30 of full-log characters {{src:
+loop9/loop9_results.txt}}). On agent-written deals it matches full-log detection at about half the size once
+calibrated (49 vs 50 of 66 at matched false alarms; 53.6% of full-log characters) {{src: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md}}.
 
 **8. Is the blame chain realistic? Real systems log credentials.**
 It applies when attribution rests on agent self-tags. With a credential-audit line in the log, GPT monitors suspend
@@ -204,6 +205,7 @@ the raw edit removes one of four deal messages {{src: review2/l2_13.md §2.6}}. 
 - "0/28 on raw logs" for the blame chain. Cite 0/14: L1c-17b's 0/28 pools two note wordings, and 0/14 is the one that
   matches L1c-20's wording.
 - "Closes the gap" for the raw lane without "by construction on planted deals".
+- That the raw lane beats summaries at matched false alarms. It does not: 49 vs 46 of 66, not significant.
 - "Validated audit" without the scope: E2 validated it for flagging lossy summarizers only (4/4, all predicted FAIL).
   The PASS side is E2b.
 - "The monitor never beats its summarizer". Say "is capped by" or "rarely beats", with the count: 1 exception in 8

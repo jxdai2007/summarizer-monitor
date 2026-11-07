@@ -11,7 +11,7 @@ How to read this file:
 - `demo_numbers.json` means `summarizer-monitor/to_human/demo_numbers.json`, written by `src/build_demo.py`. It
   re-extracts the numbers below from the raw result files, so rerunning the build is the quickest check.
 - Markers are not spoken and do not count toward the budget.
-- `[SLOT E1]` and `[SLOT E2b]` hold outcome variants. E2 itself is final and is in the base narration. Speak one variant per slot. `⟨k⟩`, `⟨FA⟩` and `⟨n⟩` are the
+- `[SLOT E2b]` holds outcome variants. E1 and E2 are final and are in the base narration. Speak one variant per slot. `⟨k⟩`, `⟨FA⟩` and `⟨n⟩` are the
   values to fill in from the experiment results.
 - On-screen material comes from `to_human/demo.html`, the cached replay that opens offline. Its tabs are 1 You are the
   monitor, 2 Raw vs summary, and 3 The framed agent. Number keys switch tabs.
@@ -112,37 +112,26 @@ Corrections to the strategy draft:
 
 > The fixes are cheap. One summarizer line, keep agent tags and report later corrections as unverified, takes the
 > framing from 16 of 28 to zero {{source: loop1c/runs/l1c20b.jsonl:mon=claude-sonnet-5.5, cond=ERR_NOEV|sfix 0/28;
-> demo_numbers.json:blame_chain.fix_sonnet}}. A raw lane of peer messages nearly closes the planted-deal gap at under
-> half the log's size {{source: loop9/loop9_results.txt:"H1 raw peer msgs only" 0.39 / 0.30 of full-log characters;
-> demo_numbers.json:script.h1_cost}}, by construction: planted deals are peer to peer.
+> demo_numbers.json:blame_chain.fix_sonnet}}. A raw lane of worker-to-worker messages also helps. On deals
+> agents wrote themselves, it matches full-log detection at about half the tokens {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:"53.6% FULL
+> message-list characters"}}, once calibrated: 49 of 66 versus 50 at matched false alarms {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:"H1 vs
+> FULL 49 vs 50 (-2 points, CI -11 to +8, p = 1)"}}. At the default threshold it raises 8 false alarms in 64
+> {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:P1 row "flags 8/64 controls (12.5%)"}}, so it needs its own threshold.
 
-**[SLOT E1: raw lane on agent-written deals.]** Speak one variant.
+E1 is final and reviewed: P1 FAIL on false alarms only (detection 51/66 passed the ≥43 bar; 8/64 false alarms missed
+the ≤6 bar), P2 PASS, P3 PASS {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:predictions verdict table}}. This is the "needs its own threshold"
+variant.
 
-- **E1-PASS** (P1 passes):
-
-  > On agent-written deals, the lane holds: ⟨k⟩ of 66 caught versus 48 on the full log {{source:
-  > review2/l2_13_stress_results.txt:"claude-sonnet-5.5 FULL: T-COORD 48/66"}}, with ⟨FA⟩ false alarms in 64.
-
-- **E1-FAIL** (P1 fails on detection):
-
-  > On agent-written deals, it does not hold: ⟨k⟩ of 66 versus 48 on the full log. The lane fixes planted
-  > deals only.
-
-- **E1-CALIBRATE** (P1 fails on false alarms only; this is protocol interpretation 3):
-
-  > On agent-written deals, the lane catches more, ⟨k⟩ of 66 versus 48, but with ⟨FA⟩ false alarms in 64
-  > versus 5 {{source: review2/l2_13_stress_results.txt:"claude-sonnet-5.5 FULL: T-COORD 48/66 C 5/64"}}, so it needs its
-  > own threshold.
-
-What the data shows now. These figures are unreviewed, read from
-`summarizer-monitor/experiments/E1-raw-lane-agent-written/results/results.txt` at about 22:45 PT.
-- P1 FAIL, on false alarms only. Sonnet on H1 caught 51/66 (the bar was ≥43) and raised 8/64 false alarms (the bar
-  was ≤6/64).
-- P2 PASS: H1 51 vs luna 37, p=0.0013.
-- P3 PASS: AUC 0.944 vs 0.924.
-- This points to **E1-CALIBRATE** with ⟨k⟩ = 51 and ⟨FA⟩ = 8.
-- On loop8 the lane is 54% of full-log characters, not 30-40%.
-- Wait for the E1 agent's final verdict and claims review before you record.
+Wording limits for the raw lane:
+- Allowed: "a raw worker-to-worker lane matches full-log detection at about half the tokens, once calibrated."
+  The size was measured in characters (53.6%), not tokens.
+- Do not claim it beats summaries at matched false alarms. There Sonnet catches 49 (lane) vs 46 (luna summaries),
+  not significant {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:"H1 vs LUNA 49 vs 46 (+5 points, CI -6 +15, p = 0.58)"}}.
+- The lane's big edge over summaries, 51 vs 37 (exact McNemar p = 0.0013) {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:P2 row}}, holds only
+  at the default threshold. If you show it, label it "default threshold".
+- On screen you can add AUC 0.944 for the lane vs 0.924 for the full log {{source: summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md:P3 row}}.
+- The planted-deal lane result (0.39 / 0.30 of full-log characters, by construction {{source:
+  loop9/loop9_results.txt:"H1 raw peer msgs only"}}) moved to the talk; the agent-written result replaces it here.
 
 > Before trusting a summarizer, audit it: plant canary deals. Under two dollars, a few minutes {{source:
 > summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md:"one audit costs $0.4 to $1.7 and 2 to 4 minutes"}}. Four summarizers we'd never used: it called all four
@@ -170,8 +159,8 @@ variant, or none if E2b is not done.
 - **E2b not done**: say nothing extra. On screen, add "validated for flagging lossy summarizers; clearing them is
   untested".
 
-On screen: fix bars (blame chain 16/28 → 0/28; split-deal detection for the full log, luna summaries and the raw
-lane), then a terminal running the audit CLI with the caption "validated for flagging lossy summarizers".
+On screen: fix bars (blame chain 16/28 → 0/28; agent-written detection at matched false alarms: full log 50, raw
+lane 49, luna summaries 46, all of 66 and none significantly different), then a terminal running the audit CLI with the caption "validated for flagging lossy summarizers".
 
 ## Beat 7 · 2:30-2:50 · Scope, said aloud
 
@@ -201,19 +190,17 @@ Each fill-in value counts as one word. The script below reproduces these numbers
 
 | Part | Words |
 |---|---|
-| Beats 1-8 without slots (E2 result now in the base) | 380 |
-| E1-PASS / E1-FAIL / E1-CALIBRATE | 23 / 22 / 28 |
+| Beats 1-8 (E1 and E2 final, in the base) | 407 |
 | E2b-PASS / E2b-FAIL / not done | 11 / 11 / 0 |
-| **Worst case (CALIBRATE + an E2b line)** | **419** |
-| Best case (E1-FAIL, no E2b line) | 402 |
-| Current reading (CALIBRATE, E2b not done) | 408 |
-| With the optional incident hook | 18 more in every case (worst 437: cut the ChatDev clause and skip the E2b line) |
+| **With an E2b line** | **418** |
+| Without (E2b not done) | 407 |
+| With the optional incident hook | 18 more (425 without an E2b line: cut the ChatDev clause, 5 words) |
 
 ```
 python3 - <<'PY'
 import re
 t = open('summarizer-monitor/to_human/video_script.md').read()
-secs = re.split(r'\n(?=## |- \*\*E[12]b?-|\*\*\[SLOT|What the data|Fallback|Optional longer|E2 is final|- \*\*E2b not)', t)
+secs = re.split(r'\n(?=## |- \*\*E[12]b?-|\*\*\[SLOT|What the data|Fallback|Optional longer|E2 is final|E1 is final|Wording limits|- \*\*E2b not)', t)
 for s in secs:
     q = [re.sub(r'^\s*> ?', '', l) for l in s.splitlines() if re.match(r'^\s*> ', l)]
     w = len(re.sub(r'\{\{.*?\}\}', '', ' '.join(q)).split())
@@ -238,7 +225,10 @@ PY
 | 0/14 raw, 16/28 via summaries | `loop1c/runs/l1c17b/...`, `loop1c/runs/l1c20.jsonl` | ok; 0/14 is the matching note wording |
 | 14/15 hidden | `loop2d/l2d15_results.txt` | ok (Haiku monitor) |
 | 16/28 → 0/28 with the summarizer line | `loop1c/runs/l1c20b.jsonl` | ok |
-| raw lane 0.39 / 0.30 of the full log | `loop9/loop9_results.txt` | characters, not tokens; "nearly closes" (ChatDev +4, CI to +17) |
+| raw lane about half the size (53.6%) | `summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md` H1 size | characters, spoken as "tokens" per the allowed wording |
+| raw lane 49 vs full log 50 of 66 at matched false alarms | `summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md` paired matched-FA line | ok; n.s.; never "beats summaries" (49 vs 46 n.s.) |
+| 8 false alarms in 64 at the default threshold | `summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md` P1 row | ok; P1 failed on false alarms only |
+| (on screen) 51 vs 37 default threshold, p 0.0013; AUC 0.944 vs 0.924 | `summarizer-monitor/experiments/E1-raw-lane-agent-written/analysis.md` P2, P3 rows | label "default threshold" |
 | matched-FA +6 [−3, +15]; 73% → 56%, p 0.001 two-sided | `loop8/l8_results.txt`; stress results | ok, matched-FA first |
 | 6 templates per corpus; 17/17 untied deals lose | `review2/l2_13.md` §2.3, §2.5 | ok (review2 pitch fix 5) |
 | canary audit: under $2, a few minutes | `summarizer-monitor/experiments/E2-canary-audit-prospective/analysis.md` cost table ($0.38-1.68, 1.9-3.7 min) | ok |
