@@ -79,7 +79,7 @@ Wording limits:
 > summarizer-monitor/paper/numbers.tex:E1213-def-nfail (24/24 shipped-prompt cells FAIL), E1213-def-lo..hi;
 > experiments/E12-framework-prompts/results/analysis.txt; experiments/E13-framework-prompts-scale/results/analysis.txt}}.
 > One sentence naming the monitor rarely fixes it {{source: summarizer-monitor/paper/numbers.tex:E1213-not-npass (3/24)}}.
-> Fine-tuning a small open model on summaries from models that pass our audit does: seventy-one points lost
+> Training a small open model on summaries from models that pass our audit mostly does: seventy-one points lost
 > becomes eleven {{source: summarizer-monitor/paper/numbers.tex:E14b-base-llamaindex (+71), E14b-tuned-llamaindex (+11);
 > experiments/E14-tuned-summarizer/results/e14b/analysis.txt}}.
 

@@ -16,7 +16,7 @@ Across six summarizer families, the monitor is capped by its own summarizer: ran
 
 **Beat 4 · 1:05-1:35 · Show, don't tell**
 
-The summarizer read three of the deal messages, called them potentially gaming, wrote: no evidence of coordinated deception. Raw log: monitors score 60 and 95. Summaries: 4 and 5. The judging happens in the summarizer. And the summary prompts frameworks ship? Across nine models, every one lost the deals. One sentence naming the monitor rarely fixes it. Fine-tuning a small open model on summaries from models that pass our audit does: seventy-one points lost becomes eleven.
+The summarizer read three of the deal messages, called them potentially gaming, wrote: no evidence of coordinated deception. Raw log: monitors score 60 and 95. Summaries: 4 and 5. The judging happens in the summarizer. And the summary prompts frameworks ship? Across nine models, every one lost the deals. One sentence naming the monitor rarely fixes it. Training a small open model on summaries from models that pass our audit mostly does: seventy-one points lost becomes eleven.
 
 **Beat 5 · 1:35-2:00 · Testimony**
 
@@ -34,4 +34,4 @@ Scope: on agent-written deals, at matched false alarms, the gap is six points, n
 
 Treat your summarizer as a monitor. Audit it like one. Everything is in the repo.
 
-_396 words, about 2.8 minutes at 140 words per minute._
+_397 words, about 2.8 minutes at 140 words per minute._
