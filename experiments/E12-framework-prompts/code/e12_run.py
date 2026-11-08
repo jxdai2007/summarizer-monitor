@@ -45,8 +45,8 @@ E9 = EXPS / "E9-far-rule-prospective" / "results"           # gemini-3.7-flash u
 E8 = EXPS / "E8-unselected-vendors" / "results"            # tencent/hy3 under SUM_SAFETY (published, E8)
 REF = {API_SUM: (E8, "hy3"), GEM: (E9, "gemini-3.7-flash")}
 THRESH = 15.0
-CAP = 18.0          # E12 OpenRouter dollars (pilot tag "E12"); global stop line below (approved overall cap $500)
-GLOBAL_STOP = 475.0
+CAP = 18.0          # E12 OpenRouter dollars (pilot tag "E12"); the D1 refill has its own tag and cap (D2)
+GLOBAL_STOP = 484.0
 MT_SUM = 4000
 
 
@@ -193,6 +193,7 @@ async def probe():
 
 
 MT_REFILL = 16000
+REFILL_CAP = 9.0     # deviation D2: separate ledger tag "E12-refill"
 
 
 async def refill():
@@ -201,8 +202,10 @@ async def refill():
     other chunk summary unchanged; re-run both monitors on the repaired summaries. Written to *_refill.jsonl beside the
     locked records, which are never modified."""
     L = {lg["id"]: lg for lg in e2.logs_A("split") + e2.logs_A("controls") + e2.logs_B("split")}
-    cap = min(CAP, or_client.spent("E12") + GLOBAL_STOP - ledger_total())
-    c = e2.E2Client(loop=1, pilot="E12", cap_usd=cap, concurrency=64)
+    if ledger_total() > GLOBAL_STOP:
+        sys.exit(f"ledger ${ledger_total():.2f} > ${GLOBAL_STOP}: no paid runs")
+    cap = min(REFILL_CAP, or_client.spent("E12-refill") + GLOBAL_STOP - ledger_total())
+    c = e2.E2Client(loop=1, pilot="E12-refill", cap_usd=cap, concurrency=64)
     jobs = []
     for f in sorted(OUT.glob(f"*_{SHORT[API_SUM]}_*.jsonl")):
         if f.stem.endswith("_refill"):
@@ -253,7 +256,7 @@ async def refill():
         await asyncio.gather(*[one(f, r) for f, r in jobs])
     except or_client.CapReached as ex:
         print(f"CAP: {ex}", flush=True)
-    print(f"[{e2.now()}] refill done; E12 ${or_client.spent('E12'):.2f}", flush=True)
+    print(f"[{e2.now()}] refill done; E12-refill ${or_client.spent('E12-refill'):.2f}", flush=True)
 
 
 # ------------------------------------------------------------------ analysis

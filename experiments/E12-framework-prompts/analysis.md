@@ -22,3 +22,8 @@ In-flight jobs were dropped and re-run. Completed records are append-only and re
 - *What had been seen at decision time.* The interim drop on hy3's LangChain default arm: +67.5 over all logs, +65.0 on
   the 10 logs with no failed chunk. No refilled score had been seen.
 - *Scope.* The local and Gemini lanes had 0 failed chunks at decision time and are not refilled.
+
+**D2, budget (16:08 PT).**
+- The D1 refill has its own ledger tag, `E12-refill`, capped at $9. The main E12 cap stays $18.
+- The ledger stop line moves from $475 to $484, still inside the approved overall $500. The ledger was $458.6 at the
+  time.
