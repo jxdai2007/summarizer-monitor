@@ -2,8 +2,7 @@
 """E14 evaluation (locked: ../protocol.md). Base vs AutoScientist-tuned Qwen3.5-4B as the chunk summarizer, local
 inference (transformers, MPS), monitors on OpenRouter. Records in ../results/{set}_{kind}_{variant}_{fw}.jsonl.
 
-  uv run --no-project --with "transformers>=4.57" --with peft --with torch --with accelerate --with openai --with scipy \
-      python e14_eval.py run [--adapter ../results/ckpt]
+  uv run --no-project --with mlx-lm --with openai --with scipy python e14_eval.py run
   ... python e14_eval.py analyze
 """
 import asyncio
@@ -25,7 +24,7 @@ HELDOUT_CTRL_RUNS = {"practice_05", "practice_07"}
 FWS = ["llamaindex", "langchain"]
 VARIANTS = ["tuned", "base"]
 CAP, GLOBAL_STOP = 3.0, 497.0
-BATCH, MAX_NEW = 6, 700
+BATCH, MAX_NEW = 12, 700
 
 
 def ledger_total():
@@ -40,42 +39,31 @@ def adapter_dir():
 
 
 class LocalModel:
+    """MLX inference (deviation D1: transformers' reference kernels were too slow; same weights and sampling). The tuned
+    variant is the base model with the AutoScientist LoRA merged in (code/e14_merge.py -> ../results/merged)."""
+
     def __init__(self, adapter=None):
-        import torch
-        from transformers import AutoModelForCausalLM, AutoTokenizer
-        self.torch = torch
-        self.tok = AutoTokenizer.from_pretrained("Qwen/Qwen3.5-4B")
-        self.tok.padding_side = "left"
-        if self.tok.pad_token is None:
-            self.tok.pad_token = self.tok.eos_token
-        self.model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3.5-4B", dtype=torch.bfloat16).to("mps")
-        self.base_model = self.model
-        self.adapter = None
-        if adapter is not None:
-            from peft import PeftModel
-            self.model = PeftModel.from_pretrained(self.model, str(adapter))
-            self.adapter = str(adapter)
-        self.model.eval()
+        from mlx_lm import load
+        from mlx_lm.sample_utils import make_sampler
+        self.models = {"base": load("Qwen/Qwen3.5-4B")}
+        merged = RES / "merged"
+        if (merged / "config.json").exists():
+            self.models["tuned"] = load(str(merged))
+        self.sampler = make_sampler(temp=0.7, top_p=0.95)
+        self.v = "base"
+        self.adapter = str(merged) if "tuned" in self.models else None
 
     def set_variant(self, v):
-        if self.adapter is None:
-            if v == "tuned":
-                raise SystemExit("no adapter loaded")
-            return
-        if v == "tuned":
-            self.model.enable_adapter_layers()
-        else:
-            self.model.disable_adapter_layers()
+        if v not in self.models:
+            raise SystemExit(f"variant {v} not loaded")
+        self.v = v
 
     def generate(self, chats):
-        texts = [self.tok.apply_chat_template(c, tokenize=False, add_generation_prompt=True, enable_thinking=False)
-                 for c in chats]
-        enc = self.tok(texts, return_tensors="pt", padding=True).to("mps")
-        with self.torch.no_grad():
-            out = self.model.generate(**enc, max_new_tokens=MAX_NEW, do_sample=True, temperature=0.7, top_p=0.95,
-                                      pad_token_id=self.tok.pad_token_id)
-        gen = out[:, enc["input_ids"].shape[1]:]
-        return [base.strip_think(self.tok.decode(g, skip_special_tokens=True)).strip() for g in gen]
+        import mlx_lm
+        model, tok = self.models[self.v]
+        prompts = [tok.apply_chat_template(c, add_generation_prompt=True, enable_thinking=False) for c in chats]
+        r = mlx_lm.batch_generate(model, tok, prompts, max_tokens=MAX_NEW, sampler=self.sampler, verbose=False)
+        return [base.strip_think(t).strip() for t in r.texts]
 
 
 def out_path(setname, kind, variant, fw):
@@ -90,9 +78,9 @@ def test_logs():
 async def run():
     if ledger_total() > GLOBAL_STOP:
         sys.exit(f"ledger ${ledger_total():.2f} > ${GLOBAL_STOP}")
-    ad = adapter_dir()
-    print(f"adapter: {ad}", flush=True)
-    lm = LocalModel(ad)
+    lm = LocalModel()
+    ad = lm.adapter
+    print(f"tuned model: {ad}", flush=True)
     mc = e2.E2Client(loop=1, pilot="E14", cap_usd=min(CAP, or_client.spent("E14") + GLOBAL_STOP - ledger_total()),
                      concurrency=32)
     pending = []
