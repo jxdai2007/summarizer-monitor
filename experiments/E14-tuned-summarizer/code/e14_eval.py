@@ -25,6 +25,8 @@ FWS = ["llamaindex", "langchain"]
 VARIANTS = ["tuned", "base"]
 CAP, GLOBAL_STOP = 3.0, 497.0
 BATCH, MAX_NEW = 4, 700
+B_MODE = "--b" in sys.argv          # E14b: tuned model and its records under results/e14b; base records reused
+RESB = RES / "e14b"
 
 
 def ledger_total():
@@ -46,7 +48,7 @@ class LocalModel:
         from mlx_lm import load
         from mlx_lm.sample_utils import make_sampler
         self.models = {"base": load("Qwen/Qwen3.5-4B")}
-        merged = RES / "merged"
+        merged = (RESB if B_MODE else RES) / "merged"
         if (merged / "config.json").exists():
             self.models["tuned"] = load(str(merged))
         self.sampler = make_sampler(temp=0.7, top_p=0.95)
@@ -67,7 +69,9 @@ class LocalModel:
 
 
 def out_path(setname, kind, variant, fw):
-    return RES / f"{setname}_{kind}_{variant}_{fw}.jsonl"
+    d = RESB if (B_MODE and variant == "tuned") else RES
+    d.mkdir(exist_ok=True)
+    return d / f"{setname}_{kind}_{variant}_{fw}.jsonl"
 
 
 def test_logs():
@@ -173,9 +177,10 @@ def analyze():
     L.append(f"E14 VERDICT: {final}")
     txt = "\n".join(L)
     print(txt)
-    (RES / "analysis.txt").write_text(txt + "\n")
-    json.dump({f"{v}|{fw}": c for (v, fw), c in C.items()}, open(RES / "cells.json", "w"), indent=1)
+    od = RESB if B_MODE else RES
+    (od / "analysis.txt").write_text(txt.replace("E14 VERDICT", "E14b VERDICT" if B_MODE else "E14 VERDICT") + "\n")
+    json.dump({f"{v}|{fw}": c for (v, fw), c in C.items()}, open(od / "cells.json", "w"), indent=1)
 
 
 if __name__ == "__main__":
-    asyncio.run(run()) if sys.argv[1] == "run" else analyze()
+    asyncio.run(run()) if sys.argv[1] == "run" else analyze()  # add --b for E14b

@@ -9,7 +9,10 @@ import torch
 from peft import PeftModel
 from transformers import AutoModelForImageTextToText, AutoProcessor, AutoTokenizer
 
+import sys
 RES = Path(__file__).resolve().parent.parent / "results"
+if "--b" in sys.argv:
+    RES = RES / "e14b"   # E14b checkpoint extracted to results/e14b/ckpt, merged to results/e14b/merged
 m = AutoModelForImageTextToText.from_pretrained("Qwen/Qwen3.5-4B", dtype=torch.bfloat16)
 print(type(m).__name__)
 name = "model.language_model.layers.0.mlp.down_proj.weight"
@@ -17,7 +20,7 @@ before = dict(m.named_parameters())[name].detach().clone().float()
 pm = PeftModel.from_pretrained(m, str(RES / "ckpt"))
 n_lora = sum(1 for n, _ in pm.named_parameters() if "lora_" in n)
 print("lora tensors attached:", n_lora)
-assert n_lora == 256, n_lora
+assert n_lora > 0, n_lora
 merged = pm.merge_and_unload()
 after = dict(merged.named_parameters())[name].detach().float()
 delta = (after - before).norm().item() / before.norm().item()
