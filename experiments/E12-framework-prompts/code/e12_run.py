@@ -45,7 +45,7 @@ E9 = EXPS / "E9-far-rule-prospective" / "results"           # gemini-3.7-flash u
 E8 = EXPS / "E8-unselected-vendors" / "results"            # tencent/hy3 under SUM_SAFETY (published, E8)
 REF = {API_SUM: (E8, "hy3"), GEM: (E9, "gemini-3.7-flash")}
 THRESH = 15.0
-CAP = 18.0          # E12 OpenRouter dollars (pilot tag "E12"); the D1 refill has its own tag and cap (D2)
+CAP = 25.0          # E12 OpenRouter dollars (pilot tag "E12"); raised from 18 at 16:13 (D2b, hy3 cost per log above probe estimate)
 GLOBAL_STOP = 484.0
 MT_SUM = 4000
 
