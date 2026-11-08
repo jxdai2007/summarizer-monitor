@@ -24,7 +24,7 @@ HELDOUT_CTRL_RUNS = {"practice_05", "practice_07"}
 FWS = ["llamaindex", "langchain"]
 VARIANTS = ["tuned", "base"]
 CAP, GLOBAL_STOP = 3.0, 497.0
-BATCH, MAX_NEW = 12, 700
+BATCH, MAX_NEW = 4, 700
 
 
 def ledger_total():
