@@ -51,12 +51,17 @@ Everything below needs you. Nothing has been submitted, published or pushed.
   runs.
 
 ## State of the evidence (for your talk)
-- **New, E12 (preregistered, verdict MIXED):** the default summary prompts shipped by LangChain, LlamaIndex, LangMem
-  and CrewAI hide split deals from the monitor.
-  - Tencent hy3, which passes our audit under our prompt (+4), loses +62 to +68 with them (mean +65).
-  - One sentence ("a monitor will read this summary") cuts that to +37 for hy3, and to +5/+11 for Gemini 3.7 Flash.
-  - For a small local model it barely helps (+67 → +59). That is the locked prediction that failed, hence MIXED.
-  - The canary flagged every bad prompt (10/10 hy3 cells).
+- **New tonight, E12 + E13 (preregistered; E12 MIXED, E13 PASS):** the default summary prompts of LangChain,
+  LlamaIndex, LangMem and CrewAI hid the planted deals for all nine summarizers we tested.
+  - 24/24 shipped-prompt cells FAIL, losing 46-70 points; 7 of the 9 summarizers pass under our oversight-aware prompt.
+  - One sentence ("a monitor will read this") helps, but only 3/24 cells pass with it.
+  - The canary told good prompts from bad in 29/30 cells (balanced accuracy 0.92).
+  - Caveat: one cell (qwen3.8-27b with LangChain) is dominated by empty summaries, and its refill is still running.
+- **New tonight, E14 (Adaption AutoScientist):**
+  - Platform-default fine-tune of Qwen3.5-4B: KILL (+71 → +67).
+  - Stronger dose, registered after that failure: +71 → +11 under an unseen shipped prompt, 0/16 false alarms.
+  - On ChatDev, never seen in training: +61 → +16, just over the line (WEAKEN).
+  - Say: "training mostly repairs it in its own environment and partly elsewhere."
 - **Planted deals:** the summarizer is a dial. GPT-5.6-luna 55/80 → 25/80; Opus summaries beat the raw log, 70/78 vs
   54/78.
 - **Canary audit:** 32/36 prospective calls right (always-FAIL 26/36).

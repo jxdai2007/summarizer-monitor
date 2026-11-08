@@ -202,3 +202,27 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
   - Reasoning models can spend the whole max_tokens budget on reasoning when given "think deeply" prompts; check
     finish_reason before trusting chunk summaries.
   - Splash runs about 3-5 logs/min whatever the client concurrency.
+
+## 2026-11-07 round 3b (18:15-21:30 PT): Adaption credits; E13 PASS, E14 KILL, E14b PASS, E14c WEAKEN (claims review PASS WITH FIXES)
+- **E13** (locked efeb43d): six Adaption-hosted summarizers from four families. **PASS.**
+  - Shipped LangChain and LlamaIndex prompts: 12/12 FAIL (mean +62).
+  - The notice helps in 11/12 pairs (mean −20.5) but only 1/12 passes.
+  - The canary discriminates: agreement 29/30, cleared 5/6, flagged 24/24, balanced accuracy 0.92.
+  - Notice controls 0/500.
+  - Locked records have 589 empty chunks; the D1 refill was still running at submission. The qwen3.8-27b LangChain
+    cells are dominated by empty chunks.
+- **E12 + E13 pooled, nine summarizers.**
+  - Shipped prompts: 24/24 FAIL (+46 to +70).
+  - Our prompt: 7/9 pass; qwen3.8-27b (+18) and the local model (+25) fail.
+  - Notice: 3/24 pass.
+- **E14** (locked bb597dd): AutoScientist SFT of Qwen3.5-4B on 1,225 set-A summaries from 7 canary-cleared teachers.
+  - Platform default (1 epoch): **KILL** (+71 → +67).
+  - **E14b**, 3 epochs at learning rate 2e-4, rank 64, registered after the failure: **PASS**. LlamaIndex (unseen)
+    +71 → +11; LangChain +67 → +1; controls 0/16.
+  - **E14c** ChatDev: +61 → +16 (CI +3 to +29), 1/24 controls; **WEAKEN**.
+- **Lessons.**
+  - Interleave jobs across models on Adaption, which rate-limits per model.
+  - Running MLX on the same GPU as Splash starved Splash (E12 D3). Serialize local GPU jobs.
+  - Merge PEFT adapters into the class they were trained on (`Qwen3_5ForConditionalGeneration`). The text-only class
+    silently drops the adapter.
+  - `pgrep -f` inside a wait loop matches the loop itself; wait on a PID instead.
