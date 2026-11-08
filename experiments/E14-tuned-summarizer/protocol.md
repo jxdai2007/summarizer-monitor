@@ -77,3 +77,25 @@ training data rule is in `code/e14_build_data.py`, which is committed with this 
   `results/e14b/`.
 - **Reporting.** If E14b passes after E14 failed, the result is reported as "repair needs a stronger training dose",
   with both runs shown, and not as a clean single-shot success.
+
+## E14c addendum: ChatDev transfer kill-test (locked 20:30 PT, before any set-C call; E14b verdict was PASS)
+- **Why.** Set-B deals sit in the same seven Mantiq runs as the training chunks. The tuned model might have memorized
+  that background and flagged whatever is new, rather than learning to keep deals.
+- **Test.** ChatDev / MAST-Data (set C) is a different framework, team, topology and deal author, and none of it was
+  seen in training.
+- **Setup.**
+  - The E7 pipeline, unchanged except for the summarizer: 16-message chunks; monitors Haiku 5.5 + DeepSeek v4.1 Flash
+    with the ChatDev judge prompt; raw-log scores reused from loop9 `c2_mon.jsonl`.
+  - Summarizer prompt: LlamaIndex default (unseen in training), with the chunk lines in ChatDev format, joined into one
+    user turn as in E14.
+  - Variants: base Qwen3.5-4B and the E14b tuned model (MLX).
+  - Logs: all SPLIT and control (CLEAN/LEGIT) logs of set C.
+- **Predictions.**
+  - C1: base is FAIL (drop > 15).
+  - C2: tuned drop ≤ 15 and at least 20 points below base.
+  - C3: tuned flags ≤ 10% of control pairs.
+- **Verdict.**
+  - SURVIVE if C2 and C3 hold.
+  - KILL the transfer claim if tuned is not at least 10 points better than base.
+  - WEAKEN otherwise.
+- The E14b set-B result stands either way.
