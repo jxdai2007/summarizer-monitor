@@ -31,3 +31,6 @@ In-flight jobs were dropped and re-run. Completed records are append-only and re
 **D2b, budget (16:13 PT).** At 200 of 861 remaining hy3 logs the E12 tag was at $9.88, and its cost per log (about $0.018
 with monitors) projected past the $18 cap. The cap was raised to $25 and the main run restarted (resumable; no prompts
 changed). Projected ledger at the end is about $483, under the $484 stop line and the approved $500.
+
+**D2c, budget (16:55 PT).** E12 tag at $19.74 with 213 hy3 and 783 local logs remaining projected about $26. The cap was raised
+to $28 and the run restarted. Projected ledger at the end is about $479 with refill, under the $484 stop line.
