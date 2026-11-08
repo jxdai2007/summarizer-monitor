@@ -226,3 +226,33 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
   - Merge PEFT adapters into the class they were trained on (`Qwen3_5ForConditionalGeneration`). The text-only class
     silently drops the adapter.
   - `pgrep -f` inside a wait loop matches the loop itself; wait on a PID instead.
+
+## 2026-11-08 round 4 (02:00-04:00 PT): E15, shipped verifier/reviewer handoff prompts (AgentScope, ARIS); PASS
+- **Source.** Jollen asked to apply ARIS (arXiv 2605.03042) and AgentScope (2407.17789) experimentally.
+  - Both systems ship prompts whose output a checker reads.
+  - The ARIS paper states our premise as a reviewer rule (a reviewer shown the executor's summary judges its framing)
+    but does not test it.
+- **E15** (locked 651c843; canary calls cbdb57f before set B): **PASS.**
+  - Five E13 summarizers × 4 shipped prompts; 1,480 records; OpenRouter $5.98.
+  - AgentScope 2.0.11 GoalPipeline verifier report: 5/5 FAIL, mean +66.
+  - ARIS reviewer-context slot (filled via one added instruction): 5/5 FAIL, mean +61.
+  - ARIS COMPACT findings log (executor memory): 5/5, +60.
+  - AgentScope memory compression: 5/5, +56.
+  - Canary 20/20, all FAIL, so no clearing test.
+- **Independent review: WEAKEN, fixes applied.**
+  - The numbers reproduce exactly, and the protocol was followed.
+  - COMPACT was misclassified as checker-facing in the protocol. Post hoc, the handoff claim is 10/10 (+51 to +71);
+    preregistered Q1 still reads 15/15.
+  - The AgentScope verifier also gets the goal.
+  - ARIS ships only a slot.
+- **Allowed wording.** "Applied to chunks of other agents' logs, AgentScope's verifier-report prompt and ARIS's
+  reviewer-context slot hid the deals in 10/10 held-out cells." Across E12, E13 and E15: 39/39 verbatim shipped-prompt
+  cells FAIL.
+- **Not allowed.**
+  - That these systems are unsafe as deployed: prompts were tested out of their native context.
+  - That the canary discriminated in E15.
+- **Lessons.**
+  - Adaption's gateway cuts unstreamed responses at about 180 s (504); stream instead.
+  - qwen3.8-27b is unusable on Adaption for long outputs.
+  - Check how a borrowed prompt is actually consumed before classifying it. COMPACT looked like a reviewer handoff but
+    is executor memory.

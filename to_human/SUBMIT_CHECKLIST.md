@@ -57,6 +57,10 @@ Everything below needs you. Nothing has been submitted, published or pushed.
   - One sentence ("a monitor will read this") helps, but only 3/24 cells pass with it.
   - The canary told good prompts from bad in 29/30 cells (balanced accuracy 0.92).
   - Caveat: one cell (qwen3.8-27b with LangChain) is dominated by empty summaries, and its refill is still running.
+- **New 8 Nov, E15 (preregistered, PASS; review WEAKEN, fixes applied):** prompts that AgentScope 2.0.11 and ARIS
+  ship for handing work to a verifier or reviewer hid the deals in 10/10 held-out cells. Across E12, E13 and E15, every
+  verbatim shipped-prompt cell FAILs (39/39). The paper is in §4.2 and the appendix. The paper still fits in 8 pages and
+  all gates pass. The video does not mention E15; that's optional.
 - **New tonight, E14 (Adaption AutoScientist):**
   - Platform-default fine-tune of Qwen3.5-4B: KILL (+71 → +67).
   - Stronger dose, registered after that failure: +71 → +11 under an unseen shipped prompt, 0/16 false alarms.
