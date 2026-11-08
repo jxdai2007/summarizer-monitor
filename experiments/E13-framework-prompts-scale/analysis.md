@@ -27,3 +27,10 @@
 - **Fix.** `e13_run.py refill` re-summarizes only the empty chunks with max_output_tokens 32000, re-runs both monitors,
   and writes `*_refill.jsonl`. The locked records stay untouched. Both analyses are reported. Headline numbers stay with
   the locked analysis unless a label differs, and any label that differs is reported.
+
+## D1 refill result (21:19 PT; analysed 23:45 PT)
+- All 274 affected logs were re-run; `analysis_refill.txt` holds the result.
+- Q1–Q4 are unchanged: Q1 12/12 FAIL with mean +62.3; Q2 11/12 better; Q3 29/30 with balanced accuracy 0.92; Q4 0/503.
+  The verdict stays PASS, and no cell label changed.
+- qwen3.8-27b's LangChain arms stayed mostly empty even with a 32,000-token budget: 137/286 chunks in the default arm,
+  301/365 with the notice. Those two cells rest on few complete logs.
