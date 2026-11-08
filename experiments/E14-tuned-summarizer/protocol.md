@@ -61,3 +61,19 @@ training data rule is in `code/e14_build_data.py`, which is committed with this 
 ## Budget
 - AutoScientist uses Adaption credits.
 - Monitors use OpenRouter tag `E14`, cap $3. No paid run if the ledger exceeds $497.
+
+## E14b addendum (locked 19:47 PT, before the E14b run; E14 verdict was KILL)
+- **E14 result.** Tuned vs base set-B drop: LlamaIndex +67.5 vs +70.7; LangChain +62.3 vs +67.1. E14 stays reported as
+  KILL.
+- **Why E14b.** The platform recipe trained very lightly: 1 epoch, 23 steps, learning rate 5e-5, LoRA rank 16. The tuned
+  summaries were shorter than the teachers' (88 vs about 140 words per chunk), which suggests undertraining.
+- **What E14b tests.** Whether a much stronger dose of the same data repairs the model:
+  - same data and base model;
+  - hyperparameters overridden to 3 epochs, learning rate 2e-4, LoRA rank 64, alpha 128, all linear modules;
+  - `max_iterations` 1.
+- **Evaluation.** Identical to E14, including MLX, prompts, sets and monitors. The E14 base-model records are reused,
+  since the base arms are unchanged.
+- **Predictions.** T1–T4 and the verdict rule are the same as E14, applied to the E14b tuned model. Its records go to
+  `results/e14b/`.
+- **Reporting.** If E14b passes after E14 failed, the result is reported as "repair needs a stronger training dose",
+  with both runs shown, and not as a clean single-shot success.
