@@ -181,3 +181,24 @@ as suspicious. Agent-written testimony (corrections, blame notes) also passes th
   −11.1); both Gemini Flash models landed near (−1.6, −3.2). With fewer than the 4 far calls the locked rule requires,
   the held-out stage was not run. The far-PASS side still rests on Argon and Opus 5.5, and far-PASS summarizers seem rare.
   OpenRouter key 2 is exhausted; key 1 works.
+
+## 2026-11-07 round 3 (15:20-19:00 PT): E12, shipped framework summary prompts (locked cf72785; review PASS WITH FIXES)
+- **Allowed wording.** "The default summary prompts of LangChain, LlamaIndex, LangMem and CrewAI hide most split
+  deals from the monitor." Do not say "erase": the summaries often still name the deal agents.
+- **Tencent hy3** passes our audit under our prompt (+4).
+  - With the five shipped prompts it loses +62 to +68 (mean +65, 5/5 FAIL; locked analysis).
+  - One added sentence (a monitor will read this summary) gives a mean of +37, a 44% cut; all five still FAIL.
+  - Controls flagged 0/207.
+  - The D1 refill of empty chunks gives +62 → +30 (51%) with the same labels.
+- **Gemini 3.7 Flash** (−7 under our prompt): LangChain default +67 → +5 with the sentence; LlamaIndex default +56 → +11.
+- **Local Qwen3.8-Flash-Next** (+25 under our prompt, interim): defaults +65 to +70; with the sentence +56 to +60.
+  Locked P2 fails for this model, so the verdict is **MIXED**.
+- **Mechanism.** The sentence makes the summarizer a first-pass judge: coordination vocabulary appears in 39-42 of 42
+  notice summaries, against 0-3 of 42 default summaries.
+- **The canary** flagged every bad prompt (10/10 hy3 cells). All of them were FAIL on both sets, so this does not show
+  that it can clear a good prompt.
+- **Scope.** These are the frameworks' prompts, not their full pipelines: no running summary, no native message format.
+- **Lessons.**
+  - Reasoning models can spend the whole max_tokens budget on reasoning when given "think deeply" prompts; check
+    finish_reason before trusting chunk summaries.
+  - Splash runs about 3-5 logs/min whatever the client concurrency.

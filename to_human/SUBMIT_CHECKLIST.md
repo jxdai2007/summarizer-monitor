@@ -30,12 +30,16 @@ Everything below needs you. Nothing has been submitted, published or pushed.
   create the GitHub repo and push.
 
 ## 4. Record the video (about 1-2 h)
-- **Script:** `to_human/video_narration_clean.md`, about 410 words, about 3:00. It's a draft; rewrite it in your own voice.
-  Sources for every number are in `to_human/video_script.md`.
-- **On-screen material:**
-  - `to_human/demo.html` (offline replay; tabs 1-3)
-  - `to_human/fig_dial.png` (the dial, now the paper's Figure 1: 26 summarizers on the same held-out deals)
-  - `to_human/slides.html` (12 slides)
+- **Teleprompter:** `to_human/teleprompter.html`. Large text, one block per beat, with timecode and which slide to
+  show. Space starts/stops scrolling, ↑/↓ sets speed, ←/→ jumps a beat.
+- **Slides in narration order:** `to_human/video_deck.html` (13 slides; press F for fullscreen, → to advance).
+  - Slide 7 is new: E12, the summary prompts that frameworks ship.
+- **Script:** `to_human/video_narration_clean.md`, 412 words, about 3:00. It's a draft; rewrite it in your own voice.
+  Sources and wording limits for every number are in `to_human/video_script.md`. Beat 4 has the E12 limits:
+  - say "LangChain's default summary prompt", not "LangChain's summarizer";
+  - the one sentence cuts the loss nearly in half for hy3; it does not fix it.
+- **Also available:** `to_human/demo.html` (offline replay, tabs 1-3), `to_human/fig_dial.png`,
+  `to_human/fig_frameworks.png`, `to_human/slides.html` (talk order).
 - Keep the scope line in beat 7: agent-written deals show a small effect at matched false alarms.
 
 ## 5. Press submit (yours alone)
@@ -47,6 +51,12 @@ Everything below needs you. Nothing has been submitted, published or pushed.
   runs.
 
 ## State of the evidence (for your talk)
+- **New, E12 (preregistered, verdict MIXED):** the default summary prompts shipped by LangChain, LlamaIndex, LangMem
+  and CrewAI hide split deals from the monitor.
+  - Tencent hy3, which passes our audit under our prompt (+4), loses +62 to +68 with them (mean +65).
+  - One sentence ("a monitor will read this summary") cuts that to +37 for hy3, and to +5/+11 for Gemini 3.7 Flash.
+  - For a small local model it barely helps (+67 → +59). That is the locked prediction that failed, hence MIXED.
+  - The canary flagged every bad prompt (10/10 hy3 cells).
 - **Planted deals:** the summarizer is a dial. GPT-5.6-luna 55/80 → 25/80; Opus summaries beat the raw log, 70/78 vs
   54/78.
 - **Canary audit:** 32/36 prospective calls right (always-FAIL 26/36).
