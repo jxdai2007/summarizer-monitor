@@ -915,6 +915,19 @@ if (_r12 / "cells.json").exists():
             _fd = [_c12[f"{_s}|{f}|default"] for f in _fws]
             if sum(x["fn"] for x in _fd):
                 put(f"E12-{_ss}-deffa", f"{sum(x['fa'] for x in _fd)}/{sum(x['fn'] for x in _fd)}")
+    if (_r12 / "exploratory.txt").exists():
+        _m = re.search(r"PERLOG gemini-3.7-flash langchain default raw (\d+)/(\d+) sum (\d+)/\d+", (_r12 / "exploratory.txt").read_text())
+        if _m:
+            put("E12-gem-lc-logsraw", _m.group(1))
+            put("E12-gem-lc-logsn", _m.group(2))
+            put("E12-gem-lc-logssum", _m.group(3))
+    for _ss, _s in (("hy3", "tencent-hy3"), ("qwen", "local-qwen3.8-flash-next")):
+        _cc = [_c12.get(f"{_s}|{f}|{a}") for f in ("langchain", "lc-classic", "llamaindex", "langmem", "crewai")
+               for a in ("default", "notice")]
+        _cc = [x for x in _cc if x and x.get("A") is not None and x.get("B") is not None]
+        if _cc:
+            put(f"E12-{_ss}-agree", f"{sum((x['A'] > 15) == (x['B'] > 15) for x in _cc)}/{len(_cc)}")
+            put(f"E12-{_ss}-allfail", "yes" if all(x["A"] > 15 and x["B"] > 15 for x in _cc) else "no")
     _t12 = (_r12 / "analysis.txt").read_text()
     _m = re.search(r"P4 canary label = held-out label in (\d+)/(\d+) cells, Spearman rho ([+-][\d.]+)", _t12)
     if _m:

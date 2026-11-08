@@ -22,12 +22,12 @@ SUMS = [("tencent-hy3", "Tencent hy3"), ("local-qwen3.8-flash-next", "Qwen3.8-Fl
         ("gemini-3.7-flash", "Gemini 3.7 Flash (2 frameworks)")]
 
 
-def main():
+def draw(paper=False):
     C = json.load(open(ROOT / "experiments/E12-framework-prompts/results/cells.json"))  # locked analysis (headline)
     have = [(s, t) for s, t in SUMS if any(C.get(f"{s}|{f}|default", {}).get("B") is not None for f, _ in FW)]
     plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10})
-    fig, axes = plt.subplots(1, len(have), figsize=(4.1 * len(have) + 1.4, 4.6), facecolor=SURFACE, sharey=True,
-                             squeeze=False)
+    size = (2.75 * len(have) + 1.1, 3.0) if paper else (4.1 * len(have) + 1.4, 4.6)
+    fig, axes = plt.subplots(1, len(have), figsize=size, facecolor=SURFACE, sharey=True, squeeze=False)
     axes = axes[0]
     for ax, (s, title) in zip(axes, have):
         ax.set_facecolor(SURFACE)
@@ -61,19 +61,34 @@ def main():
         ax.tick_params(axis="y", length=0)
         ax.tick_params(axis="x", colors=INK2)
     axes[0].set_yticks(range(len(FW)))
-    axes[0].set_yticklabels([t for _, t in reversed(FW)], color=INK, fontsize=9)
-    fig.supxlabel("Detection lost by reading summaries instead of the raw log (points; held-out set B; 15 = FAIL line)",
-                  color=INK2, fontsize=9.5)
+    axes[0].set_yticklabels([(t.split("\n")[0] if paper else t) for _, t in reversed(FW)], color=INK, fontsize=9)
+    if not paper:
+        fig.supxlabel("Detection lost by reading summaries instead of the raw log (points; held-out set B; 15 = FAIL line)",
+                      color=INK2, fontsize=9.5)
     h1 = plt.Line2D([], [], color=DEFAULT_C, marker="s", ls="", ms=8, label="framework prompt as shipped")
     h2 = plt.Line2D([], [], color=NOTICE_C, marker="o", ls="", ms=8, label="+ one sentence: a monitor will read this")
-    fig.legend(handles=[h1, h2], loc="upper left", frameon=False, fontsize=9, ncol=2, bbox_to_anchor=(0.005, 0.935))
+    if not paper:
+        fig.legend(handles=[h1, h2], loc="upper left", frameon=False, fontsize=9, ncol=2, bbox_to_anchor=(0.005, 0.935))
+    if paper:
+        fig.supxlabel("Detection lost, summaries vs raw log (points; held-out set B; dashed = FAIL line)", color=INK2,
+                      fontsize=9)
+        fig.legend(handles=[h1, h2], loc="upper left", frameon=False, fontsize=9, ncol=2, bbox_to_anchor=(0.005, 1.0))
+        fig.tight_layout(rect=(0, 0, 1, 0.9))
+        fig.savefig(ROOT / "paper/fig_frameworks.pdf", facecolor=SURFACE)
+        plt.close(fig)
+        return
     fig.suptitle("Shipped summary prompts hide split deals; one added sentence helps some summarizers far more than others", x=0.01, ha="left", y=0.985,
                  fontsize=12.5, color=INK, fontweight="bold")
     fig.tight_layout(rect=(0, 0, 1, 0.87))
     fig.savefig(ROOT / "to_human/fig_frameworks.png", dpi=200, facecolor=SURFACE)
-    fig.savefig(ROOT / "paper/fig_frameworks.pdf", facecolor=SURFACE)
     fig.savefig(ROOT / "to_human/panels/frameworks.png", dpi=150, facecolor=SURFACE)
-    print(f"saved fig_frameworks ({len(have)} summarizer panels)")
+    plt.close(fig)
+
+
+def main():
+    draw(paper=False)
+    draw(paper=True)
+    print("saved fig_frameworks (slide PNGs + paper PDF)")
 
 
 if __name__ == "__main__":
