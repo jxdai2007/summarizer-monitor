@@ -1,6 +1,6 @@
 # E15: do shipped prompts written for a verifier or reviewer keep the deals? (LOCKED before any scored call)
 
-Written 2026-11-08 ~02:50 PT. This file is committed to git before `e15_run.py run A`.
+Written 2026-11-08 ~02:20 PT (lock commit 651c843, 02:21:50 PT). This file is committed to git before `e15_run.py run A`.
 
 ## Why
 - E12 and E13 tested shipped *memory* summary prompts (LangChain, LlamaIndex, LangMem, CrewAI): 24/24 cells FAIL.
