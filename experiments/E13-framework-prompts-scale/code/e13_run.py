@@ -135,8 +135,8 @@ async def run():
     if ledger_total() > GLOBAL_STOP:
         sys.exit(f"ledger ${ledger_total():.2f} > ${GLOBAL_STOP}: no paid runs")
     cap = min(CAP, or_client.spent("E13") + GLOBAL_STOP - ledger_total())
-    mc = e2.E2Client(loop=1, pilot="E13", cap_usd=cap, concurrency=64)
-    sc = AdaptionClient(96)
+    mc = e2.E2Client(loop=1, pilot="E13", cap_usd=cap, concurrency=128)
+    sc = AdaptionClient(400)
     sets = [("B", "split", e2.logs_B("split")), ("A", "split", e2.logs_A("split")), ("A", "controls", e2.logs_A("controls"))]
     jobs = []
     for setname, kind, logs in sets:
@@ -147,8 +147,18 @@ async def run():
                 o = out_path(model, fw, nt, setname, kind)
                 have = e12.done_ids(o)
                 jobs += [(model, fw, nt, lg, o, setname) for lg in logs if lg["id"] not in have]
+    # interleave summarizers (round-robin within each set) so per-model rate limits do not serialize the run
+    from itertools import zip_longest
+    ordered = []
+    for setname in ("B", "A"):
+        for kind in ("split", "controls"):
+            per = [[j for j in jobs if j[0] == m and j[5] == setname and j[4].name.startswith(f"{setname}_{kind}_")]
+                   for m in SUMMARIZERS]
+            ordered += [j for grp in zip_longest(*per) for j in grp if j is not None]
+    assert len(ordered) == len(jobs), (len(ordered), len(jobs))
+    jobs = ordered
     print(f"[{e2.now()}] E13: {len(jobs)} log-jobs", flush=True)
-    sem, k = asyncio.Semaphore(40), 0
+    sem, k = asyncio.Semaphore(120), 0
 
     async def one(j):
         nonlocal k
