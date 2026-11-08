@@ -7,6 +7,22 @@ Swarm Alignment Hackathon, track 4 (oversight). Every number here is copied from
 becomes an unannounced first monitor. What the downstream monitor can catch is capped by what the
 summarizer keeps and frames as suspicious.
 
+## Prior work
+
+No code, data or results in this repository predate the sprint. Everything here was written during the
+Swarm Alignment Hackathon, after the kickoff on Friday 6 November 2026, 13:30 PT; the first commit is
+2026-11-06 22:23 PT. The author's only pre-sprint code (the `steer` package, for a different idea, kept in a
+separate private repository) is not in this repository and is not used by any result. Small helper modules
+imported from the author's pilot records were also written during the sprint. Full details are under
+[Weekend work](#weekend-work) below and in the report's appendix "Preexisting code".
+
+This public repository was split out of the author's private hackathon repository on 2026-11-08 with its
+history preserved (same commit dates and messages). Commit hashes quoted in this README, the protocols and
+the report refer to that original repository, so they differ from the hashes shown here.
+
+Code is MIT-licensed (see `LICENSE`). Records derived from the two public corpora keep their CC BY 4.0
+terms; all planted deals and testimony logs are fictional.
+
 ## Headline results
 
 - **Result 1 - the ceiling.** Planted split deals (4 innocuous-looking messages) in real Mantiq swarm
