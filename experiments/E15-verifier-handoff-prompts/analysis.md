@@ -77,9 +77,9 @@
 ## What the paper may say
 - "Applied to chunks of other agents' logs, AgentScope 2.0.11's GoalPipeline verifier-report prompt and ARIS's
   reviewer-context slot (filled via one added instruction) hid the deals: 10/10 held-out cells FAIL (+51 to +71;
-  preregistered, five summarizers)."
+  cells preregistered, grouping post hoc; five summarizers)."
 - "ARIS's COMPACT findings log (executor memory) and AgentScope's memory-compression prompt: 5/5 FAIL each."
-- "Across E12, E13 and E15, every cell with a verbatim shipped prompt FAILs: 39/39." `aris_review` is excluded from
+- "Across E12, E13 and E15, every cell with a verbatim shipped prompt (schema-rendering words added) FAILs: 39/39." `aris_review` is excluded from
   that count.
 - It may not say:
   - that the canary discriminated in E15 (all cells were FAIL);
