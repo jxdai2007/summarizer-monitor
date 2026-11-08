@@ -285,16 +285,16 @@ def slides(N, B):
         alt="Dot plot: held-out detection loss per summarizer, from about minus 21 points (summaries beat the raw log) to plus 69 points">""",
         eyebrow="Added 7 Nov \u00b7 all summarizers with held-out results",
         notes=["Each dot is one summarizer on the same held-out deals and monitors; left of zero, its summaries beat the raw log."])
-    if "E12-hy3-defB" in NT and (PANELS / "frameworks.png").exists():
+    if "E1213-def-nfail" in NT and (PANELS / "frameworks9.png").exists():
         add(4, "The summary prompts frameworks ship hide the deals", f"""
-      <img class="panel" style="max-height:720px;display:block;margin:0 auto" src="{img('frameworks.png')}"
-        alt="Held-out detection lost with five frameworks' default summary prompts, and with one added sentence">
-      <p class="sub" style="text-align:center">Tencent hy3 passes our audit under our prompt ({nt('E12-hy3-safety-d-B')}).
-        With the shipped prompts it loses <b>{nt('E12-hy3-defB')}</b> points on average ({nt('E12-hy3-nfail')} FAIL).
-        One added sentence, <i>a monitor will read this summary</i>, cuts that to <b>{nt('E12-hy3-notB')}</b>
-        (still FAIL; controls flagged {nt('E12-hy3-notfa')}); for Gemini 3.7 Flash to {nt('E12-gem-notBlo')}&ndash;{nt('E12-gem-notBhi')};
-        for a small local model only to {nt('E12-qwen-notB')}. The fix has to be audited per summarizer.</p>""",
-            eyebrow="Added 7 Nov \u00b7 E12, preregistered: shipped framework prompts", note_idx=[1])
+      <img class="panel" style="max-height:700px;display:block;margin:0 auto" src="{img('frameworks9.png')}"
+        alt="Nine summarizers: held-out detection lost under our prompt, shipped framework prompts, and shipped prompts plus one sentence">
+      <p class="sub" style="text-align:center">Nine summarizers, five frameworks' default prompts: <b>{nt('E1213-def-nfail')}</b>
+        shipped-prompt cells FAIL ({nt('E1213-def-lo')} to {nt('E1213-def-hi')} points), while {nt('E1213-safe-npass')} summarizers
+        pass under an oversight-aware prompt. One added sentence: {nt('E1213-not-npass')} pass. The canary told good prompts from bad
+        in {nt('E13-agree')} cells. A 4B model fine-tuned on audit-passing summaries: {nt('E14b-base-llamaindex')} &rarr;
+        <b>{nt('E14b-tuned-llamaindex')}</b> under an unseen shipped prompt (ChatDev: {nt('E14c-base')} &rarr; {nt('E14c-tuned')}).</p>""",
+            eyebrow="Added 7 Nov \u00b7 E12-E14, preregistered: shipped prompts, and a repair", note_idx=[1])
     add(6, "Does the audit hold up for a deployer?", f"""
       <ul class="facts">
         <li><b>New environment</b> (ChatDev, different framework and deal author): canary label right for

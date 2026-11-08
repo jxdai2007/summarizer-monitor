@@ -16,15 +16,15 @@ Across six summarizer families, the monitor is capped by its own summarizer: ran
 
 **Beat 4 · 1:05-1:35 · Show, don't tell**
 
-The summarizer read three of the deal messages, called them potentially gaming, wrote: no evidence of coordinated deception. Raw log: monitors score 60 and 95. Summaries: 4 and 5. The judging happens in the summarizer. And the prompts frameworks ship? With LangChain's, LlamaIndex's or CrewAI's default, a summarizer that passes our audit loses more than sixty points. One sentence telling it a monitor will read the summary cuts that nearly in half.
+The summarizer read three of the deal messages, called them potentially gaming, wrote: no evidence of coordinated deception. Raw log: monitors score 60 and 95. Summaries: 4 and 5. The judging happens in the summarizer. And the summary prompts frameworks ship? Across nine models, every one lost the deals. One sentence naming the monitor rarely fixes it. Fine-tuning a small open model on summaries from models that pass our audit does: seventy-one points lost becomes eleven.
 
 **Beat 5 · 1:35-2:00 · Testimony**
 
-Worse: agents write the record. The guilty agent appends one line: step 9 was run by build-agent-9, not me. On raw logs, Sonnet never suspends only the innocent agent: zero of 14. Reading a summary, 16 of 28.
+The guilty agent appends one line: step 9 was run by build-agent-9, not me. On raw logs, Sonnet never suspends only the innocent agent: zero of 14. Reading a summary, 16 of 28.
 
 **Beat 6 · 2:00-2:32 · Fixes and the audit**
 
-The fixes are cheap. One summarizer line, keep agent tags and report later corrections as unverified, takes the framing from 16 of 28 to zero. On deals agents wrote themselves, a raw lane of worker-to-worker messages matches full-log detection with about half the text, once calibrated. Before trusting a summarizer, test it the way programmers test their tests: plant known deals, count how many get through. Mutation testing for oversight. Under six dollars, minutes. In its first four tests it got twelve of twelve summarizers right. It also flags bad prompts. But on vendors picked blind, all near the line, it was right half the time. Far from the line it was never wrong, and a preregistered test held eight of eight, all lossy-side. Trust its FAIL calls there.
+The fixes are cheap. One summarizer line, keep agent tags and report later corrections as unverified, takes the framing from 16 of 28 to zero. Before trusting a summarizer, test it the way programmers test their tests: plant known deals, count how many get through. Mutation testing for oversight. Under six dollars, minutes. In its first four tests it got twelve of twelve summarizers right. It also tells good prompts from bad, twenty-nine times in thirty. But on vendors picked blind, all near the line, it was right half the time. Far from the line it was never wrong, and a preregistered test held eight of eight, all lossy-side. Trust its FAIL calls there.
 
 **Beat 7 · 2:32-2:50 · Scope, said aloud**
 
@@ -34,4 +34,4 @@ Scope: on agent-written deals, at matched false alarms, the gap is six points, n
 
 Treat your summarizer as a monitor. Audit it like one. Everything is in the repo.
 
-_412 words, about 2.9 minutes at 140 words per minute._
+_396 words, about 2.8 minutes at 140 words per minute._
