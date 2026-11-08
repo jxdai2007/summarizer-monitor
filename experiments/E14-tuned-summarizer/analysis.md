@@ -1,4 +1,33 @@
-# E14 analysis (in progress)
+# E14 analysis
+
+## Results (locked predictions; MLX inference; monitors Haiku 5.5 + DeepSeek v4.1 Flash)
+**E14** (platform recipe: 1 epoch, 23 steps, learning rate 5e-5, LoRA rank 16): **KILL.**
+
+| Held-out set B | Base | Tuned |
+|---|---|---|
+| LlamaIndex prompt (unseen) | +70.7 | +67.5 |
+| LangChain prompt (seen) | +67.1 | +62.3 |
+| Held-out controls flagged | 0/16 | 0/16 |
+
+**E14b** (stronger dose: 3 epochs, 69 steps, learning rate 2e-4, LoRA rank 64; training loss 1.37 → 0.42): **PASS**
+(T1–T4 all pass).
+
+| Held-out set B | Base | Tuned |
+|---|---|---|
+| LlamaIndex prompt (unseen) | +70.7 | **+11.4** [+5, +18] |
+| LangChain prompt (seen) | +67.1 | **+1.3** [−9, +9] |
+| Held-out controls flagged | 0/16 | 0/16 |
+
+**E14c** (ChatDev transfer kill-test, an environment never seen in training; LlamaIndex prompt): **WEAKEN.**
+- Tuned +15.9 [+3, +29] vs base +61.1.
+- Tuned flags 1/24 control pairs.
+- C2 misses the locked ≤ 15 PASS line by 0.9 points.
+- Reading: most of the repair carries over to a new environment, but not all of it.
+
+**Allowed wording.** "Fine-tuning a 4B open model on about 1,200 summaries from audit-passing summarizers (set A only)
+cut its held-out loss under shipped prompts from about 70 to 1–11 points. On a new environment, from 61 to 16 (just over
+the FAIL line). A lighter platform-default recipe did nothing."
+
 
 ## Deviations (logged before any evaluation output existed)
 - **D1, inference engine (18:55 PT).** Evaluation runs on MLX (mlx-lm 0.32.2, `batch_generate`) instead of transformers
