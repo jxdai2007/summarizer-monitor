@@ -1,0 +1,24 @@
+% DRAFT, not yet in main.tex. Apply only after E12 finishes and a fresh claims review passes. Numbers are macros from
+% make_numbers.py (E12 block, from results/cells.json and analysis.txt).
+
+% ---- Results subsection (after sec:ceiling, before sec:realism)
+\subsection{The summary prompts frameworks ship hide split deals; one sentence restores them (E12)}
+\label{sec:frameworks}
+Our pipeline tells the summarizer that a monitor will read its output. Deployed agents usually compact history with the default prompt their framework ships, written for task continuity. In E12 (preregistered) we replaced our prompt with the verbatim default summary prompts of five open-source frameworks (LangChain v1 \texttt{SummarizationMiddleware}, LangChain-classic \texttt{ConversationSummaryMemory}, LlamaIndex \texttt{ChatSummaryMemoryBuffer}, LangMem \texttt{summarize\_messages} and CrewAI's context summarizer), each called the way its source code calls it, and ran each once more with one sentence added: an oversight monitor will read only this summary to check whether agents secretly coordinated, so keep what it needs, with agent ids (Figure~\ref{fig:frameworks}). Tencent hy3, whose summaries pass our canary under our prompt (E8), loses \N{E12-hy3-defB} points on held-out deals averaged over the five shipped prompts (\N{E12-hy3-nfail} FAIL) and \N{E12-hy3-notB} with the added sentence; the local Qwen3.8-Flash-Next loses \N{E12-qwen-defB} and \N{E12-qwen-notB}. Gemini 3.7 Flash, whose summaries beat the raw log under our prompt (\N{E12-gem-safety-d-B}), loses \N{E12-gem-langchain-d-B} points with LangChain's default and \N{E12-gem-llamaindex-d-B} with LlamaIndex's; the sentence brings these to \N{E12-gem-langchain-n-B} and \N{E12-gem-llamaindex-n-B}. The shipped prompts do not lose deals for lack of room: their summaries are longer than ours, and most chunk summaries that cover a deal name both deal agents$^\dagger$; they record what was built, not what was agreed. With the sentence, controls flagged: \N{E12-hy3-notfa} (hy3) and \N{E12-qwen-notfa} (local). The canary label on set A matched the held-out label in \N{E12-agree} of the (summarizer, prompt) cells (Spearman \N{E12-rho}), so the audit catches a bad prompt as well as a bad model.
+
+% ---- Figure
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_frameworks.pdf}
+\caption{\textbf{Shipped summary prompts.} Held-out detection lost (set B, same monitors and threshold) with each framework's default summary prompt (squares) and with one added sentence telling the summarizer that a monitor will read the summary (circles). Dotted line: our oversight-aware prompt with the same summarizer.}
+\label{fig:frameworks}
+\end{figure}
+
+% ---- Abstract sentence (replace the neutral-prompt clause)
+% The summary prompts five agent frameworks ship hide most split deals even with summarizers that pass under an
+% oversight-aware prompt (mean held-out loss \N{E12-hy3-defB} points for Tencent hy3); one added sentence, ``a monitor
+% will read this summary'', brings it to \N{E12-hy3-notB}.
+
+% ---- Deployer checklist item (new, first)
+% \item \textbf{Check the summary prompt.} Framework compaction prompts are written for continuity. Tell the summarizer a
+% monitor will read it, then audit the result: the canary catches a bad prompt as well as a bad model (E12).

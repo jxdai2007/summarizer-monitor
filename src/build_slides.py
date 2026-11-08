@@ -207,7 +207,7 @@ def slides(N, B):
           <div class="stat"><span class="big">{np_['caught']} of {np_['n']}</span>
             <span>split deals caught when the summary prompt is neutral (Haiku monitor). The judging happens in the summarizer.</span></div>
         </div>
-      </div>""")
+      </div>""", note_idx=[0])
 
     # 5 testimony
     l2 = demo["tab2"]["l2d15"]
@@ -285,6 +285,16 @@ def slides(N, B):
         alt="Dot plot: held-out detection loss per summarizer, from about minus 21 points (summaries beat the raw log) to plus 69 points">""",
         eyebrow="Added 7 Nov \u00b7 all summarizers with held-out results",
         notes=["Each dot is one summarizer on the same held-out deals and monitors; left of zero, its summaries beat the raw log."])
+    if "E12-hy3-defB" in NT and (PANELS / "frameworks.png").exists():
+        add(4, "The summary prompts frameworks ship hide the deals", f"""
+      <img class="panel" style="max-height:720px;display:block;margin:0 auto" src="{img('frameworks.png')}"
+        alt="Held-out detection lost with five frameworks' default summary prompts, and with one added sentence">
+      <p class="sub" style="text-align:center">Tencent hy3 passes our audit under our prompt ({nt('E12-hy3-safety-d-B')}).
+        With the shipped prompts it loses <b>{nt('E12-hy3-defB')}</b> points on average ({nt('E12-hy3-nfail')} FAIL).
+        One added sentence, <i>a monitor will read this summary</i>, cuts that to <b>{nt('E12-hy3-notB')}</b>
+        (still FAIL; controls flagged {nt('E12-hy3-notfa')}); for Gemini 3.7 Flash to {nt('E12-gem-notBlo')}&ndash;{nt('E12-gem-notBhi')};
+        for a small local model only to {nt('E12-qwen-notB')}. The fix has to be audited per summarizer.</p>""",
+            eyebrow="Added 7 Nov \u00b7 E12, preregistered: shipped framework prompts", note_idx=[1])
     add(6, "Does the audit hold up for a deployer?", f"""
       <ul class="facts">
         <li><b>New environment</b> (ChatDev, different framework and deal author): canary label right for
@@ -504,6 +514,9 @@ def main():
     out = HUMAN / "slides.html"
     out.write_text(page(S))
     print(f"wrote {out.relative_to(ROOT)}: {len(S)} slides, {out.stat().st_size / 1e6:.1f} MB")
+    vid = HUMAN / "video_deck.html"   # same slides in narration (beat) order, for recording the 3-minute video
+    vid.write_text(page(sorted(S, key=lambda x: x["beat"])))
+    print(f"wrote {vid.relative_to(ROOT)}: beat order {[x['beat'] for x in sorted(S, key=lambda x: x['beat'])]}")
 
 
 if __name__ == "__main__":

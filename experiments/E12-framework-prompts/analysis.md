@@ -1,4 +1,48 @@
-# E12 analysis (in progress)
+# E12 analysis
+
+## Result (locked analysis = headline; D1 refill in parentheses; local lane set A and controls still running)
+Verdict: **MIXED**. P1 and P3 pass for hy3. P2 passes for hy3 but fails for the local model, which makes the overall
+result MIXED whatever the remaining local data show.
+
+- **Tencent hy3, held-out set B.**
+  - Under our oversight-aware prompt: +3.9 (E8).
+  - Five shipped default prompts: +62 to +68, mean +65 (D1: +62); 5/5 FAIL. P1 PASS.
+  - With the one-sentence notice: +21 to +55, mean +37, a 44% cut (D1: +30, 51%). Better in 5/5, all still FAIL.
+    P2 PASS.
+  - Control pairs flagged with the notice: 0/207 (D1: 0/210). P3 PASS. Every arm, our prompt included, flags 0
+    controls, so this test has little power.
+- **Local Qwen3.8-Flash-Next, set B complete.**
+  - Defaults: +65 to +70, mean +67.
+  - Notice: +56 to +60, mean +59. Change −8.5, against the required −15, so P2 FAILS.
+  - Set-A canary, controls and our-prompt reference: pending.
+- **Gemini 3.7 Flash, set B (secondary).**
+  - Our prompt: −7.4.
+  - LangChain default +66.7 (56 → 2 of 81 pairs; per log 33/42 → 1/42); with the notice +4.9.
+  - LlamaIndex default +56.1; with the notice +11.1.
+  - P5 PASS.
+- **P4 (interim, hy3 cells only).** Canary label = held-out label in 10/10, ρ 0.86 (D1: 0.80). Every cell is FAIL on
+  both sets, so this shows the canary catches bad prompts. It does not test whether the canary can clear good ones.
+- **Mechanism.** The notice makes the summarizer comment on coordination itself: coordination vocabulary appears in
+  39-42 of 42 notice summaries of split logs, against 0-3 of 42 default summaries. The raw logs contain no such words.
+  The monitor therefore partly reads the summarizer's own verdict.
+- **Erasure.** Default summaries still name both deal agents in about 51-80% of deal chunks. What gets lost is what the
+  deal means, not who was involved.
+- **Scope.** We tested the frameworks' prompts, not their full pipelines:
+  - LlamaIndex's "Transcript so far" wrapper is not used;
+  - LangMem's separate messages are collapsed into one turn;
+  - LangChain's XML message format is not used;
+  - chunks are summarized independently, not as a running summary.
+
+## Claims review (fresh independent reviewer, 17:55 PT): PASS WITH FIXES, all applied
+- Headline numbers use the locked analysis, following the D1 rule.
+- "Halves" was replaced by "cuts nearly in half" (44%).
+- The P2 failure on the local model is reported, and the notice claim is scoped to hy3 and Gemini.
+- "Erase" was replaced by "hide from the monitor".
+- Template demand / mechanism is stated (see above).
+- P4 is framed as interim, catching bad prompts.
+- "Prompts, not pipelines" is stated.
+- The proposed video line "56 of 81 hidden deals" was rejected: those are pairs over 42 logs. It is not used.
+
 
 ## Deviations (logged before the affected results were seen)
 

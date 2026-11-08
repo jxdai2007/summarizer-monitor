@@ -141,3 +141,11 @@ block_2026-11-07:
     - id: PAPER-3
       what: "Judge review 2 + claims check: dial figure as Figure 1, scoped abstract (d0f5753); records bundled (e2c2236); handoff checklist (ae5c319)"
       status: "done; all 11 gates met"
+  block_2026-11-07_round3:
+    goal: "Needle-moving experiments (Jollen 15:20 PT: 'experiments that actually move the needle', not more measurement)"
+    shortlist: "round3_candidates.md (N1 framework prompts top; N2 prompt repair; N7 canary power analysis)"
+    budget: "E12 cap $18; no paid runs if ledger > $475 (approved overall cap $500)"
+    items:
+    - id: E12
+      what: "Five frameworks' shipped default summary prompts (LangChain v1, LangChain classic, LlamaIndex, LangMem, CrewAI) under the canary, default vs one-sentence oversight notice; Tencent hy3 + local Qwen3.8-Flash-Next (+ Gemini 3.7 Flash, set B, 2 frameworks)"
+      status: "locked cf72785, running since 15:44 PT (restarted 15:47 with higher concurrency; no scored data lost)"
