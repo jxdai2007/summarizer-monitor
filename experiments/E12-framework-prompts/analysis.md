@@ -78,3 +78,15 @@ changed). Projected ledger at the end is about $483, under the $484 stop line an
 
 **D2c, budget (16:55 PT).** E12 tag at $19.74 with 213 hy3 and 783 local logs remaining projected about $26. The cap was raised
 to $28 and the run restarted. Projected ledger at the end is about $479 with refill, under the $484 stop line.
+
+**D3, local lane set A and controls invalid (19:08 PT).**
+- From about 18:45, the local Splash server failed requests: 540 of 1,364 set-A chunks and all 869 control chunks came
+  back empty.
+- Cause: the author's E14 test runs used the same GPU (MLX tests and an out-of-memory attempt at 18:47–18:55).
+- The local set-B records were completed before 18:40 with 0 of 1,782 chunks failed, and stay valid.
+- Consequences:
+  - The local set-A canary values and control flags are invalid and are set aside.
+  - Local P3 and the local half of P4 are reported as **not evaluable**.
+  - P4 is reported over the 10 hy3 cells only (10/10).
+- The verdict stays **MIXED**, because local P2 fails on its clean set-B data.
+- A re-run of the empty local chunks will happen only if GPU time is left after E14.

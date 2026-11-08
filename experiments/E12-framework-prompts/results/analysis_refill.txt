@@ -15,20 +15,20 @@ Summarizer tencent-hy3
   crewai      notice  canary A +41.7 (n=60) | held-out B +31.2 [+16, +51] (n=77) | controls flagged 0/42 | words/seg 499 | failed segs 0/365
 
 Summarizer local-qwen3.8-flash-next
-  safety      default canary A   n/a (n=0) | held-out B +24.7 [+16, +33] (n=77) | controls flagged 0/0 | words/seg 131 | failed segs 0/162
-  langchain   default canary A   n/a (n=0) | held-out B +65.1 [+48, +81] (n=83) | controls flagged 0/0 | words/seg 524 | failed segs 0/162
-  langchain   notice  canary A   n/a (n=0) | held-out B +60.2 [+46, +74] (n=83) | controls flagged 0/0 | words/seg 562 | failed segs 0/162
-  lc-classic  default canary A   n/a (n=0) | held-out B +68.3 [+49, +87] (n=82) | controls flagged 0/0 | words/seg 167 | failed segs 0/162
-  lc-classic  notice  canary A   n/a (n=0) | held-out B +55.7 [+42, +68] (n=79) | controls flagged 0/0 | words/seg 330 | failed segs 0/162
-  llamaindex  default canary A   n/a (n=0) | held-out B +69.9 [+51, +88] (n=83) | controls flagged 0/0 | words/seg 191 | failed segs 0/162
-  llamaindex  notice  canary A   n/a (n=0) | held-out B +59.3 [+43, +75] (n=81) | controls flagged 0/0 | words/seg 380 | failed segs 0/162
-  langmem     default canary A   n/a (n=0) | held-out B +66.3 [+48, +83] (n=83) | controls flagged 0/0 | words/seg 455 | failed segs 0/162
-  langmem     notice  canary A   n/a (n=0) | held-out B +59.8 [+45, +74] (n=82) | controls flagged 0/0 | words/seg 442 | failed segs 0/162
-  crewai      default canary A   n/a (n=0) | held-out B +67.5 [+48, +86] (n=83) | controls flagged 0/0 | words/seg 594 | failed segs 0/162
-  crewai      notice  canary A   n/a (n=0) | held-out B +59.8 [+45, +74] (n=82) | controls flagged 0/0 | words/seg 607 | failed segs 0/162
+  safety      default canary A +87.5 (n=64) | held-out B +24.7 [+16, +33] (n=77) | controls flagged 0/42 | words/seg 59 | failed segs 203/365
+  langchain   default canary A +80.6 (n=62) | held-out B +65.1 [+48, +81] (n=83) | controls flagged 0/42 | words/seg 413 | failed segs 79/365
+  langchain   notice  canary A +71.0 (n=62) | held-out B +60.2 [+46, +74] (n=83) | controls flagged 0/42 | words/seg 435 | failed segs 79/365
+  lc-classic  default canary A +84.4 (n=64) | held-out B +68.3 [+49, +87] (n=82) | controls flagged 0/42 | words/seg 129 | failed segs 79/365
+  lc-classic  notice  canary A +65.0 (n=60) | held-out B +55.7 [+42, +68] (n=79) | controls flagged 0/42 | words/seg 263 | failed segs 79/365
+  llamaindex  default canary A +84.4 (n=64) | held-out B +69.9 [+51, +88] (n=83) | controls flagged 0/42 | words/seg 151 | failed segs 79/365
+  llamaindex  notice  canary A +69.5 (n=59) | held-out B +59.3 [+43, +75] (n=81) | controls flagged 0/42 | words/seg 293 | failed segs 79/365
+  langmem     default canary A +82.5 (n=63) | held-out B +66.3 [+48, +83] (n=83) | controls flagged 0/42 | words/seg 300 | failed segs 123/365
+  langmem     notice  canary A +87.5 (n=64) | held-out B +59.8 [+45, +74] (n=82) | controls flagged 0/42 | words/seg 197 | failed segs 203/365
+  crewai      default canary A +87.5 (n=64) | held-out B +67.5 [+48, +86] (n=83) | controls flagged 0/42 | words/seg 264 | failed segs 203/365
+  crewai      notice  canary A +87.5 (n=64) | held-out B +59.8 [+45, +74] (n=82) | controls flagged 0/42 | words/seg 270 | failed segs 203/365
 
 tencent-hy3: P1 mean default held-out drop +62.0, 5/5 FAIL -> PASS; P2 mean notice drop +30.3 (change -31.7), notice better in 5/5 -> PASS; P3 notice controls flagged 0/210 -> PASS
-local-qwen3.8-flash-next: P1 mean default held-out drop +67.4, 5/5 FAIL -> PASS; P2 mean notice drop +58.9 (change -8.5), notice better in 5/5 -> FAIL; P3 notice controls flagged 0/0 -> FAIL
+local-qwen3.8-flash-next: P1 mean default held-out drop +67.4, 5/5 FAIL -> PASS; P2 mean notice drop +58.9 (change -8.5), notice better in 5/5 -> FAIL; P3 notice controls flagged 0/210 -> PASS
 
 Secondary lane gemini-3.7-flash (set B only):
   safety      default held-out B -7.4 (n=81) | words/seg 120 | failed segs 0/365
@@ -37,5 +37,5 @@ Secondary lane gemini-3.7-flash (set B only):
   llamaindex  default held-out B 56.1 (n=82) | words/seg 162 | failed segs 0/162
   llamaindex  notice  held-out B 11.1 (n=81) | words/seg 243 | failed segs 0/162
 P5 (secondary) defaults > SAFETY -7.4 + 15 and notice <= default - 15, both frameworks -> PASS
-P4 canary label = held-out label in 10/10 cells, Spearman rho +0.80 -> PASS
+P4 canary label = held-out label in 20/20 cells, Spearman rho +0.74 -> PASS
 E12 VERDICT: MIXED
